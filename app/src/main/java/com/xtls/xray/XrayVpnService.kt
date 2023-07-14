@@ -101,13 +101,16 @@ class XrayVpnService : VpnService() {
     fun startVPN() {
         isRunning = true
 
-        xrayExecutor = newFixedThreadPool(1)
-        xrayExecutor!!.submit {
-            val process = Runtime.getRuntime().exec("su")
-            val root = DataOutputStream(process.outputStream)
-            root.writeBytes("${xrayPath()} run -c ${configPath()}\n")
-            root.flush()
-            process.waitFor()
+        if (Settings.useXray) {
+            /** Start xray */
+            xrayExecutor = newFixedThreadPool(1)
+            xrayExecutor!!.submit {
+                val process = Runtime.getRuntime().exec("su")
+                val root = DataOutputStream(process.outputStream)
+                root.writeBytes("${xrayPath()} run -c ${configPath()}\n")
+                root.flush()
+                process.waitFor()
+            }
         }
 
         /** Create Tun */
