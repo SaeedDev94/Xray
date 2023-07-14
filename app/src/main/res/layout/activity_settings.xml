@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="15dp"
+        tools:context=".SettingsActivity">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/socksAddress"
+            android:labelFor="@id/socksAddress" />
+        <EditText
+            android:id="@+id/socksAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:autofillHints="" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/socksPort"
+            android:labelFor="@id/socksPort" />
+        <EditText
+            android:id="@+id/socksPort"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:autofillHints="" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/primaryDns"
+            android:labelFor="@id/primaryDns" />
+        <EditText
+            android:id="@+id/primaryDns"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:autofillHints="" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/secondaryDns"
+            android:labelFor="@id/secondaryDns" />
+        <EditText
+            android:id="@+id/secondaryDns"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:autofillHints="" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/xrayConfig"
+            android:labelFor="@id/xrayConfig" />
+        <EditText
+            android:id="@+id/xrayConfig"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:autofillHints="" />
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/useXray"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="33dp"
+            android:text="@string/useXray" />
+        <Button
+            android:id="@+id/saveSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/saveSettings" />
+    </LinearLayout>
+</ScrollView>
