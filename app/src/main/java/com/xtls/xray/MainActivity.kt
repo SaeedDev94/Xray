@@ -15,7 +15,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
-import com.jaredrummler.android.shell.Shell
 import com.xtls.xray.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -101,30 +100,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun onToggleButtonClick() {
         if (!vpnServiceBound) return
+        val sharedPref = sharedPref()
+        val isXrayUpToDate = sharedPref.getInt("xrayAppVersionCode", 0) == BuildConfig.VERSION_CODE
+        if (!isXrayUpToDate) {
+            Toast.makeText(applicationContext, "Updating XTLS/Xray-core", Toast.LENGTH_SHORT).show()
+            Thread {
+                vpnService.installXray()
+                val process = Runtime.getRuntime().exec(arrayOf(vpnService.xrayPath(), "version"))
+                val xrayVersion = process.inputStream.bufferedReader().readText()
+                sharedPref.edit()
+                    .putInt("xrayAppVersionCode", BuildConfig.VERSION_CODE)
+                    .putString("xrayVersion", xrayVersion)
+                    .apply()
+                runOnUiThread {
+                    setXrayVersion()
+                }
+            }.start()
+            return
+        }
         if (Settings.useXray) {
-            if (!Shell.SU.available()) {
-                Toast.makeText(applicationContext, "**Use Xray** You need root access", Toast.LENGTH_SHORT).show()
-                return
-            }
-            val sharedPref = sharedPref()
-            val isXrayExists = vpnService.isXrayExists()
-            val isXrayUpToDate = sharedPref.getInt("xrayAppVersionCode", 0) == BuildConfig.VERSION_CODE
-            if (!isXrayExists || !isXrayUpToDate) {
-                Toast.makeText(applicationContext, "${if (isXrayExists) "Updating" else "Installing"} XTLS/Xray-core", Toast.LENGTH_SHORT).show()
-                Thread {
-                    vpnService.installXray()
-                    val cmd = Shell.SU.run("${vpnService.xrayPath()} version")
-                    val xrayVersion = cmd.getStdout()
-                    sharedPref.edit()
-                        .putInt("xrayAppVersionCode", BuildConfig.VERSION_CODE)
-                        .putString("xrayVersion", xrayVersion)
-                        .apply()
-                    runOnUiThread {
-                        setXrayVersion()
-                    }
-                }.start()
-                return
-            }
             if (!vpnService.isConfigExists()) {
                 Toast.makeText(applicationContext, "Xray config file missed", Toast.LENGTH_SHORT).show()
                 return

@@ -5,7 +5,7 @@ import android.net.VpnService
 import android.os.Binder
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
-import java.io.DataOutputStream
+import android.system.Os
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -36,14 +36,9 @@ class XrayVpnService : VpnService() {
 
     override fun onBind(intent: Intent?): IBinder = binder
 
-    fun xrayPath(): String = "${filesPath()}/xray"
+    fun xrayPath(): String = "${applicationContext.applicationInfo.nativeLibraryDir}/libxray.so"
 
-    private fun configPath(): String = "${filesPath()}/config.json"
-
-    private fun filesPath(): String {
-        val files = applicationContext.getExternalFilesDirs(null)
-        return if (files.isNotEmpty()) files.first().absolutePath else "/"
-    }
+    private fun configPath(): String = "${applicationContext.filesDir}/config.json"
 
     fun getIsRunning(): Boolean = isRunning
 
@@ -52,13 +47,8 @@ class XrayVpnService : VpnService() {
         return config.exists() && config.isFile
     }
 
-    fun isXrayExists(): Boolean {
-        val xray = File(xrayPath())
-        return xray.exists() && xray.isFile
-    }
-
     fun installXray() {
-        val filesPath = filesPath()
+        val filesPath = applicationContext.filesDir.absolutePath
         assets.list("")?.forEach { fileName ->
             var input: InputStream? = null
             var output: OutputStream? = null
@@ -78,12 +68,6 @@ class XrayVpnService : VpnService() {
                 permission.add(PosixFilePermission.OWNER_WRITE)
                 permission.add(PosixFilePermission.GROUP_READ)
                 permission.add(PosixFilePermission.OTHERS_READ)
-                /** xray 755 */
-                if (fileName == "xray") {
-                    permission.add(PosixFilePermission.OWNER_EXECUTE)
-                    permission.add(PosixFilePermission.GROUP_EXECUTE)
-                    permission.add(PosixFilePermission.OTHERS_EXECUTE)
-                }
                 Files.setPosixFilePermissions(file.toPath(), permission)
             } catch (_: IOException) {
                 // Ignore
@@ -105,10 +89,14 @@ class XrayVpnService : VpnService() {
             /** Start xray */
             xrayExecutor = newFixedThreadPool(1)
             xrayExecutor!!.submit {
-                val process = Runtime.getRuntime().exec("su")
-                val root = DataOutputStream(process.outputStream)
-                root.writeBytes("${xrayPath()} run -c ${configPath()}\n")
-                root.flush()
+                Os.setenv("xray.location.asset", applicationContext.filesDir.absolutePath, true)
+                val xrayCommand = arrayListOf(
+                    xrayPath(), "run", "-c", configPath()
+                )
+                val process = ProcessBuilder(xrayCommand)
+                    .directory(applicationContext.filesDir)
+                    .redirectErrorStream(true)
+                    .start()
                 process.waitFor()
             }
         }

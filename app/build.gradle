@@ -7,12 +7,18 @@ android {
     namespace 'com.xtls.xray'
     compileSdk 33
 
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
     defaultConfig {
         applicationId "com.xtls.xray"
         minSdk 29
         targetSdk 33
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.1.0"
 
         vectorDrawables {
             useSupportLibrary true
@@ -43,6 +49,5 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.jaredrummler:android-shell:1.0.0'
     implementation (name: 'tun2socks', ext: 'aar')
 }

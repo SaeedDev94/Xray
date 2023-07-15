@@ -25,7 +25,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun configFile(): File = File(applicationContext.getExternalFilesDir(null), "config.json")
+    private fun configFile(): File = File(applicationContext.filesDir, "config.json")
 
     private fun getXrayConfig(): String {
         val configFile = configFile()
