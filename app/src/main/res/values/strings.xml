@@ -4,6 +4,7 @@
     <string name="xrayLabel">XTLS/Xray-core</string>
     <string name="tun2socksLabel">xjasonlyu/tun2socks</string>
     <string name="tun2socksVersion">2.5.1</string>
+    <string name="vpnServiceLabel">VpnService</string>
     <string name="settings">Settings</string>
     <string name="toggleButton">Start / Stop</string>
     <string name="socksAddress">Socks Address</string>

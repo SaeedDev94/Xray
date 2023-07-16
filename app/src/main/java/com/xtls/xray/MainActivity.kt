@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
             val binder = service as XrayVpnService.ServiceBinder
             vpnService = binder.getService()
             vpnServiceBound = true
+            setVpnServiceStatus()
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -73,6 +74,11 @@ class MainActivity : AppCompatActivity() {
         vpnServiceBound = false
     }
 
+    override fun onResume() {
+        super.onResume()
+        setVpnServiceStatus()
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == 1) onToggleButtonClick()
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -87,6 +93,11 @@ class MainActivity : AppCompatActivity() {
     private fun setXrayVersion() {
         val sharedPref = sharedPref()
         binding.xrayVersion.text = sharedPref.getString("xrayVersion", "-")
+    }
+
+    private fun setVpnServiceStatus() {
+        if (!vpnServiceBound) return
+        binding.vpnService.text = if (vpnService.getIsRunning()) "Enable" else "Disable"
     }
 
     private fun setSettings() {
@@ -136,6 +147,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "Start VPN", Toast.LENGTH_SHORT).show()
             vpnService.startVPN()
         }
+        setVpnServiceStatus()
     }
 
     private fun hasPostNotification(): Boolean {
