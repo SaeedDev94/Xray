@@ -111,21 +111,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun onToggleButtonClick() {
         if (!vpnServiceBound || !hasPostNotification()) return
-        val sharedPref = sharedPref()
-        val isXrayUpToDate = sharedPref.getInt("xrayAppVersionCode", 0) == BuildConfig.VERSION_CODE
-        if (!isXrayUpToDate) {
-            Thread {
-                vpnService.installXray()
-                val process = Runtime.getRuntime().exec(arrayOf(vpnService.xrayPath(), "version"))
-                val xrayVersion = process.inputStream.bufferedReader().readText().trim()
-                sharedPref.edit()
-                    .putInt("xrayAppVersionCode", BuildConfig.VERSION_CODE)
-                    .putString("xrayVersion", xrayVersion)
-                    .apply()
-                runOnUiThread { setXrayVersion() }
-            }.start()
-        }
         if (Settings.useXray) {
+            val sharedPref = sharedPref()
+            val isXrayUpToDate = sharedPref.getInt("xrayAppVersionCode", 0) == BuildConfig.VERSION_CODE
+            if (!isXrayUpToDate) {
+                Thread {
+                    vpnService.installXray()
+                    val process = Runtime.getRuntime().exec(arrayOf(vpnService.xrayPath(), "version"))
+                    val xrayVersion = process.inputStream.bufferedReader().readText().trim()
+                    sharedPref.edit()
+                        .putInt("xrayAppVersionCode", BuildConfig.VERSION_CODE)
+                        .putString("xrayVersion", xrayVersion)
+                        .apply()
+                    runOnUiThread { setXrayVersion() }
+                }.start()
+            }
             if (!vpnService.isConfigExists()) {
                 Toast.makeText(applicationContext, "Xray config file missed", Toast.LENGTH_SHORT).show()
                 return
