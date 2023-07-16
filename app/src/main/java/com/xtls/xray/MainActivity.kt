@@ -99,24 +99,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onToggleButtonClick() {
-        if (!vpnServiceBound) return
+        if (!vpnServiceBound || !hasPostNotification()) return
         val sharedPref = sharedPref()
         val isXrayUpToDate = sharedPref.getInt("xrayAppVersionCode", 0) == BuildConfig.VERSION_CODE
         if (!isXrayUpToDate) {
-            Toast.makeText(applicationContext, "Updating XTLS/Xray-core", Toast.LENGTH_SHORT).show()
             Thread {
                 vpnService.installXray()
                 val process = Runtime.getRuntime().exec(arrayOf(vpnService.xrayPath(), "version"))
-                val xrayVersion = process.inputStream.bufferedReader().readText()
+                val xrayVersion = process.inputStream.bufferedReader().readText().trim()
                 sharedPref.edit()
                     .putInt("xrayAppVersionCode", BuildConfig.VERSION_CODE)
                     .putString("xrayVersion", xrayVersion)
                     .apply()
-                runOnUiThread {
-                    setXrayVersion()
-                }
+                runOnUiThread { setXrayVersion() }
             }.start()
-            return
         }
         if (Settings.useXray) {
             if (!vpnService.isConfigExists()) {
@@ -124,7 +120,6 @@ class MainActivity : AppCompatActivity() {
                 return
             }
         }
-        if (!hasPostNotification()) return
         val vpn = VpnService.prepare(this)
         if (vpn != null) {
             resultLauncher.launch(vpn)
