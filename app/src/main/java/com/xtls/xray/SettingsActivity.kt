@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.xtls.xray.databinding.ActivitySettingsBinding
-import java.io.File
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -25,10 +24,8 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun configFile(): File = File(applicationContext.filesDir, "config.json")
-
     private fun getXrayConfig(): String {
-        val configFile = configFile()
+        val configFile = Settings.configFile(applicationContext)
         if (!configFile.exists() || !configFile.isFile) return ""
         val bufferedReader = configFile.bufferedReader()
         return bufferedReader.use { it.readText() }
@@ -48,7 +45,7 @@ class SettingsActivity : AppCompatActivity() {
             .putString("secondaryDns", Settings.secondaryDns)
             .putBoolean("useXray", Settings.useXray)
             .apply()
-        configFile().writeText(binding.xrayConfig.text.toString())
+        Settings.configFile(applicationContext).writeText(binding.xrayConfig.text.toString())
         finish()
     }
 }

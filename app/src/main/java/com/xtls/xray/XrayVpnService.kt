@@ -36,12 +36,10 @@ class XrayVpnService : VpnService() {
 
     fun xrayPath(): String = "${applicationContext.applicationInfo.nativeLibraryDir}/libxray.so"
 
-    private fun configPath(): String = "${applicationContext.filesDir}/config.json"
-
     fun getIsRunning(): Boolean = isRunning
 
     fun isConfigExists(): Boolean {
-        val config = File(configPath())
+        val config = Settings.configFile(applicationContext)
         return config.exists() && config.isFile
     }
 
@@ -90,7 +88,7 @@ class XrayVpnService : VpnService() {
             executor!!.submit {
                 Os.setenv("xray.location.asset", applicationContext.filesDir.absolutePath, true)
                 val xrayCommand = arrayListOf(
-                    xrayPath(), "run", "-c", configPath()
+                    xrayPath(), "run", "-c", Settings.configFile(applicationContext).absolutePath
                 )
                 val process = ProcessBuilder(xrayCommand)
                     .directory(applicationContext.filesDir)
