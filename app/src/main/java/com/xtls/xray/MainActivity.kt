@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.VpnService
 import android.os.Build
@@ -84,14 +83,12 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private fun sharedPref(): SharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
-
     private fun setAppVersion() {
         binding.appVersion.text = BuildConfig.VERSION_NAME
     }
 
     private fun setXrayVersion() {
-        val sharedPref = sharedPref()
+        val sharedPref = Settings.sharedPref(applicationContext)
         binding.xrayVersion.text = sharedPref.getString("xrayVersion", "-")
     }
 
@@ -101,7 +98,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setSettings() {
-        val sharedPref = sharedPref()
+        val sharedPref = Settings.sharedPref(applicationContext)
         Settings.socksAddress = sharedPref.getString("socksAddress", Settings.socksAddress)!!
         Settings.socksPort = sharedPref.getString("socksPort", Settings.socksPort)!!
         Settings.primaryDns = sharedPref.getString("primaryDns", Settings.primaryDns)!!
@@ -112,7 +109,7 @@ class MainActivity : AppCompatActivity() {
     private fun onToggleButtonClick() {
         if (!vpnServiceBound || !hasPostNotification()) return
         if (Settings.useXray) {
-            val sharedPref = sharedPref()
+            val sharedPref = Settings.sharedPref(applicationContext)
             val isXrayUpToDate = sharedPref.getInt("xrayAppVersionCode", 0) == BuildConfig.VERSION_CODE
             if (!isXrayUpToDate) {
                 Thread {

@@ -1,6 +1,7 @@
 package com.xtls.xray
 
 import android.content.Context
+import android.content.SharedPreferences
 import java.io.File
 
 object Settings {
@@ -11,4 +12,5 @@ object Settings {
     var useXray: Boolean = false
 
     fun configFile(context: Context): File = File(context.filesDir, "config.json")
+    fun sharedPref(context: Context): SharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 }

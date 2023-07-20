@@ -1,6 +1,5 @@
 package com.xtls.xray
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.xtls.xray.databinding.ActivitySettingsBinding
@@ -37,7 +36,7 @@ class SettingsActivity : AppCompatActivity() {
         Settings.primaryDns = binding.primaryDns.text.toString()
         Settings.secondaryDns = binding.secondaryDns.text.toString()
         Settings.useXray = binding.useXray.isChecked
-        val sharedPref = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val sharedPref = Settings.sharedPref(applicationContext)
         sharedPref.edit()
             .putString("socksAddress", Settings.socksAddress)
             .putString("socksPort", Settings.socksPort)
