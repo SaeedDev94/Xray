@@ -24,10 +24,8 @@ class XrayVpnService : VpnService() {
 
     private val binder: ServiceBinder = ServiceBinder()
     private var isRunning: Boolean = false
+    private var executor: ExecutorService? = null
     private var tunDevice: ParcelFileDescriptor? = null
-
-    private var xrayExecutor: ExecutorService? = null
-    private var tun2socksExecutor: ExecutorService? = null
 
     override fun onDestroy() {
         stopVPN(stopSelf = false)
@@ -85,10 +83,11 @@ class XrayVpnService : VpnService() {
     fun startVPN() {
         isRunning = true
 
+        executor = newFixedThreadPool(1 + if (Settings.useXray) 1 else 0)
+
         if (Settings.useXray) {
             /** Start xray */
-            xrayExecutor = newFixedThreadPool(1)
-            xrayExecutor!!.submit {
+            executor!!.submit {
                 Os.setenv("xray.location.asset", applicationContext.filesDir.absolutePath, true)
                 val xrayCommand = arrayListOf(
                     xrayPath(), "run", "-c", configPath()
@@ -125,8 +124,7 @@ class XrayVpnService : VpnService() {
         tunDevice = tun.establish()
 
         /** Start tun2socks */
-        tun2socksExecutor = newFixedThreadPool(1)
-        tun2socksExecutor!!.submit {
+        executor!!.submit {
             val tun2socks = engine.Key()
             tun2socks.mark = 0L
             tun2socks.mtu = 0L
@@ -145,13 +143,10 @@ class XrayVpnService : VpnService() {
 
     fun stopVPN(stopSelf: Boolean = true) {
         isRunning = false
-        if (xrayExecutor != null) {
-            xrayExecutor!!.shutdown()
-            xrayExecutor = null
-        }
-        if (tun2socksExecutor != null) {
-            tun2socksExecutor!!.shutdown()
-            tun2socksExecutor = null
+        if (executor != null) {
+            executor!!.shutdown()
+            executor!!.shutdownNow()
+            executor = null
         }
         if (tunDevice != null) {
             tunDevice!!.close()
