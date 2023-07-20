@@ -110,7 +110,7 @@ class XrayVpnService : VpnService() {
         tun.addDnsServer(Settings.secondaryDns)
 
         /** Pass all traffic to the tun (Except private IP addresses) */
-        resources.getStringArray(R.array.bypass_private_ip_address).forEach {
+        resources.getStringArray(R.array.publicIpAddresses).forEach {
             val address = it.split('/')
             tun.addRoute(address[0], address[1].toInt())
         }

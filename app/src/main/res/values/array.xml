@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="bypass_private_ip_address">
+    <string-array name="publicIpAddresses">
         <item>0.0.0.0/5</item>
         <item>8.0.0.0/7</item>
         <item>11.0.0.0/8</item>
