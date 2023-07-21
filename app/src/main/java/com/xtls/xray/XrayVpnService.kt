@@ -28,16 +28,14 @@ class XrayVpnService : VpnService() {
     private var tun2socksExecutor: ExecutorService? = null
     private var tunDevice: ParcelFileDescriptor? = null
 
-    override fun onDestroy() {
-        stopVPN(stopSelf = false)
-        super.onDestroy()
-    }
-
+    fun getIsRunning(): Boolean = isRunning
+    fun xrayPath(): String = "${applicationContext.applicationInfo.nativeLibraryDir}/libxray.so"
     override fun onBind(intent: Intent?): IBinder = binder
 
-    fun xrayPath(): String = "${applicationContext.applicationInfo.nativeLibraryDir}/libxray.so"
-
-    fun getIsRunning(): Boolean = isRunning
+    override fun onDestroy() {
+        stopVPN()
+        super.onDestroy()
+    }
 
     fun isConfigExists(): Boolean {
         val config = Settings.configFile(applicationContext)
@@ -140,7 +138,7 @@ class XrayVpnService : VpnService() {
         }
     }
 
-    fun stopVPN(stopSelf: Boolean = true) {
+    fun stopVPN() {
         isRunning = false
         if (xrayExecutor != null) {
             xrayExecutor!!.shutdown()
@@ -156,7 +154,6 @@ class XrayVpnService : VpnService() {
             tunDevice!!.close()
             tunDevice = null
         }
-        if (stopSelf) stopSelf()
     }
 
 }
