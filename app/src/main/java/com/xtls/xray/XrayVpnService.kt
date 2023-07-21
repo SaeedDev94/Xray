@@ -24,7 +24,8 @@ class XrayVpnService : VpnService() {
 
     private val binder: ServiceBinder = ServiceBinder()
     private var isRunning: Boolean = false
-    private var executor: ExecutorService? = null
+    private var xrayExecutor: ExecutorService? = null
+    private var tun2socksExecutor: ExecutorService? = null
     private var tunDevice: ParcelFileDescriptor? = null
 
     override fun onDestroy() {
@@ -81,11 +82,10 @@ class XrayVpnService : VpnService() {
     fun startVPN() {
         isRunning = true
 
-        executor = newFixedThreadPool(1 + if (Settings.useXray) 1 else 0)
-
         if (Settings.useXray) {
             /** Start xray */
-            executor!!.submit {
+            xrayExecutor = newFixedThreadPool(1)
+            xrayExecutor!!.submit {
                 Os.setenv("xray.location.asset", applicationContext.filesDir.absolutePath, true)
                 val xrayCommand = arrayListOf(
                     xrayPath(), "run", "-c", Settings.configFile(applicationContext).absolutePath
@@ -122,7 +122,8 @@ class XrayVpnService : VpnService() {
         tunDevice = tun.establish()
 
         /** Start tun2socks */
-        executor!!.submit {
+        tun2socksExecutor = newFixedThreadPool(1)
+        tun2socksExecutor!!.submit {
             val tun2socks = engine.Key()
             tun2socks.mark = 0L
             tun2socks.mtu = 0L
@@ -141,10 +142,15 @@ class XrayVpnService : VpnService() {
 
     fun stopVPN(stopSelf: Boolean = true) {
         isRunning = false
-        if (executor != null) {
-            executor!!.shutdown()
-            executor!!.shutdownNow()
-            executor = null
+        if (xrayExecutor != null) {
+            xrayExecutor!!.shutdown()
+            xrayExecutor!!.shutdownNow()
+            xrayExecutor = null
+        }
+        if (tun2socksExecutor != null) {
+            tun2socksExecutor!!.shutdown()
+            tun2socksExecutor!!.shutdownNow()
+            tun2socksExecutor = null
         }
         if (tunDevice != null) {
             tunDevice!!.close()
