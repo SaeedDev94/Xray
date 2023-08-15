@@ -9,6 +9,12 @@
         android:orientation="vertical"
         android:padding="15dp"
         tools:context=".SettingsActivity">
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/useBepass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="@string/useBepass" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,45 +37,69 @@
             android:layout_height="wrap_content"
             android:inputType="text"
             android:autofillHints="" />
-        <TextView
+        <LinearLayout
+            android:id="@+id/xraySettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/primaryDns"
-            android:labelFor="@id/primaryDns" />
-        <EditText
-            android:id="@+id/primaryDns"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/primaryDns"
+                android:labelFor="@id/primaryDns" />
+            <EditText
+                android:id="@+id/primaryDns"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:autofillHints="" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/secondaryDns"
+                android:labelFor="@id/secondaryDns" />
+            <EditText
+                android:id="@+id/secondaryDns"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:autofillHints="" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/xrayConfig"
+                android:labelFor="@id/xrayConfig" />
+            <EditText
+                android:id="@+id/xrayConfig"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:autofillHints="" />
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/useXray"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="33dp"
+                android:text="@string/useXray" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/bepassSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:autofillHints="" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/secondaryDns"
-            android:labelFor="@id/secondaryDns" />
-        <EditText
-            android:id="@+id/secondaryDns"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:autofillHints="" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/xrayConfig"
-            android:labelFor="@id/xrayConfig" />
-        <EditText
-            android:id="@+id/xrayConfig"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:autofillHints="" />
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/useXray"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="33dp"
-            android:text="@string/useXray" />
+            android:orientation="vertical"
+            android:visibility="gone">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/bepassConfig"
+                android:labelFor="@id/bepassConfig" />
+            <EditText
+                android:id="@+id/bepassConfig"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:autofillHints="" />
+        </LinearLayout>
         <Button
             android:id="@+id/saveSettings"
             android:layout_width="match_parent"

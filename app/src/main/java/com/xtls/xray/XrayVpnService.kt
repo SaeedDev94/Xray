@@ -1,6 +1,7 @@
 package com.xtls.xray
 
 import android.content.Intent
+import android.net.ProxyInfo
 import android.net.VpnService
 import android.os.Binder
 import android.os.IBinder
@@ -24,12 +25,13 @@ class XrayVpnService : VpnService() {
 
     private val binder: ServiceBinder = ServiceBinder()
     private var isRunning: Boolean = false
-    private var xrayExecutor: ExecutorService? = null
-    private var tun2socksExecutor: ExecutorService? = null
     private var tunDevice: ParcelFileDescriptor? = null
+    private var socksProcess: Process? = null
+    private var tun2socksExecutor: ExecutorService? = null
 
     fun getIsRunning(): Boolean = isRunning
     fun xrayPath(): String = "${applicationContext.applicationInfo.nativeLibraryDir}/libxray.so"
+    private fun bepassPath(): String = "${applicationContext.applicationInfo.nativeLibraryDir}/libbepass.so"
     override fun onBind(intent: Intent?): IBinder = binder
 
     override fun onDestroy() {
@@ -38,7 +40,7 @@ class XrayVpnService : VpnService() {
     }
 
     fun isConfigExists(): Boolean {
-        val config = Settings.configFile(applicationContext)
+        val config = if (Settings.useBepass) Settings.bepassConfig(applicationContext) else Settings.xrayConfig(applicationContext)
         return config.exists() && config.isFile
     }
 
@@ -79,21 +81,30 @@ class XrayVpnService : VpnService() {
 
     fun startVPN() {
         isRunning = true
-
-        if (Settings.useXray) {
-            /** Start xray */
-            xrayExecutor = newFixedThreadPool(1)
-            xrayExecutor!!.submit {
-                Os.setenv("xray.location.asset", applicationContext.filesDir.absolutePath, true)
-                val xrayCommand = arrayListOf(
-                    xrayPath(), "run", "-c", Settings.configFile(applicationContext).absolutePath
+        if (Settings.useBepass) {
+            Thread {
+                val bepassCommand = arrayListOf(
+                    bepassPath(), "-c", Settings.bepassConfig(applicationContext).absolutePath
                 )
-                val process = ProcessBuilder(xrayCommand)
+                socksProcess = ProcessBuilder(bepassCommand)
                     .directory(applicationContext.filesDir)
                     .redirectErrorStream(true)
                     .start()
-                process.waitFor()
-            }
+                socksProcess!!.waitFor()
+            }.start()
+        } else if (Settings.useXray) {
+            /** Start xray */
+            Thread {
+                Os.setenv("xray.location.asset", applicationContext.filesDir.absolutePath, true)
+                val xrayCommand = arrayListOf(
+                    xrayPath(), "run", "-c", Settings.xrayConfig(applicationContext).absolutePath
+                )
+                socksProcess = ProcessBuilder(xrayCommand)
+                    .directory(applicationContext.filesDir)
+                    .redirectErrorStream(true)
+                    .start()
+                socksProcess!!.waitFor()
+            }.start()
         }
 
         /** Create Tun */
@@ -104,8 +115,12 @@ class XrayVpnService : VpnService() {
         tun.setMtu(1500)
         tun.setSession("tun0")
         tun.addAddress("10.10.10.10", 24)
-        tun.addDnsServer(Settings.primaryDns)
-        tun.addDnsServer(Settings.secondaryDns)
+        if (Settings.useBepass) {
+            tun.setHttpProxy(ProxyInfo.buildDirectProxy(Settings.socksAddress, Settings.socksPort.toInt()))
+        } else {
+            tun.addDnsServer(Settings.primaryDns)
+            tun.addDnsServer(Settings.secondaryDns)
+        }
 
         /** Pass all traffic to the tun (Except private IP addresses) */
         resources.getStringArray(R.array.publicIpAddresses).forEach {
@@ -140,10 +155,9 @@ class XrayVpnService : VpnService() {
 
     fun stopVPN() {
         isRunning = false
-        if (xrayExecutor != null) {
-            xrayExecutor!!.shutdown()
-            xrayExecutor!!.shutdownNow()
-            xrayExecutor = null
+        if (socksProcess != null) {
+            if (socksProcess!!.isAlive) socksProcess!!.destroy()
+            socksProcess = null
         }
         if (tun2socksExecutor != null) {
             tun2socksExecutor!!.shutdown()
@@ -154,6 +168,7 @@ class XrayVpnService : VpnService() {
             tunDevice!!.close()
             tunDevice = null
         }
+        stopSelf()
     }
 
 }
