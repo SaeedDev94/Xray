@@ -27,16 +27,6 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bepassLabel"
-        android:textStyle="bold" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/bepassVersion"
-        android:layout_marginBottom="5dp" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:text="@string/tun2socksLabel"
         android:textStyle="bold" />
     <TextView

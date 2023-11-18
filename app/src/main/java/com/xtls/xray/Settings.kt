@@ -5,14 +5,12 @@ import android.content.SharedPreferences
 import java.io.File
 
 object Settings {
-    var useBepass: Boolean = false
     var socksAddress: String = "127.0.0.1"
     var socksPort: String = "10808"
     var primaryDns: String = "1.1.1.1"
     var secondaryDns: String = "1.0.0.1"
     var useXray: Boolean = false
 
-    fun bepassConfig(context: Context): File = File(context.filesDir, "bepass.json")
     fun xrayConfig(context: Context): File = File(context.filesDir, "config.json")
     fun sharedPref(context: Context): SharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 }

@@ -99,7 +99,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setSettings() {
         val sharedPref = Settings.sharedPref(applicationContext)
-        Settings.useBepass = sharedPref.getBoolean("useBepass", Settings.useBepass)
         Settings.socksAddress = sharedPref.getString("socksAddress", Settings.socksAddress)!!
         Settings.socksPort = sharedPref.getString("socksPort", Settings.socksPort)!!
         Settings.primaryDns = sharedPref.getString("primaryDns", Settings.primaryDns)!!
@@ -109,12 +108,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onToggleButtonClick() {
         if (!vpnServiceBound || !hasPostNotification()) return
-        if (Settings.useBepass) {
-            if (!vpnService.isConfigExists()) {
-                Toast.makeText(applicationContext, "Bepass config file missed", Toast.LENGTH_SHORT).show()
-                return
-            }
-        } else if (Settings.useXray) {
+        if (Settings.useXray) {
             val sharedPref = Settings.sharedPref(applicationContext)
             val isXrayUpToDate = sharedPref.getInt("xrayAppVersionCode", 0) == BuildConfig.VERSION_CODE
             if (!isXrayUpToDate) {

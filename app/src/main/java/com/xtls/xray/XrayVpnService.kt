@@ -1,7 +1,6 @@
 package com.xtls.xray
 
 import android.content.Intent
-import android.net.ProxyInfo
 import android.net.VpnService
 import android.os.Binder
 import android.os.IBinder
@@ -31,7 +30,6 @@ class XrayVpnService : VpnService() {
 
     fun getIsRunning(): Boolean = isRunning
     fun xrayPath(): String = "${applicationContext.applicationInfo.nativeLibraryDir}/libxray.so"
-    private fun bepassPath(): String = "${applicationContext.applicationInfo.nativeLibraryDir}/libbepass.so"
     override fun onBind(intent: Intent?): IBinder = binder
 
     override fun onDestroy() {
@@ -40,7 +38,7 @@ class XrayVpnService : VpnService() {
     }
 
     fun isConfigExists(): Boolean {
-        val config = if (Settings.useBepass) Settings.bepassConfig(applicationContext) else Settings.xrayConfig(applicationContext)
+        val config = Settings.xrayConfig(applicationContext)
         return config.exists() && config.isFile
     }
 
@@ -81,18 +79,7 @@ class XrayVpnService : VpnService() {
 
     fun startVPN() {
         isRunning = true
-        if (Settings.useBepass) {
-            Thread {
-                val bepassCommand = arrayListOf(
-                    bepassPath(), "-c", Settings.bepassConfig(applicationContext).absolutePath
-                )
-                socksProcess = ProcessBuilder(bepassCommand)
-                    .directory(applicationContext.filesDir)
-                    .redirectErrorStream(true)
-                    .start()
-                socksProcess!!.waitFor()
-            }.start()
-        } else if (Settings.useXray) {
+        if (Settings.useXray) {
             /** Start xray */
             Thread {
                 Os.setenv("xray.location.asset", applicationContext.filesDir.absolutePath, true)
@@ -115,12 +102,8 @@ class XrayVpnService : VpnService() {
         tun.setMtu(1500)
         tun.setSession("tun0")
         tun.addAddress("10.10.10.10", 24)
-        if (Settings.useBepass) {
-            tun.setHttpProxy(ProxyInfo.buildDirectProxy(Settings.socksAddress, Settings.socksPort.toInt()))
-        } else {
-            tun.addDnsServer(Settings.primaryDns)
-            tun.addDnsServer(Settings.secondaryDns)
-        }
+        tun.addDnsServer(Settings.primaryDns)
+        tun.addDnsServer(Settings.secondaryDns)
 
         /** Pass all traffic to the tun (Except private IP addresses) */
         resources.getStringArray(R.array.publicIpAddresses).forEach {
