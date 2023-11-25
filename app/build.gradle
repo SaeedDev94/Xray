@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace 'com.xtls.xray'
-    compileSdk 33
+    compileSdk 34
 
     packagingOptions {
         jniLibs {
@@ -16,9 +16,9 @@ android {
     defaultConfig {
         applicationId "com.xtls.xray"
         minSdk 29
-        targetSdk 33
-        versionCode 10
-        versionName "1.6.0"
+        targetSdk 34
+        versionCode 12
+        versionName "1.6.2"
 
         vectorDrawables {
             useSupportLibrary true
@@ -46,8 +46,8 @@ android {
 
 dependencies {
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.22')
-    implementation 'androidx.core:core-ktx:1.10.1'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation (name: 'tun2socks', ext: 'aar')
+    implementation (name: 'tun2socks', ext: 'aar', group: 'native-lib', version: '2.5.1')
 }
