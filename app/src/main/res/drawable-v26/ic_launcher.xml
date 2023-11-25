@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+  <background>
+    <inset
+        android:insetBottom="0dp"
+        android:insetLeft="0dp"
+        android:insetRight="0dp"
+        android:insetTop="0dp">
+      <shape android:shape="oval">
+        <solid android:color="#FFFFFF" />
+      </shape>
+    </inset>
+  </background>
+  <foreground android:drawable="@drawable/ic_xray" />
+  <monochrome android:drawable="@drawable/ic_xray" />
+</adaptive-icon>
