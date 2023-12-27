@@ -24,11 +24,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private lateinit var vpnService: XrayVpnService
+    private lateinit var vpnService: TProxyService
     private var vpnServiceBound: Boolean = false
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            val binder = service as XrayVpnService.ServiceBinder
+            val binder = service as TProxyService.ServiceBinder
             vpnService = binder.getService()
             vpnServiceBound = true
             setVpnServiceStatus()
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        Intent(this, XrayVpnService::class.java).also { intent ->
+        Intent(this, TProxyService::class.java).also { intent ->
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
     }

@@ -24,7 +24,7 @@
             android:parentActivityName=".MainActivity"
             android:exported="true" />
         <service
-            android:name=".XrayVpnService"
+            android:name=".TProxyService"
             android:exported="true"
             android:permission="android.permission.BIND_VPN_SERVICE">
             <intent-filter>

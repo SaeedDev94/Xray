@@ -13,20 +13,26 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermission
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors.newFixedThreadPool
 
-class XrayVpnService : VpnService() {
+class TProxyService : VpnService() {
+
+    companion object {
+        init {
+            System.loadLibrary("hev-socks5-tunnel")
+        }
+    }
+
+    private external fun TProxyStartService(config_path: String, fd: Int)
+    private external fun TProxyStopService()
 
     inner class ServiceBinder : Binder() {
-        fun getService(): XrayVpnService = this@XrayVpnService
+        fun getService(): TProxyService = this@TProxyService
     }
 
     private val binder: ServiceBinder = ServiceBinder()
     private var isRunning: Boolean = false
     private var tunDevice: ParcelFileDescriptor? = null
     private var socksProcess: Process? = null
-    private var tun2socksExecutor: ExecutorService? = null
 
     fun getIsRunning(): Boolean = isRunning
     fun xrayPath(): String = "${applicationContext.applicationInfo.nativeLibraryDir}/libxray.so"
@@ -99,7 +105,7 @@ class XrayVpnService : VpnService() {
 
         /** Basic tun config */
         tun.setMetered(false)
-        tun.setMtu(1500)
+        tun.setMtu(Settings.MTU)
         tun.setSession("tun0")
         tun.addAddress("10.10.10.10", 24)
         tun.addDnsServer(Settings.primaryDns)
@@ -117,23 +123,19 @@ class XrayVpnService : VpnService() {
         /** Build tun device */
         tunDevice = tun.establish()
 
+        /** Create, Update tun2socks config */
+        val tun2socksConfig = arrayOf(
+            "tunnel:",
+            "  mtu: ${Settings.MTU}",
+            "socks5:",
+            "  address: ${Settings.socksAddress}",
+            "  port: ${Settings.socksPort}",
+            "  udp: 'udp'"
+        )
+        Settings.tun2socksConfig(applicationContext).writeText(tun2socksConfig.joinToString("\n"))
+
         /** Start tun2socks */
-        tun2socksExecutor = newFixedThreadPool(1)
-        tun2socksExecutor!!.submit {
-            val tun2socks = engine.Key()
-            tun2socks.mark = 0L
-            tun2socks.mtu = 0L
-            tun2socks.`interface` = ""
-            tun2socks.logLevel = "info"
-            tun2socks.restAPI = ""
-            tun2socks.tcpSendBufferSize = ""
-            tun2socks.tcpReceiveBufferSize = ""
-            tun2socks.tcpModerateReceiveBuffer = true
-            tun2socks.device = "fd://${tunDevice!!.fd}"
-            tun2socks.proxy = "socks5://${Settings.socksAddress}:${Settings.socksPort}"
-            engine.Engine.insert(tun2socks)
-            engine.Engine.start()
-        }
+        TProxyStartService(Settings.tun2socksConfig(applicationContext).absolutePath, tunDevice!!.fd)
     }
 
     fun stopVPN() {
@@ -142,12 +144,8 @@ class XrayVpnService : VpnService() {
             if (socksProcess!!.isAlive) socksProcess!!.destroy()
             socksProcess = null
         }
-        if (tun2socksExecutor != null) {
-            tun2socksExecutor!!.shutdown()
-            tun2socksExecutor!!.shutdownNow()
-            tun2socksExecutor = null
-        }
         if (tunDevice != null) {
+            TProxyStopService()
             tunDevice!!.close()
             tunDevice = null
         }

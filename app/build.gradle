@@ -23,6 +23,10 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", 'x86', 'x86_64'
+        }
     }
 
     buildTypes {
@@ -42,6 +46,12 @@ android {
         buildConfig = true
         viewBinding = true
     }
+    externalNativeBuild {
+        ndkVersion = "26.1.10909125"
+        ndkBuild {
+            path = "src/main/jni/Android.mk"
+        }
+    }
 }
 
 dependencies {
@@ -49,5 +59,4 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation (name: 'tun2socks', ext: 'aar', group: 'native-lib', version: '2.5.1')
 }
