@@ -5,7 +5,6 @@ import android.net.VpnService
 import android.os.Binder
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
-import android.system.Os
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -88,14 +87,13 @@ class TProxyService : VpnService() {
         if (Settings.useXray) {
             /** Start xray */
             Thread {
-                Os.setenv("xray.location.asset", applicationContext.filesDir.absolutePath, true)
                 val xrayCommand = arrayListOf(
                     xrayPath(), "run", "-c", Settings.xrayConfig(applicationContext).absolutePath
                 )
-                socksProcess = ProcessBuilder(xrayCommand)
-                    .directory(applicationContext.filesDir)
-                    .redirectErrorStream(true)
-                    .start()
+                val xrayProcess = ProcessBuilder(xrayCommand)
+                val xrayEnv = xrayProcess.environment()
+                xrayEnv["xray.location.asset"] = applicationContext.filesDir.absolutePath
+                socksProcess = xrayProcess.start()
                 socksProcess!!.waitFor()
             }.start()
         }
