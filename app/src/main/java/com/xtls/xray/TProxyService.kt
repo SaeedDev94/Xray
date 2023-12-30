@@ -84,18 +84,17 @@ class TProxyService : VpnService() {
 
     fun startVPN() {
         isRunning = true
+
+        /** Start xray */
         if (Settings.useXray) {
-            /** Start xray */
-            Thread {
-                val xrayCommand = arrayListOf(
-                    xrayPath(), "run", "-c", Settings.xrayConfig(applicationContext).absolutePath
-                )
-                val xrayProcess = ProcessBuilder(xrayCommand)
-                val xrayEnv = xrayProcess.environment()
-                xrayEnv["xray.location.asset"] = applicationContext.filesDir.absolutePath
-                socksProcess = xrayProcess.start()
-                socksProcess!!.waitFor()
-            }.start()
+            val xrayCommand = arrayListOf(
+                xrayPath(), "run", "-c", Settings.xrayConfig(applicationContext).absolutePath
+            )
+            val xrayProcess = ProcessBuilder(xrayCommand).inheritIO()
+            val xrayEnv = xrayProcess.environment()
+            xrayEnv["xray.location.asset"] = applicationContext.filesDir.absolutePath
+            socksProcess = xrayProcess.start()
+            Thread { socksProcess!!.waitFor() }.start()
         }
 
         /** Create Tun */
