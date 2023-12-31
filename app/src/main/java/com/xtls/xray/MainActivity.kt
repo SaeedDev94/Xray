@@ -103,7 +103,9 @@ class MainActivity : AppCompatActivity() {
         Settings.socksPort = sharedPref.getString("socksPort", Settings.socksPort)!!
         Settings.primaryDns = sharedPref.getString("primaryDns", Settings.primaryDns)!!
         Settings.secondaryDns = sharedPref.getString("secondaryDns", Settings.secondaryDns)!!
+        Settings.excludedApps = sharedPref.getString("excludedApps", Settings.excludedApps)!!
         Settings.useXray = sharedPref.getBoolean("useXray", Settings.useXray)
+        Settings.socksUdp = sharedPref.getBoolean("socksUdp", Settings.socksUdp)
     }
 
     private fun onToggleButtonClick() {

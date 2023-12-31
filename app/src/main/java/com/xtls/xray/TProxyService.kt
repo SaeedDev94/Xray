@@ -114,8 +114,11 @@ class TProxyService : VpnService() {
             tun.addRoute(address[0], address[1].toInt())
         }
 
-        /** Exclude the app itself */
+        /** Exclude apps */
         tun.addDisallowedApplication(applicationContext.packageName)
+        Settings.excludedApps.split("\n").forEach { packageName ->
+            if (packageName.trim().isNotEmpty()) tun.addDisallowedApplication(packageName)
+        }
 
         /** Build tun device */
         tunDevice = tun.establish()
@@ -127,7 +130,7 @@ class TProxyService : VpnService() {
             "socks5:",
             "  address: ${Settings.socksAddress}",
             "  port: ${Settings.socksPort}",
-            "  udp: 'udp'"
+            if (Settings.socksUdp) "  udp: 'udp'" else "  udp: 'tcp'"
         )
         Settings.tun2socksConfig(applicationContext).writeText(tun2socksConfig.joinToString("\n"))
 

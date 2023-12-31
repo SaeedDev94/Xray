@@ -9,7 +9,9 @@ object Settings {
     var socksPort: String = "10808"
     var primaryDns: String = "1.1.1.1"
     var secondaryDns: String = "1.0.0.1"
+    var excludedApps: String = ""
     var useXray: Boolean = false
+    var socksUdp: Boolean = true
     var MTU: Int = 1500
 
     fun xrayConfig(context: Context): File = File(context.filesDir, "config.json")

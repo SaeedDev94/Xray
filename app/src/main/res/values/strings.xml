@@ -12,6 +12,8 @@
     <string name="primaryDns">Primary DNS</string>
     <string name="secondaryDns">Secondary DNS</string>
     <string name="useXray">Use Xray</string>
+    <string name="socksUdp">Socks UDP</string>
+    <string name="excludedApps">Excluded Apps</string>
     <string name="xrayConfig">Xray Config</string>
     <string name="saveSettings">Save Settings</string>
 </resources>

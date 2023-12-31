@@ -17,6 +17,8 @@ class SettingsActivity : AppCompatActivity() {
         binding.primaryDns.setText(Settings.primaryDns)
         binding.secondaryDns.setText(Settings.secondaryDns)
         binding.useXray.isChecked = Settings.useXray
+        binding.socksUdp.isChecked = Settings.socksUdp
+        binding.excludedApps.setText(Settings.excludedApps)
         binding.xrayConfig.setText(getXrayConfig())
         binding.saveSettings.setOnClickListener {
             saveSettings()
@@ -35,14 +37,18 @@ class SettingsActivity : AppCompatActivity() {
         Settings.socksPort = binding.socksPort.text.toString()
         Settings.primaryDns = binding.primaryDns.text.toString()
         Settings.secondaryDns = binding.secondaryDns.text.toString()
+        Settings.excludedApps = binding.excludedApps.text.toString()
         Settings.useXray = binding.useXray.isChecked
+        Settings.socksUdp = binding.socksUdp.isChecked
         val sharedPref = Settings.sharedPref(applicationContext)
         sharedPref.edit()
             .putString("socksAddress", Settings.socksAddress)
             .putString("socksPort", Settings.socksPort)
             .putString("primaryDns", Settings.primaryDns)
             .putString("secondaryDns", Settings.secondaryDns)
+            .putString("excludedApps", Settings.excludedApps)
             .putBoolean("useXray", Settings.useXray)
+            .putBoolean("socksUdp", Settings.socksUdp)
             .apply()
         Settings.xrayConfig(applicationContext).writeText(binding.xrayConfig.text.toString())
         finish()
