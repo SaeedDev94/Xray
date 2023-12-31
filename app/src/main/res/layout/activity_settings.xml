@@ -31,44 +31,44 @@
             android:layout_height="wrap_content"
             android:inputType="text"
             android:autofillHints="" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/primaryDns"
+            android:labelFor="@id/primaryDns" />
+        <EditText
+            android:id="@+id/primaryDns"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:autofillHints="" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/secondaryDns"
+            android:labelFor="@id/secondaryDns" />
+        <EditText
+            android:id="@+id/secondaryDns"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:autofillHints="" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/excludedApps"
+            android:labelFor="@id/excludedApps" />
+        <EditText
+            android:id="@+id/excludedApps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:autofillHints="" />
         <LinearLayout
             android:id="@+id/xraySettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/primaryDns"
-                android:labelFor="@id/primaryDns" />
-            <EditText
-                android:id="@+id/primaryDns"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:autofillHints="" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/secondaryDns"
-                android:labelFor="@id/secondaryDns" />
-            <EditText
-                android:id="@+id/secondaryDns"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:autofillHints="" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/excludedApps"
-                android:labelFor="@id/excludedApps" />
-            <EditText
-                android:id="@+id/excludedApps"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:autofillHints="" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -80,19 +80,19 @@
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
                 android:autofillHints="" />
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/useXray"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="33dp"
-                android:text="@string/useXray" />
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/socksUdp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="33dp"
-                android:text="@string/socksUdp" />
         </LinearLayout>
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/useXray"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="33dp"
+            android:text="@string/useXray" />
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/socksUdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="33dp"
+            android:text="@string/socksUdp" />
         <Button
             android:id="@+id/saveSettings"
             android:layout_width="match_parent"

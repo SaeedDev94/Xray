@@ -2,6 +2,7 @@ package com.xtls.xray
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import com.xtls.xray.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
@@ -22,6 +23,19 @@ class SettingsActivity : AppCompatActivity() {
         binding.xrayConfig.setText(getXrayConfig())
         binding.saveSettings.setOnClickListener {
             saveSettings()
+        }
+        binding.useXray.setOnCheckedChangeListener { _, _ ->
+            toggleSettings()
+        }
+        toggleSettings()
+    }
+
+    private fun toggleSettings() {
+        val checked = binding.useXray.isChecked
+        if (checked) {
+            binding.xraySettings.visibility = View.VISIBLE
+        } else {
+            binding.xraySettings.visibility = View.GONE
         }
     }
 
