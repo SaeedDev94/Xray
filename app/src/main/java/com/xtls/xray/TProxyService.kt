@@ -104,9 +104,9 @@ class TProxyService : VpnService() {
 
         /** Basic tun config */
         tun.setMetered(false)
-        tun.setMtu(Settings.MTU)
-        tun.setSession("tun0")
-        tun.addAddress("10.10.10.10", 24)
+        tun.setMtu(Settings.tunMTU)
+        tun.setSession(Settings.tunName)
+        tun.addAddress(Settings.tunAddress, Settings.tunPrefix)
         tun.addDnsServer(Settings.primaryDns)
         tun.addDnsServer(Settings.secondaryDns)
 
@@ -128,11 +128,17 @@ class TProxyService : VpnService() {
         /** Create, Update tun2socks config */
         val tun2socksConfig = arrayOf(
             "tunnel:",
-            "  mtu: ${Settings.MTU}",
+            "  name: ${Settings.tunName}",
+            "  mtu: ${Settings.tunMTU}",
+            "  ipv4:",
+            "    gateway: ${Settings.tunGateway}",
+            "    address: ${Settings.tunAddress}",
+            "    prefix: ${Settings.tunPrefix}",
             "socks5:",
             "  address: ${Settings.socksAddress}",
             "  port: ${Settings.socksPort}",
-            if (Settings.socksUdp) "  udp: 'udp'" else "  udp: 'tcp'"
+            if (Settings.socksUdp) "  udp: udp" else "  udp: tcp",
+            ""
         )
         Settings.tun2socksConfig(applicationContext).writeText(tun2socksConfig.joinToString("\n"))
 
