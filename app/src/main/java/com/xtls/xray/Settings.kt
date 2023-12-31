@@ -7,13 +7,13 @@ import java.io.File
 object Settings {
     var socksAddress: String = "127.0.0.1"
     var socksPort: String = "10808"
+    var socksUdp: Boolean = true
     var primaryDns: String = "1.1.1.1"
     var secondaryDns: String = "1.0.0.1"
     var excludedApps: String = ""
     var useXray: Boolean = false
-    var socksUdp: Boolean = true
     var tunName: String = "tun0"
-    var tunMTU: Int = 1500
+    var tunMtu: Int = 1500
     var tunGateway: String = "10.14.1.1"
     var tunAddress: String = "10.14.1.2"
     var tunPrefix: Int = 24
