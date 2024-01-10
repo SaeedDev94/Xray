@@ -10,4 +10,3 @@ Also you can use it independent of Xray-core just for your socks proxy (Like Soc
 
 # Known issues
 - You can't use a domain for outbound address, just use IP
-- Routing direct rules doesn't work for now
