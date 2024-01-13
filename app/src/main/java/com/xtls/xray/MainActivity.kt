@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import com.xtls.xray.databinding.ActivityMainBinding
+import libXray.LibXray
 
 class MainActivity : AppCompatActivity() {
 
@@ -111,19 +112,19 @@ class MainActivity : AppCompatActivity() {
     private fun onToggleButtonClick() {
         if (!vpnServiceBound || !hasPostNotification()) return
         if (Settings.useXray) {
+            val xrayVersion = LibXray.xrayVersion()
             val sharedPref = Settings.sharedPref(applicationContext)
-            val isXrayUpToDate = sharedPref.getInt("xrayAppVersionCode", 0) == BuildConfig.VERSION_CODE
+            val isXrayUpToDate = sharedPref.getString("xrayVersion", "") == xrayVersion
             if (!isXrayUpToDate) {
                 Thread {
                     vpnService.installXray()
-                    val process = Runtime.getRuntime().exec(arrayOf(vpnService.xrayPath(), "version"))
-                    val xrayVersion = process.inputStream.bufferedReader().readText().trim()
                     sharedPref.edit()
-                        .putInt("xrayAppVersionCode", BuildConfig.VERSION_CODE)
                         .putString("xrayVersion", xrayVersion)
                         .apply()
                     runOnUiThread { setXrayVersion() }
                 }.start()
+                Toast.makeText(applicationContext, "Installing xray assets...", Toast.LENGTH_SHORT).show()
+                return
             }
             if (!vpnService.isConfigExists()) {
                 Toast.makeText(applicationContext, "Xray config file missed", Toast.LENGTH_SHORT).show()

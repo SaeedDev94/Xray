@@ -12,6 +12,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermission
+import libXray.LibXray
 
 class TProxyService : VpnService() {
 
@@ -30,11 +31,10 @@ class TProxyService : VpnService() {
 
     private val binder: ServiceBinder = ServiceBinder()
     private var isRunning: Boolean = false
+    private var xrayProcess: Boolean = false
     private var tunDevice: ParcelFileDescriptor? = null
-    private var socksProcess: Process? = null
 
     fun getIsRunning(): Boolean = isRunning
-    fun xrayPath(): String = "${applicationContext.applicationInfo.nativeLibraryDir}/libxray.so"
     override fun onBind(intent: Intent?): IBinder = binder
 
     override fun onDestroy() {
@@ -87,16 +87,11 @@ class TProxyService : VpnService() {
 
         /** Start xray */
         if (Settings.useXray) {
-            Thread {
-                val xrayCommand = arrayListOf(
-                    xrayPath(), "run", "-c", Settings.xrayConfig(applicationContext).absolutePath
-                )
-                val xrayProcess = ProcessBuilder(xrayCommand).directory(applicationContext.filesDir)
-                val xrayEnv = xrayProcess.environment()
-                xrayEnv["xray.location.asset"] = applicationContext.filesDir.absolutePath
-                socksProcess = xrayProcess.start()
-                socksProcess!!.waitFor()
-            }.start()
+            val datDir: String = applicationContext.filesDir.absolutePath
+            val configPath: String = Settings.xrayConfig(applicationContext).absolutePath
+            val maxMemory: Long = 67108864 // 64 MB * 1024 KB * 1024 B
+            val error: String = LibXray.runXray(datDir, configPath, maxMemory)
+            xrayProcess = error.isEmpty()
         }
 
         /** Create Tun */
@@ -148,9 +143,8 @@ class TProxyService : VpnService() {
 
     fun stopVPN() {
         isRunning = false
-        if (socksProcess != null) {
-            if (socksProcess!!.isAlive) socksProcess!!.destroy()
-            socksProcess = null
+        if (xrayProcess) {
+            LibXray.stopXray()
         }
         if (tunDevice != null) {
             TProxyStopService()
