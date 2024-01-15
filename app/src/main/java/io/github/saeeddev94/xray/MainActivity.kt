@@ -141,8 +141,8 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "Stop VPN", Toast.LENGTH_SHORT).show()
             vpnService.stopVPN()
         } else {
-            Toast.makeText(applicationContext, "Start VPN", Toast.LENGTH_SHORT).show()
-            vpnService.startVPN()
+            val error = vpnService.startVPN()
+            Toast.makeText(applicationContext, error.ifEmpty { "Start VPN" }, Toast.LENGTH_SHORT).show()
         }
         setVpnServiceStatus()
     }

@@ -40,7 +40,7 @@ class TProxyService : VpnService() {
         return config.exists() && config.isFile
     }
 
-    fun startVPN() {
+    fun startVPN(): String {
         isRunning = true
 
         /** Start xray */
@@ -50,6 +50,10 @@ class TProxyService : VpnService() {
             val maxMemory: Long = 67108864 // 64 MB * 1024 KB * 1024 B
             val error: String = LibXray.runXray(datDir, configPath, maxMemory)
             xrayProcess = error.isEmpty()
+            if (!xrayProcess) {
+                isRunning = false
+                return error
+            }
         }
 
         /** Create Tun */
@@ -97,6 +101,8 @@ class TProxyService : VpnService() {
 
         /** Start tun2socks */
         TProxyStartService(Settings.tun2socksConfig(applicationContext).absolutePath, tunDevice!!.fd)
+
+        return ""
     }
 
     fun stopVPN() {
