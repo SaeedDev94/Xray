@@ -1,0 +1,2 @@
+This is a simple GUI client for XTLS/Xray-core
+Also you can use it independent of Xray-core just for your socks proxy (Like SocksDroid)
