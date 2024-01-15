@@ -117,14 +117,11 @@ class MainActivity : AppCompatActivity() {
             val isXrayUpToDate = sharedPref.getString("xrayVersion", "") == xrayVersion
             if (!isXrayUpToDate) {
                 Thread {
-                    vpnService.installXray()
                     sharedPref.edit()
                         .putString("xrayVersion", xrayVersion)
                         .apply()
                     runOnUiThread { setXrayVersion() }
                 }.start()
-                Toast.makeText(applicationContext, "Installing xray assets...", Toast.LENGTH_SHORT).show()
-                return
             }
             if (!vpnService.isConfigExists()) {
                 Toast.makeText(applicationContext, "Xray config file missed", Toast.LENGTH_SHORT).show()

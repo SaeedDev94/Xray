@@ -5,13 +5,6 @@ import android.net.VpnService
 import android.os.Binder
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
-import java.nio.file.Files
-import java.nio.file.attribute.PosixFilePermission
 import libXray.LibXray
 
 class TProxyService : VpnService() {
@@ -45,41 +38,6 @@ class TProxyService : VpnService() {
     fun isConfigExists(): Boolean {
         val config = Settings.xrayConfig(applicationContext)
         return config.exists() && config.isFile
-    }
-
-    fun installXray() {
-        val filesPath = applicationContext.filesDir.absolutePath
-        assets.list("")?.forEach { fileName ->
-            var input: InputStream? = null
-            var output: OutputStream? = null
-            try {
-                val file = File(filesPath, fileName)
-                input = assets.open(fileName)
-                output = FileOutputStream(file)
-                /** Copy file */
-                val buffer = ByteArray(1024)
-                var read: Int?
-                while (input.read(buffer).also { read = it } != -1) {
-                    read?.let { output.write(buffer, 0, it) }
-                }
-                /** Set file permission 644 */
-                val permission = HashSet<PosixFilePermission>()
-                permission.add(PosixFilePermission.OWNER_READ)
-                permission.add(PosixFilePermission.OWNER_WRITE)
-                permission.add(PosixFilePermission.GROUP_READ)
-                permission.add(PosixFilePermission.OTHERS_READ)
-                Files.setPosixFilePermissions(file.toPath(), permission)
-            } catch (_: IOException) {
-                // Ignore
-            } finally {
-                if (input != null) {
-                    try { input.close() } catch (_: IOException) {}
-                }
-                if (output != null) {
-                    try { output.close() } catch (_: IOException) {}
-                }
-            }
-        }
     }
 
     fun startVPN() {
