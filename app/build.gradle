@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.xtls.xray'
+    namespace 'io.github.saeeddev94.xray'
     compileSdk 34
 
     defaultConfig {
-        applicationId 'com.xtls.xray'
+        applicationId 'io.github.saeeddev94.xray'
         minSdk 29
         targetSdk 34
         versionCode 20

@@ -1,4 +1,4 @@
-package com.xtls.xray
+package io.github.saeeddev94.xray
 
 import android.content.ComponentName
 import android.content.Context
@@ -14,7 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
-import com.xtls.xray.databinding.ActivityMainBinding
+import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import libXray.LibXray
 
 class MainActivity : AppCompatActivity() {

@@ -1,4 +1,4 @@
-package com.xtls.xray
+package io.github.saeeddev94.xray
 
 import android.content.Context
 import android.content.SharedPreferences

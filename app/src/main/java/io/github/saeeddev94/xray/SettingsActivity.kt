@@ -1,9 +1,9 @@
-package com.xtls.xray
+package io.github.saeeddev94.xray
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import com.xtls.xray.databinding.ActivitySettingsBinding
+import io.github.saeeddev94.xray.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
 
