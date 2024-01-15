@@ -4,7 +4,6 @@ DEST="../app/libs"
 
 prepare_go() {
   go install golang.org/x/mobile/cmd/gomobile@latest
-  go get golang.org/x/mobile/bind
   go mod download
 }
 
