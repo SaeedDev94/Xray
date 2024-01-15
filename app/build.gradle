@@ -11,8 +11,8 @@ android {
         applicationId 'io.github.saeeddev94.xray'
         minSdk 29
         targetSdk 34
-        versionCode 20
-        versionName '2.0.0'
+        versionCode 40
+        versionName '4.0.0'
 
         vectorDrawables {
             useSupportLibrary true
