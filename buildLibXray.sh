@@ -3,7 +3,7 @@
 DEST="../app/libs"
 
 prepare_go() {
-  go install golang.org/x/mobile/cmd/gomobile@latest
+  go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20240112133503-c713f31d574b
   go mod download
 }
 
