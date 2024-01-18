@@ -17,10 +17,6 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
-
-        ndk {
-            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
-        }
     }
 
     buildTypes {
@@ -29,21 +25,34 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = '17'
     }
+
     buildFeatures {
         buildConfig = true
         viewBinding = true
     }
+
     externalNativeBuild {
         ndkVersion = '26.1.10909125'
         ndkBuild {
             path = 'src/main/jni/Android.mk'
+        }
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            universalApk false
         }
     }
 }
