@@ -58,7 +58,7 @@ android {
             enable true
             reset()
             //noinspection ChromeOsAbiSupport
-            include abiTraget.split(',')
+            include abiTarget.split(',')
             universalApk false
         }
     }
