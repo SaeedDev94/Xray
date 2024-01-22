@@ -25,6 +25,10 @@ android {
         }
     }
 
+    packagingOptions {
+        doNotStrip '**/*.so'
+    }
+
     buildTypes {
         release {
             minifyEnabled false
