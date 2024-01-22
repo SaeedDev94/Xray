@@ -31,6 +31,10 @@ android {
         }
     }
 
+    aaptOptions {
+        cruncherEnabled = false
+    }
+
     packagingOptions {
         doNotStrip '**/*.so'
     }
