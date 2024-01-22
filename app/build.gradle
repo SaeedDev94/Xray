@@ -24,6 +24,8 @@ android {
             useSupportLibrary true
         }
 
+        vectorDrawables.generatedDensities = []
+
         externalNativeBuild {
             ndkBuild {
                 arguments 'LOCAL_LDFLAGS += -Wl,--build-id=none -Wl,--hash-style=gnu'
