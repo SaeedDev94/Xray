@@ -11,7 +11,7 @@ build_android() {
   rm -f "$DEST/*.jar"
   rm -f "$DEST/*.aar"
   gomobile init
-  gomobile bind -o "$DEST/libXray.aar" -target android -androidapi 29
+  gomobile bind -o "$DEST/libXray.aar" -target android -androidapi 29 -ldflags="-buildid=" -trimpath
 }
 
 cd libXray
