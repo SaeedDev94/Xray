@@ -23,6 +23,12 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        externalNativeBuild {
+            ndkBuild {
+                arguments 'LOCAL_LDFLAGS += -Wl,--build-id=none -Wl,--hash-style=gnu'
+            }
+        }
     }
 
     packagingOptions {
