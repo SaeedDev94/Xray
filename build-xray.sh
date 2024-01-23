@@ -33,7 +33,7 @@ export PATH="$PATH:$GOPATH/bin"
 git clone https://github.com/SaeedDev94/Xray.git
 cd Xray
 git submodule update --init --recursive
-git checkout v4.0.0
+git checkout "$RELEASE_TAG"
 VERSION_CODE=$(cat app/versionCode.txt)
 ((VERSION_CODE += ABI_ID))
 BUILD_NAME="Xray-$RELEASE_TAG-$VERSION_CODE.apk"
