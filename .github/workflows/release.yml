@@ -5,6 +5,11 @@ on:
 jobs:
   build-arm32:
     runs-on: ubuntu-latest
+    env:
+      KS_FILE: ${{ secrets.KS_FILE }}
+      KS_PASSWORD: ${{ secrets.KS_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,10 +25,10 @@ jobs:
             -e NATIVE_ARCH="arm" \
             -e ABI_ID=1 \
             -e ABI_TARGET="armeabi-v7a"
-            -e KS_FILE="${{ secrets.KS_FILE }}" \
-            -e KS_PASSWORD="${{ secrets.KS_PASSWORD }}" \
-            -e KEY_ALIAS="${{ secrets.KEY_ALIAS }}" \
-            -e KEY_PASSWORD="${{ secrets.KEY_PASSWORD }}" \
+            -e KS_FILE="$KS_FILE" \
+            -e KS_PASSWORD="$KS_PASSWORD" \
+            -e KEY_ALIAS="$KEY_ALIAS" \
+            -e KEY_PASSWORD="$KEY_PASSWORD" \
             arm32
       - name: Upload arm32 artifact
         uses: actions/upload-artifact@v4
@@ -33,6 +38,11 @@ jobs:
 
   build-arm64:
     runs-on: ubuntu-latest
+    env:
+      KS_FILE: ${{ secrets.KS_FILE }}
+      KS_PASSWORD: ${{ secrets.KS_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -48,10 +58,10 @@ jobs:
             -e NATIVE_ARCH="arm64" \
             -e ABI_ID=2 \
             -e ABI_TARGET="arm64-v8a"
-            -e KS_FILE="${{ secrets.KS_FILE }}" \
-            -e KS_PASSWORD="${{ secrets.KS_PASSWORD }}" \
-            -e KEY_ALIAS="${{ secrets.KEY_ALIAS }}" \
-            -e KEY_PASSWORD="${{ secrets.KEY_PASSWORD }}" \
+            -e KS_FILE="$KS_FILE" \
+            -e KS_PASSWORD="$KS_PASSWORD" \
+            -e KEY_ALIAS="$KEY_ALIAS" \
+            -e KEY_PASSWORD="$KEY_PASSWORD" \
             arm64
       - name: Upload arm64 artifact
         uses: actions/upload-artifact@v4
@@ -61,6 +71,11 @@ jobs:
 
   build-amd32:
     runs-on: ubuntu-latest
+    env:
+      KS_FILE: ${{ secrets.KS_FILE }}
+      KS_PASSWORD: ${{ secrets.KS_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -76,10 +91,10 @@ jobs:
             -e NATIVE_ARCH="386" \
             -e ABI_ID=3 \
             -e ABI_TARGET="x86"
-            -e KS_FILE="${{ secrets.KS_FILE }}" \
-            -e KS_PASSWORD="${{ secrets.KS_PASSWORD }}" \
-            -e KEY_ALIAS="${{ secrets.KEY_ALIAS }}" \
-            -e KEY_PASSWORD="${{ secrets.KEY_PASSWORD }}" \
+            -e KS_FILE="$KS_FILE" \
+            -e KS_PASSWORD="$KS_PASSWORD" \
+            -e KEY_ALIAS="$KEY_ALIAS" \
+            -e KEY_PASSWORD="$KEY_PASSWORD" \
             amd32
       - name: Upload amd32 artifact
         uses: actions/upload-artifact@v4
@@ -89,6 +104,11 @@ jobs:
 
   build-amd64:
     runs-on: ubuntu-latest
+    env:
+      KS_FILE: ${{ secrets.KS_FILE }}
+      KS_PASSWORD: ${{ secrets.KS_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -104,10 +124,10 @@ jobs:
             -e NATIVE_ARCH="amd64" \
             -e ABI_ID=4 \
             -e ABI_TARGET="x86_64"
-            -e KS_FILE="${{ secrets.KS_FILE }}" \
-            -e KS_PASSWORD="${{ secrets.KS_PASSWORD }}" \
-            -e KEY_ALIAS="${{ secrets.KEY_ALIAS }}" \
-            -e KEY_PASSWORD="${{ secrets.KEY_PASSWORD }}" \
+            -e KS_FILE="$KS_FILE" \
+            -e KS_PASSWORD="$KS_PASSWORD" \
+            -e KEY_ALIAS="$KEY_ALIAS" \
+            -e KEY_PASSWORD="$KEY_PASSWORD" \
             amd64
       - name: Upload amd64 artifact
         uses: actions/upload-artifact@v4
