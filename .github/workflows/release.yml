@@ -1,0 +1,158 @@
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  build-arm32:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build arm32 docker
+        run: docker build -t arm32 -f Dockerfile .
+      - name: Compile arm32 build
+        run: |
+          docker run --rm \
+            --cpus 1 \
+            -v /opt/dist:/opt/dist \
+            -e DIST_DIR='/opt/dist' \
+            -e RELEASE_TAG="$GITHUB_REF_NAME" \
+            -e NATIVE_ARCH="arm" \
+            -e ABI_ID=1 \
+            -e ABI_TARGET="armeabi-v7a"
+            -e KS_FILE="${{ secrets.KS_FILE }}" \
+            -e KS_PASSWORD="${{ secrets.KS_PASSWORD }}" \
+            -e KEY_ALIAS="${{ secrets.KEY_ALIAS }}" \
+            -e KEY_PASSWORD="${{ secrets.KEY_PASSWORD }}" \
+            arm32
+      - name: Upload arm32 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: arm32-build
+          path: /opt/dist
+
+  build-arm64:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build arm64 docker
+        run: docker build -t arm64 -f Dockerfile .
+      - name: Compile arm64 build
+        run: |
+          docker run --rm \
+            --cpus 1 \
+            -v /opt/dist:/opt/dist \
+            -e DIST_DIR='/opt/dist' \
+            -e RELEASE_TAG="$GITHUB_REF_NAME" \
+            -e NATIVE_ARCH="arm64" \
+            -e ABI_ID=2 \
+            -e ABI_TARGET="arm64-v8a"
+            -e KS_FILE="${{ secrets.KS_FILE }}" \
+            -e KS_PASSWORD="${{ secrets.KS_PASSWORD }}" \
+            -e KEY_ALIAS="${{ secrets.KEY_ALIAS }}" \
+            -e KEY_PASSWORD="${{ secrets.KEY_PASSWORD }}" \
+            arm64
+      - name: Upload arm64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: arm64-build
+          path: /opt/dist
+
+  build-amd32:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build amd32 docker
+        run: docker build -t amd32 -f Dockerfile .
+      - name: Compile amd32 build
+        run: |
+          docker run --rm \
+            --cpus 1 \
+            -v /opt/dist:/opt/dist \
+            -e DIST_DIR='/opt/dist' \
+            -e RELEASE_TAG="$GITHUB_REF_NAME" \
+            -e NATIVE_ARCH="386" \
+            -e ABI_ID=3 \
+            -e ABI_TARGET="x86"
+            -e KS_FILE="${{ secrets.KS_FILE }}" \
+            -e KS_PASSWORD="${{ secrets.KS_PASSWORD }}" \
+            -e KEY_ALIAS="${{ secrets.KEY_ALIAS }}" \
+            -e KEY_PASSWORD="${{ secrets.KEY_PASSWORD }}" \
+            amd32
+      - name: Upload amd32 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: amd32-build
+          path: /opt/dist
+
+  build-amd64:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build amd64 docker
+        run: docker build -t amd64 -f Dockerfile .
+      - name: Compile amd64 build
+        run: |
+          docker run --rm \
+            --cpus 1 \
+            -v /opt/dist:/opt/dist \
+            -e DIST_DIR='/opt/dist' \
+            -e RELEASE_TAG="$GITHUB_REF_NAME" \
+            -e NATIVE_ARCH="amd64" \
+            -e ABI_ID=4 \
+            -e ABI_TARGET="x86_64"
+            -e KS_FILE="${{ secrets.KS_FILE }}" \
+            -e KS_PASSWORD="${{ secrets.KS_PASSWORD }}" \
+            -e KEY_ALIAS="${{ secrets.KEY_ALIAS }}" \
+            -e KEY_PASSWORD="${{ secrets.KEY_PASSWORD }}" \
+            amd64
+      - name: Upload amd64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: amd64-build
+          path: /opt/dist
+
+  publish:
+    runs-on: ubuntu-latest
+    needs:
+      - build-arm32
+      - build-arm64
+      - build-amd32
+      - build-amd64
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Download arm32 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: arm32-build
+          path: dist
+      - name: Download arm64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: arm64-build
+          path: dist
+      - name: Download amd32 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: amd32-build
+          path: dist
+      - name: Download amd64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: amd64-build
+          path: dist
+      - name: Publish release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          prerelease: false
+          draft: false
+          files: "dist/*.apk"
+          body_path: ${{ github.workspace }}/CHANGELOG.md
