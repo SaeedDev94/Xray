@@ -24,7 +24,7 @@ jobs:
             -e RELEASE_TAG="$GITHUB_REF_NAME" \
             -e NATIVE_ARCH="arm" \
             -e ABI_ID=1 \
-            -e ABI_TARGET="armeabi-v7a"
+            -e ABI_TARGET="armeabi-v7a" \
             -e KS_FILE="$KS_FILE" \
             -e KS_PASSWORD="$KS_PASSWORD" \
             -e KEY_ALIAS="$KEY_ALIAS" \
@@ -57,7 +57,7 @@ jobs:
             -e RELEASE_TAG="$GITHUB_REF_NAME" \
             -e NATIVE_ARCH="arm64" \
             -e ABI_ID=2 \
-            -e ABI_TARGET="arm64-v8a"
+            -e ABI_TARGET="arm64-v8a" \
             -e KS_FILE="$KS_FILE" \
             -e KS_PASSWORD="$KS_PASSWORD" \
             -e KEY_ALIAS="$KEY_ALIAS" \
@@ -90,7 +90,7 @@ jobs:
             -e RELEASE_TAG="$GITHUB_REF_NAME" \
             -e NATIVE_ARCH="386" \
             -e ABI_ID=3 \
-            -e ABI_TARGET="x86"
+            -e ABI_TARGET="x86" \
             -e KS_FILE="$KS_FILE" \
             -e KS_PASSWORD="$KS_PASSWORD" \
             -e KEY_ALIAS="$KEY_ALIAS" \
@@ -123,7 +123,7 @@ jobs:
             -e RELEASE_TAG="$GITHUB_REF_NAME" \
             -e NATIVE_ARCH="amd64" \
             -e ABI_ID=4 \
-            -e ABI_TARGET="x86_64"
+            -e ABI_TARGET="x86_64" \
             -e KS_FILE="$KS_FILE" \
             -e KS_PASSWORD="$KS_PASSWORD" \
             -e KEY_ALIAS="$KEY_ALIAS" \
