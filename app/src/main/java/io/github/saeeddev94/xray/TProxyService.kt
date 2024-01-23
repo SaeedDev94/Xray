@@ -17,6 +17,7 @@ class TProxyService : VpnService() {
 
     private external fun TProxyStartService(configPath: String, fd: Int)
     private external fun TProxyStopService()
+    private external fun TProxyGetStats(): LongArray
 
     inner class ServiceBinder : Binder() {
         fun getService(): TProxyService = this@TProxyService
