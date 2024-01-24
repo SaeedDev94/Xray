@@ -30,7 +30,7 @@ export PATH="/home/vagrant/build/srclib/go/bin:$PATH"
 export ANDROID_HOME="/opt/android-sdk"
 export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/26.1.10909125"
 export ANDROID_SDK_TOOLS="$ANDROID_HOME/build-tools/34.0.0"
-export GOPATH="$HOME/go"
+export GOPATH="/home/vagrant/go"
 export PATH="$PATH:$GOPATH/bin"
 
 # Build app
