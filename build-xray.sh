@@ -45,7 +45,7 @@ pushd libXray
 go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20240112133503-c713f31d574b
 go mod download
 gomobile init
-gomobile bind -o "../app/libs/libXray.aar" -androidapi 29 -target "android/$NATIVE_ARCH"
+gomobile bind -o "../app/libs/libXray.aar" -androidapi 29 -target "android/$NATIVE_ARCH" -ldflags="-buildid=" -trimpath
 popd
 ./gradlew -PabiId=$ABI_ID -PabiTarget=$ABI_TARGET assembleRelease
 
