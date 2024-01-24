@@ -19,7 +19,7 @@ mkdir -p /home/vagrant/build/srclib
 
 # Build go
 git clone https://github.com/golang/go.git /home/vagrant/build/srclib/go
-pushd /opt/go
+pushd /home/vagrant/build/srclib/go/src
 git checkout go1.21.6
 cd src
 ./make.bash
