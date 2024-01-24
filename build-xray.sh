@@ -16,7 +16,6 @@ apt-get install -y gcc libc-dev
 # mkdir sources dir
 mkdir -p /home/vagrant/build/srclib
 
-
 # Build go
 git clone https://github.com/golang/go.git /home/vagrant/build/srclib/go
 pushd /home/vagrant/build/srclib/go
@@ -33,23 +32,30 @@ export ANDROID_SDK_TOOLS="$ANDROID_HOME/build-tools/34.0.0"
 export GOPATH="/home/vagrant/go"
 export PATH="$PATH:$GOPATH/bin"
 
-# Build app
+# Clone repo
 git clone https://github.com/SaeedDev94/Xray.git /home/vagrant/build/io.github.saeeddev94.xray
 cd /home/vagrant/build/io.github.saeeddev94.xray
 git submodule update --init --recursive
 git checkout "$RELEASE_TAG"
-VERSION_CODE=$(cat app/versionCode.txt)
-((VERSION_CODE += ABI_ID))
-BUILD_NAME="Xray-$RELEASE_TAG-$VERSION_CODE.apk"
+
+# Download gradle
+./gradlew clean
+
+# Build libXray
 pushd libXray
 go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20240112133503-c713f31d574b
 go mod download
 gomobile init
 gomobile bind -o "../app/libs/libXray.aar" -androidapi 29 -target "android/$NATIVE_ARCH" -ldflags="-buildid=" -trimpath
 popd
+
+# Build app
 ./gradlew -PabiId=$ABI_ID -PabiTarget=$ABI_TARGET assembleRelease
 
 # Sign app
+VERSION_CODE=$(cat app/versionCode.txt)
+((VERSION_CODE += ABI_ID))
+BUILD_NAME="Xray-$RELEASE_TAG-$VERSION_CODE.apk"
 cd app/build/outputs/apk/release
 echo "$KS_FILE" > /xray_base64.txt
 base64 -d /xray_base64.txt > /xray.jks
