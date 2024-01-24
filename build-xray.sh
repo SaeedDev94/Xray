@@ -13,8 +13,12 @@ sdkmanager --install "ndk;26.1.10909125" --channel=3
 apt-get install -t bullseye-backports -y golang-go
 apt-get install -y gcc libc-dev
 
+# mkdir sources dir
+mkdir -p /home/vagrant/build/srclib
+
+
 # Build go
-git clone https://github.com/golang/go.git /opt/go
+git clone https://github.com/golang/go.git /home/vagrant/build/srclib/go
 pushd /opt/go
 git checkout go1.21.6
 cd src
@@ -22,7 +26,7 @@ cd src
 popd
 
 # Set vars
-export PATH="/opt/go/bin:$PATH"
+export PATH="/home/vagrant/build/srclib/go/bin:$PATH"
 export ANDROID_HOME="/opt/android-sdk"
 export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/26.1.10909125"
 export ANDROID_SDK_TOOLS="$ANDROID_HOME/build-tools/34.0.0"
@@ -30,8 +34,8 @@ export GOPATH="$HOME/go"
 export PATH="$PATH:$GOPATH/bin"
 
 # Build app
-git clone https://github.com/SaeedDev94/Xray.git
-cd Xray
+git clone https://github.com/SaeedDev94/Xray.git /home/vagrant/build/io.github.saeeddev94.xray
+cd /home/vagrant/build/io.github.saeeddev94.xray
 git submodule update --init --recursive
 git checkout "$RELEASE_TAG"
 VERSION_CODE=$(cat app/versionCode.txt)
