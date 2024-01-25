@@ -11,13 +11,21 @@ apt-get dist-upgrade -y
 ANDROID_PLATFORM_VERSION="android-34"
 ANDROID_SDK_VERSION="34.0.0"
 ANDROID_NDK_VERSION="26.1.10909125"
+JAVA_VERSION="17"
 GRADLE_VERSION="8.2.1"
 GO_VERSION="go1.21.6"
 
-# Install tools
-apt-get install -y git openjdk-17-jdk-headless sdkmanager wget unzip
+# Install Tools
+apt-get install -y git openjdk-$JAVA_VERSION-jdk-headless sdkmanager wget unzip
 sdkmanager "platform-tools" "platforms;$ANDROID_PLATFORM_VERSION" "build-tools;$ANDROID_SDK_VERSION"
 sdkmanager --install "ndk;$ANDROID_NDK_VERSION" --channel=3
+
+# Set vars
+export ANDROID_HOME="/opt/android-sdk"
+export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION"
+export JAVA_HOME="/usr/lib/jvm/java-$JAVA_VERSION-openjdk-amd64"
+export PATH="$JAVA_HOME/bin:$PATH"
+export PATH="$PATH:$ANDROID_HOME/platform-tools"
 
 # Create directories
 mkdir /opt/gradle
@@ -40,15 +48,9 @@ wget "https://go.dev/dl/$GO_ARCHIVE"
 tar -xzvf "$GO_ARCHIVE"
 rm "$GO_ARCHIVE"
 mv * "$GO_VERSION"
-export PATH="/opt/go/$GO_VERSION/bin:$PATH"
+export GOPATH="/opt/go/$GO_VERSION"
+export PATH="$GOPATH/bin:$PATH"
 popd
-
-# Set vars
-export ANDROID_HOME="/opt/android-sdk"
-export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION"
-export GOPATH="/home/vagrant/go"
-export PATH="$PATH:$GOPATH/bin"
-export PATH="$PATH:$ANDROID_HOME/platform-tools"
 
 # Clone repo
 git clone https://github.com/SaeedDev94/Xray.git /home/vagrant/build/io.github.saeeddev94.xray
