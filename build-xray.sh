@@ -33,27 +33,28 @@ export PATH="$JAVA_HOME/bin:$PATH"
 export PATH="$PATH:$ANDROID_HOME/platform-tools"
 
 # Create directories
-mkdir /opt/gradle
-mkdir /opt/go
+mkdir -p /home/vagrant/build
+mkdir -p /home/vagrant/gradle
+mkdir -p /home/vagrant/go
 
 # Download gradle
-pushd /opt/gradle
+pushd /home/vagrant/gradle
 GRADLE_ARCHIVE="gradle-$GRADLE_VERSION-bin.zip"
 wget "https://services.gradle.org/distributions/$GRADLE_ARCHIVE"
 unzip "$GRADLE_ARCHIVE"
 rm "$GRADLE_ARCHIVE"
 mv * "$GRADLE_VERSION"
-export PATH="/opt/gradle/$GRADLE_VERSION/bin:$PATH"
+export PATH="/home/vagrant/gradle/$GRADLE_VERSION/bin:$PATH"
 popd
 
 # Download go
-pushd /opt/go
+pushd /home/vagrant/go
 GO_ARCHIVE="$GO_VERSION.linux-amd64.tar.gz"
 wget "https://go.dev/dl/$GO_ARCHIVE"
 tar -xzvf "$GO_ARCHIVE"
 rm "$GO_ARCHIVE"
 mv * "$GO_VERSION"
-export GOPATH="/opt/go/$GO_VERSION"
+export GOPATH="/home/vagrant/go/$GO_VERSION"
 export PATH="$GOPATH/bin:$PATH"
 popd
 
