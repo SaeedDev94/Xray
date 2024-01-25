@@ -17,7 +17,6 @@ GO_VERSION="go1.21.6"
 # Install tools
 apt-get install -y git openjdk-17-jdk-headless sdkmanager wget unzip
 sdkmanager "platform-tools" "platforms;$ANDROID_PLATFORM_VERSION" "build-tools;$ANDROID_SDK_VERSION"
-sdkmanager --install "ndk;$ANDROID_NDK_VERSION" --channel=3
 apt-get install -t bullseye-backports -y golang-go
 apt-get install -y gcc libc-dev
 
