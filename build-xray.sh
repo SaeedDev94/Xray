@@ -17,30 +17,30 @@ GO_VERSION="go1.21.6"
 # Install tools
 apt-get install -y git openjdk-17-jdk-headless sdkmanager wget unzip
 sdkmanager "platform-tools" "platforms;$ANDROID_PLATFORM_VERSION" "build-tools;$ANDROID_SDK_VERSION"
-apt-get install -t bullseye-backports -y golang-go
-apt-get install -y gcc libc-dev
+sdkmanager --install "ndk;$ANDROID_NDK_VERSION" --channel=3
 
 # Create directories
-mkdir -p /home/vagrant/.cache/fdroidserver/gradle
-mkdir -p /home/vagrant/build/srclib
+mkdir /opt/gradle
+mkdir /opt/go
 
 # Download gradle
-pushd /home/vagrant/.cache/fdroidserver/gradle
+pushd /opt/gradle
 GRADLE_ARCHIVE="gradle-$GRADLE_VERSION-bin.zip"
 wget "https://services.gradle.org/distributions/$GRADLE_ARCHIVE"
 unzip "$GRADLE_ARCHIVE"
 rm "$GRADLE_ARCHIVE"
 mv * "$GRADLE_VERSION"
-export PATH="/home/vagrant/.cache/fdroidserver/gradle/$GRADLE_VERSION/bin:$PATH"
+export PATH="/opt/gradle/$GRADLE_VERSION/bin:$PATH"
 popd
 
-# Build go
-git clone https://github.com/golang/go.git /home/vagrant/build/srclib/go
-pushd /home/vagrant/build/srclib/go
-git checkout "$GO_VERSION"
-cd src
-./make.bash
-export PATH="/home/vagrant/build/srclib/go/bin:$PATH"
+# Download go
+pushd /opt/go
+GO_ARCHIVE="$GO_VERSION.linux-amd64.tar.gz"
+wget "https://go.dev/dl/$GO_ARCHIVE"
+tar -xzvf "$GO_ARCHIVE"
+rm "$GO_ARCHIVE"
+mv * "$GO_VERSION"
+export PATH="/opt/go/$GO_VERSION/bin:$PATH"
 popd
 
 # Set vars
@@ -49,7 +49,6 @@ export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION"
 export GOPATH="/home/vagrant/go"
 export PATH="$PATH:$GOPATH/bin"
 export PATH="$PATH:$ANDROID_HOME/platform-tools"
-ANDROID_SDK_TOOLS="$ANDROID_HOME/build-tools/$ANDROID_SDK_VERSION"
 
 # Clone repo
 git clone https://github.com/SaeedDev94/Xray.git /home/vagrant/build/io.github.saeeddev94.xray
@@ -74,6 +73,7 @@ popd
 gradle -PabiId=$ABI_ID -PabiTarget=$ABI_TARGET assembleRelease
 
 # Sign app
+ANDROID_SDK_TOOLS="$ANDROID_HOME/build-tools/$ANDROID_SDK_VERSION"
 VERSION_CODE=$(cat versionCode.txt)
 ((VERSION_CODE += ABI_ID))
 BUILD_NAME="Xray-$RELEASE_TAG-$VERSION_CODE.apk"
