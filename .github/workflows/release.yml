@@ -13,7 +13,6 @@ jobs:
       - name: Compile arm32 build
         run: |
           docker run --rm \
-            --cpus 1 \
             -v /opt/dist:/opt/dist \
             -e DIST_DIR='/opt/dist' \
             -e RELEASE_TAG="$GITHUB_REF_NAME" \
@@ -41,7 +40,6 @@ jobs:
       - name: Compile arm64 build
         run: |
           docker run --rm \
-            --cpus 1 \
             -v /opt/dist:/opt/dist \
             -e DIST_DIR='/opt/dist' \
             -e RELEASE_TAG="$GITHUB_REF_NAME" \
@@ -69,7 +67,6 @@ jobs:
       - name: Compile amd32 build
         run: |
           docker run --rm \
-            --cpus 1 \
             -v /opt/dist:/opt/dist \
             -e DIST_DIR='/opt/dist' \
             -e RELEASE_TAG="$GITHUB_REF_NAME" \
@@ -97,7 +94,6 @@ jobs:
       - name: Compile amd64 build
         run: |
           docker run --rm \
-            --cpus 1 \
             -v /opt/dist:/opt/dist \
             -e DIST_DIR='/opt/dist' \
             -e RELEASE_TAG="$GITHUB_REF_NAME" \

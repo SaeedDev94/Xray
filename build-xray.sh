@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Max CPU 1
+CPUS_MAX=1
+CPUS=$(getconf _NPROCESSORS_ONLN)
+for (( c=$CPUS_MAX; c<$CPUS; c++ )) ; do echo 0 > /sys/devices/system/cpu/cpu$c/online; done
+
 # Update repo
 apt-get update
 apt-get install -y ca-certificates
