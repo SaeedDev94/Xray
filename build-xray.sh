@@ -5,32 +5,52 @@ apt-get update
 apt-get install -y ca-certificates
 echo "deb https://deb.debian.org/debian bullseye-backports main" > /etc/apt/sources.list.d/backports.list
 apt-get update || apt-get update
+apt-get dist-upgrade -y
+
+# Tools version
+ANDROID_PLATFORM_VERSION="android-34"
+ANDROID_SDK_VERSION="34.0.0"
+ANDROID_NDK_VERSION="26.1.10909125"
+GRADLE_VERSION="8.2.1"
+GO_VERSION="go1.21.6"
 
 # Install tools
-apt-get install -y git openjdk-17-jdk-headless sdkmanager
-sdkmanager "platforms;android-34" "build-tools;34.0.0"
-sdkmanager --install "ndk;26.1.10909125" --channel=3
+apt-get install -y git openjdk-17-jdk-headless sdkmanager wget unzip
+sdkmanager "platform-tools" "platforms;$ANDROID_PLATFORM_VERSION" "build-tools;$ANDROID_SDK_VERSION"
+sdkmanager --install "ndk;$ANDROID_NDK_VERSION" --channel=3
 apt-get install -t bullseye-backports -y golang-go
 apt-get install -y gcc libc-dev
 
-# mkdir sources dir
+# Create directories
+mkdir -p /home/vagrant/.cache/fdroidserver/gradle
 mkdir -p /home/vagrant/build/srclib
+
+# Download gradle
+pushd /home/vagrant/.cache/fdroidserver/gradle
+GRADLE_ARCHIVE="gradle-$GRADLE_VERSION-bin.zip"
+wget "https://services.gradle.org/distributions/$GRADLE_ARCHIVE"
+unzip "$GRADLE_ARCHIVE"
+rm "$GRADLE_ARCHIVE"
+mv * "$GRADLE_VERSION"
+export PATH="/home/vagrant/.cache/fdroidserver/gradle/$GRADLE_VERSION/bin:$PATH"
+popd
 
 # Build go
 git clone https://github.com/golang/go.git /home/vagrant/build/srclib/go
 pushd /home/vagrant/build/srclib/go
-git checkout go1.21.6
+git checkout "$GO_VERSION"
 cd src
 ./make.bash
+export PATH="/home/vagrant/build/srclib/go/bin:$PATH"
 popd
 
 # Set vars
-export PATH="/home/vagrant/build/srclib/go/bin:$PATH"
 export ANDROID_HOME="/opt/android-sdk"
-export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/26.1.10909125"
-export ANDROID_SDK_TOOLS="$ANDROID_HOME/build-tools/34.0.0"
+export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION"
 export GOPATH="/home/vagrant/go"
 export PATH="$PATH:$GOPATH/bin"
+export PATH="$PATH:$ANDROID_HOME/platform-tools"
+ANDROID_SDK_TOOLS="$ANDROID_HOME/build-tools/$ANDROID_SDK_VERSION"
 
 # Clone repo
 git clone https://github.com/SaeedDev94/Xray.git /home/vagrant/build/io.github.saeeddev94.xray
@@ -38,11 +58,13 @@ cd /home/vagrant/build/io.github.saeeddev94.xray
 git submodule update --init --recursive
 git checkout "$RELEASE_TAG"
 
-# Download gradle
-./gradlew clean
+# Clean task
+rm gradle/wrapper/gradle-wrapper.jar
+cd app
+gradle clean
 
 # Build libXray
-pushd libXray
+pushd ../libXray
 go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20240112133503-c713f31d574b
 go mod download
 gomobile init
@@ -50,13 +72,13 @@ gomobile bind -o "../app/libs/libXray.aar" -androidapi 29 -target "android/$NATI
 popd
 
 # Build app
-./gradlew -PabiId=$ABI_ID -PabiTarget=$ABI_TARGET assembleRelease
+gradle -PabiId=$ABI_ID -PabiTarget=$ABI_TARGET assembleRelease
 
 # Sign app
-VERSION_CODE=$(cat app/versionCode.txt)
+VERSION_CODE=$(cat versionCode.txt)
 ((VERSION_CODE += ABI_ID))
 BUILD_NAME="Xray-$RELEASE_TAG-$VERSION_CODE.apk"
-cd app/build/outputs/apk/release
+cd build/outputs/apk/release
 echo "$KS_FILE" > /xray_base64.txt
 base64 -d /xray_base64.txt > /xray.jks
 $ANDROID_SDK_TOOLS/zipalign -p -f -v 4 "app-$ABI_TARGET-release-unsigned.apk" "$BUILD_NAME"
