@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# Max CPU 1
-CPUS_MAX=1
-CPUS=$(getconf _NPROCESSORS_ONLN)
-for (( c=$CPUS_MAX; c<$CPUS; c++ )) ; do echo 0 > /sys/devices/system/cpu/cpu$c/online; done
-
 # Update repo
 apt-get update
 apt-get install -y ca-certificates
@@ -33,9 +28,8 @@ export PATH="$JAVA_HOME/bin:$PATH"
 export PATH="$PATH:$ANDROID_HOME/platform-tools"
 
 # Create directories
-mkdir -p /home/vagrant/build
 mkdir -p /home/vagrant/gradle
-mkdir -p /home/vagrant/go
+mkdir -p /home/vagrant/build/srclib
 
 # Download gradle
 pushd /home/vagrant/gradle
@@ -47,14 +41,13 @@ mv * "$GRADLE_VERSION"
 export PATH="/home/vagrant/gradle/$GRADLE_VERSION/bin:$PATH"
 popd
 
-# Download go
-pushd /home/vagrant/go
-GO_ARCHIVE="$GO_VERSION.linux-amd64.tar.gz"
-wget "https://go.dev/dl/$GO_ARCHIVE"
-tar -xzvf "$GO_ARCHIVE"
-rm "$GO_ARCHIVE"
-mv * "$GO_VERSION"
-export GOPATH="/home/vagrant/go/$GO_VERSION"
+# Build go
+git clone https://github.com/golang/go.git /home/vagrant/build/srclib/go
+pushd /home/vagrant/build/srclib/go
+git checkout "$GO_VERSION"
+cd src
+./make.bash
+export GOPATH="/home/vagrant/build/srclib/go"
 export PATH="$GOPATH/bin:$PATH"
 popd
 
