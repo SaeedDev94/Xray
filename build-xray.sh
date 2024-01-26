@@ -16,7 +16,8 @@ GRADLE_VERSION="8.2.1"
 GO_VERSION="go1.21.6"
 
 # Install Tools
-apt-get install -y git openjdk-$JAVA_VERSION-jdk-headless sdkmanager wget unzip
+apt-get install -t bullseye-backports -y golang-go
+apt-get install -y git openjdk-$JAVA_VERSION-jdk-headless sdkmanager wget unzip gcc libc-dev
 sdkmanager "platform-tools" "platforms;$ANDROID_PLATFORM_VERSION" "build-tools;$ANDROID_SDK_VERSION"
 sdkmanager --install "ndk;$ANDROID_NDK_VERSION" --channel=3
 
