@@ -106,6 +106,7 @@ class MainActivity : AppCompatActivity() {
         Settings.secondaryDns = sharedPref.getString("secondaryDns", Settings.secondaryDns)!!
         Settings.excludedApps = sharedPref.getString("excludedApps", Settings.excludedApps)!!
         Settings.useXray = sharedPref.getBoolean("useXray", Settings.useXray)
+        Settings.bypassLan = sharedPref.getBoolean("bypassLan", Settings.bypassLan)
         Settings.socksUdp = sharedPref.getBoolean("socksUdp", Settings.socksUdp)
         Settings.socksAuth = sharedPref.getBoolean("socksAuth", Settings.socksAuth)
         Settings.socksUsername = sharedPref.getString("socksUsername", Settings.socksUsername)!!

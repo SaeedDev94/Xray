@@ -20,6 +20,7 @@ class SettingsActivity : AppCompatActivity() {
         binding.excludedApps.setText(Settings.excludedApps)
         binding.xrayConfig.setText(getXrayConfig())
         binding.useXray.isChecked = Settings.useXray
+        binding.bypassLan.isChecked = Settings.bypassLan
         binding.socksUdp.isChecked = Settings.socksUdp
         binding.socksAuth.isChecked = Settings.socksAuth
         binding.socksUsername.setText(Settings.socksUsername)
@@ -69,6 +70,7 @@ class SettingsActivity : AppCompatActivity() {
         Settings.secondaryDns = binding.secondaryDns.text.toString()
         Settings.excludedApps = binding.excludedApps.text.toString()
         Settings.useXray = binding.useXray.isChecked
+        Settings.bypassLan = binding.bypassLan.isChecked
         Settings.socksUdp = binding.socksUdp.isChecked
         Settings.socksAuth = binding.socksAuth.isChecked
         Settings.socksUsername = binding.socksUsername.text.toString()
@@ -81,6 +83,7 @@ class SettingsActivity : AppCompatActivity() {
             .putString("secondaryDns", Settings.secondaryDns)
             .putString("excludedApps", Settings.excludedApps)
             .putBoolean("useXray", Settings.useXray)
+            .putBoolean("bypassLan", Settings.bypassLan)
             .putBoolean("socksUdp", Settings.socksUdp)
             .putBoolean("socksAuth", Settings.socksAuth)
             .putString("socksUsername", Settings.socksUsername)

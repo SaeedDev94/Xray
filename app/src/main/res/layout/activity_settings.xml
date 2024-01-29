@@ -88,6 +88,12 @@
             android:layout_marginVertical="8dp"
             android:text="@string/useXray" />
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/bypassLan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:text="@string/bypassLan" />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/socksUdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

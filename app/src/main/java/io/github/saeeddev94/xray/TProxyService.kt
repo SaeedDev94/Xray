@@ -68,10 +68,14 @@ class TProxyService : VpnService() {
         tun.addDnsServer(Settings.primaryDns)
         tun.addDnsServer(Settings.secondaryDns)
 
-        /** Pass all traffic to the tun (Except private IP addresses) */
-        resources.getStringArray(R.array.publicIpAddresses).forEach {
-            val address = it.split('/')
-            tun.addRoute(address[0], address[1].toInt())
+        /** Routing config */
+        if (Settings.bypassLan) {
+            resources.getStringArray(R.array.publicIpAddresses).forEach {
+                val address = it.split('/')
+                tun.addRoute(address[0], address[1].toInt())
+            }
+        } else {
+            tun.addRoute("0.0.0.0", 0)
         }
 
         /** Exclude apps */
