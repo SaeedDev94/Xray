@@ -52,8 +52,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setAppVersion()
-        setXrayVersion()
         setSettings()
+        checkXrayVersion()
         binding.toggleButton.setOnClickListener { onToggleButtonClick() }
         binding.launchSettings.setOnClickListener {
             val intent = Intent(applicationContext, SettingsActivity::class.java)
@@ -88,6 +88,22 @@ class MainActivity : AppCompatActivity() {
         binding.appVersion.text = BuildConfig.VERSION_NAME
     }
 
+    private fun checkXrayVersion() {
+        val xrayVersion = LibXray.xrayVersion()
+        val sharedPref = Settings.sharedPref(applicationContext)
+        val isXrayUpToDate = sharedPref.getString("xrayVersion", "") == xrayVersion
+        if (isXrayUpToDate) {
+            setXrayVersion()
+            return
+        }
+        Thread {
+            sharedPref.edit()
+                .putString("xrayVersion", xrayVersion)
+                .apply()
+            runOnUiThread { setXrayVersion() }
+        }.start()
+    }
+
     private fun setXrayVersion() {
         val sharedPref = Settings.sharedPref(applicationContext)
         binding.xrayVersion.text = sharedPref.getString("xrayVersion", "-")
@@ -115,22 +131,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun onToggleButtonClick() {
         if (!vpnServiceBound || !hasPostNotification()) return
-        if (Settings.useXray) {
-            val xrayVersion = LibXray.xrayVersion()
-            val sharedPref = Settings.sharedPref(applicationContext)
-            val isXrayUpToDate = sharedPref.getString("xrayVersion", "") == xrayVersion
-            if (!isXrayUpToDate) {
-                Thread {
-                    sharedPref.edit()
-                        .putString("xrayVersion", xrayVersion)
-                        .apply()
-                    runOnUiThread { setXrayVersion() }
-                }.start()
-            }
-            if (!vpnService.isConfigExists()) {
-                Toast.makeText(applicationContext, "Xray config file missed", Toast.LENGTH_SHORT).show()
-                return
-            }
+        if (Settings.useXray && !vpnService.isConfigExists()) {
+            Toast.makeText(applicationContext, "Xray config file missed", Toast.LENGTH_SHORT).show()
+            return
         }
         val vpn = VpnService.prepare(this)
         if (vpn != null) {
