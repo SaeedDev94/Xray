@@ -1,0 +1,4 @@
+- New settings:
+- ++ Socks auth
+- ++ Bypass LAN
+- Set Xray-core version on activity start
