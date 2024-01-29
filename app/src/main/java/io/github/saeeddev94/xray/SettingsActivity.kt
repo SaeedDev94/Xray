@@ -15,6 +15,8 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.socksAddress.setText(Settings.socksAddress)
         binding.socksPort.setText(Settings.socksPort)
+        binding.socksUsername.setText(Settings.socksUsername)
+        binding.socksPassword.setText(Settings.socksPassword)
         binding.primaryDns.setText(Settings.primaryDns)
         binding.secondaryDns.setText(Settings.secondaryDns)
         binding.useXray.isChecked = Settings.useXray
@@ -49,6 +51,8 @@ class SettingsActivity : AppCompatActivity() {
     private fun saveSettings() {
         Settings.socksAddress = binding.socksAddress.text.toString()
         Settings.socksPort = binding.socksPort.text.toString()
+        Settings.socksUsername = binding.socksUsername.text.toString()
+        Settings.socksPassword = binding.socksPassword.text.toString()
         Settings.primaryDns = binding.primaryDns.text.toString()
         Settings.secondaryDns = binding.secondaryDns.text.toString()
         Settings.excludedApps = binding.excludedApps.text.toString()
@@ -58,6 +62,8 @@ class SettingsActivity : AppCompatActivity() {
         sharedPref.edit()
             .putString("socksAddress", Settings.socksAddress)
             .putString("socksPort", Settings.socksPort)
+            .putString("socksUsername", Settings.socksUsername)
+            .putString("socksPassword", Settings.socksPassword)
             .putString("primaryDns", Settings.primaryDns)
             .putString("secondaryDns", Settings.secondaryDns)
             .putString("excludedApps", Settings.excludedApps)

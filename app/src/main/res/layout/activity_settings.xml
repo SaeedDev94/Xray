@@ -34,6 +34,28 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@string/socksUsername"
+            android:labelFor="@id/socksUsername" />
+        <EditText
+            android:id="@+id/socksUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:autofillHints="" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/socksPassword"
+            android:labelFor="@id/socksPassword" />
+        <EditText
+            android:id="@+id/socksPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textVisiblePassword"
+            android:autofillHints="" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="@string/primaryDns"
             android:labelFor="@id/primaryDns" />
         <EditText

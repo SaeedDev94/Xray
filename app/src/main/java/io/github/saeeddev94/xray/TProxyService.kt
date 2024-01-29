@@ -95,6 +95,8 @@ class TProxyService : VpnService() {
             "socks5:",
             "  address: ${Settings.socksAddress}",
             "  port: ${Settings.socksPort}",
+            "  username: ${Settings.socksUsername}",
+            "  password: ${Settings.socksPassword}",
             if (Settings.socksUdp) "  udp: udp" else "  udp: tcp",
             ""
         )

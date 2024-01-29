@@ -9,6 +9,8 @@
     <string name="toggleButton">Start / Stop</string>
     <string name="socksAddress">Socks Address</string>
     <string name="socksPort">Socks Port</string>
+    <string name="socksUsername">Socks Username</string>
+    <string name="socksPassword">Socks Password</string>
     <string name="primaryDns">Primary DNS</string>
     <string name="secondaryDns">Secondary DNS</string>
     <string name="useXray">Use Xray</string>
