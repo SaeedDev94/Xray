@@ -57,7 +57,7 @@ jobs:
           name: arm64-build
           path: /opt/dist
 
-  build-amd32:
+  build-x86:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -81,7 +81,7 @@ jobs:
       - name: Upload amd32 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: amd32-build
+          name: x86-build
           path: /opt/dist
 
   build-amd64:
@@ -116,7 +116,7 @@ jobs:
     needs:
       - build-arm32
       - build-arm64
-      - build-amd32
+      - build-x86
       - build-amd64
     permissions:
       contents: write
@@ -136,7 +136,7 @@ jobs:
       - name: Download amd32 artifact
         uses: actions/download-artifact@v4
         with:
-          name: amd32-build
+          name: x86-build
           path: dist
       - name: Download amd64 artifact
         uses: actions/download-artifact@v4
