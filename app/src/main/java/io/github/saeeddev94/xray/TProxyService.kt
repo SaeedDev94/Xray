@@ -84,7 +84,7 @@ class TProxyService : VpnService() {
         tunDevice = tun.establish()
 
         /** Create, Update tun2socks config */
-        val tun2socksConfig = arrayOf(
+        val tun2socksConfig = arrayListOf(
             "tunnel:",
             "  name: ${Settings.tunName}",
             "  mtu: ${Settings.tunMtu}",
@@ -95,11 +95,15 @@ class TProxyService : VpnService() {
             "socks5:",
             "  address: ${Settings.socksAddress}",
             "  port: ${Settings.socksPort}",
-            "  username: ${Settings.socksUsername}",
-            "  password: ${Settings.socksPassword}",
-            if (Settings.socksUdp) "  udp: udp" else "  udp: tcp",
-            ""
         )
+        if (Settings.socksUsername.trim().isNotEmpty()) {
+            tun2socksConfig.add("  username: ${Settings.socksUsername}")
+        }
+        if (Settings.socksPassword.trim().isNotEmpty()) {
+            tun2socksConfig.add("  password: ${Settings.socksPassword}")
+        }
+        tun2socksConfig.add(if (Settings.socksUdp) "  udp: udp" else "  udp: tcp")
+        tun2socksConfig.add("")
         Settings.tun2socksConfig(applicationContext).writeText(tun2socksConfig.joinToString("\n"))
 
         /** Start tun2socks */
