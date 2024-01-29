@@ -14,6 +14,7 @@ ANDROID_NDK_VERSION="26.1.10909125"
 JAVA_VERSION="17"
 GRADLE_VERSION="8.2.1"
 GO_VERSION="go1.21.6"
+GO_MOBILE_VERSION="v0.0.0-20240112133503-c713f31d574b"
 
 # Install Tools
 apt-get install -t bullseye-backports -y golang-go
@@ -65,7 +66,7 @@ gradle clean
 
 # Build libXray
 pushd ../libXray
-go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20240112133503-c713f31d574b
+go install golang.org/x/mobile/cmd/gomobile@$GO_MOBILE_VERSION
 go mod download
 gomobile init
 gomobile bind -o "../app/libs/libXray.aar" -androidapi 29 -target "android/$NATIVE_ARCH" -ldflags="-buildid=" -trimpath
