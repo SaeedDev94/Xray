@@ -15,29 +15,43 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.socksAddress.setText(Settings.socksAddress)
         binding.socksPort.setText(Settings.socksPort)
-        binding.socksUsername.setText(Settings.socksUsername)
-        binding.socksPassword.setText(Settings.socksPassword)
         binding.primaryDns.setText(Settings.primaryDns)
         binding.secondaryDns.setText(Settings.secondaryDns)
-        binding.useXray.isChecked = Settings.useXray
-        binding.socksUdp.isChecked = Settings.socksUdp
         binding.excludedApps.setText(Settings.excludedApps)
         binding.xrayConfig.setText(getXrayConfig())
+        binding.useXray.isChecked = Settings.useXray
+        binding.socksUdp.isChecked = Settings.socksUdp
+        binding.socksAuth.isChecked = Settings.socksAuth
+        binding.socksUsername.setText(Settings.socksUsername)
+        binding.socksPassword.setText(Settings.socksPassword)
+        binding.useXray.setOnCheckedChangeListener { _, _ ->
+            toggleXraySettings()
+        }
+        binding.socksAuth.setOnCheckedChangeListener { _, _ ->
+            toggleSocksSettings()
+        }
         binding.saveSettings.setOnClickListener {
             saveSettings()
         }
-        binding.useXray.setOnCheckedChangeListener { _, _ ->
-            toggleSettings()
-        }
-        toggleSettings()
+        toggleXraySettings()
+        toggleSocksSettings()
     }
 
-    private fun toggleSettings() {
+    private fun toggleXraySettings() {
         val checked = binding.useXray.isChecked
         if (checked) {
             binding.xraySettings.visibility = View.VISIBLE
         } else {
             binding.xraySettings.visibility = View.GONE
+        }
+    }
+
+    private fun toggleSocksSettings() {
+        val checked = binding.socksAuth.isChecked
+        if (checked) {
+            binding.socksSettings.visibility = View.VISIBLE
+        } else {
+            binding.socksSettings.visibility = View.GONE
         }
     }
 
@@ -51,24 +65,26 @@ class SettingsActivity : AppCompatActivity() {
     private fun saveSettings() {
         Settings.socksAddress = binding.socksAddress.text.toString()
         Settings.socksPort = binding.socksPort.text.toString()
-        Settings.socksUsername = binding.socksUsername.text.toString()
-        Settings.socksPassword = binding.socksPassword.text.toString()
         Settings.primaryDns = binding.primaryDns.text.toString()
         Settings.secondaryDns = binding.secondaryDns.text.toString()
         Settings.excludedApps = binding.excludedApps.text.toString()
         Settings.useXray = binding.useXray.isChecked
         Settings.socksUdp = binding.socksUdp.isChecked
+        Settings.socksAuth = binding.socksAuth.isChecked
+        Settings.socksUsername = binding.socksUsername.text.toString()
+        Settings.socksPassword = binding.socksPassword.text.toString()
         val sharedPref = Settings.sharedPref(applicationContext)
         sharedPref.edit()
             .putString("socksAddress", Settings.socksAddress)
             .putString("socksPort", Settings.socksPort)
-            .putString("socksUsername", Settings.socksUsername)
-            .putString("socksPassword", Settings.socksPassword)
             .putString("primaryDns", Settings.primaryDns)
             .putString("secondaryDns", Settings.secondaryDns)
             .putString("excludedApps", Settings.excludedApps)
             .putBoolean("useXray", Settings.useXray)
             .putBoolean("socksUdp", Settings.socksUdp)
+            .putBoolean("socksAuth", Settings.socksAuth)
+            .putString("socksUsername", Settings.socksUsername)
+            .putString("socksPassword", Settings.socksPassword)
             .apply()
         Settings.xrayConfig(applicationContext).writeText(binding.xrayConfig.text.toString())
         finish()

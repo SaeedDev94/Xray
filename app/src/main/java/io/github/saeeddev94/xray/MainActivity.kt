@@ -102,13 +102,14 @@ class MainActivity : AppCompatActivity() {
         val sharedPref = Settings.sharedPref(applicationContext)
         Settings.socksAddress = sharedPref.getString("socksAddress", Settings.socksAddress)!!
         Settings.socksPort = sharedPref.getString("socksPort", Settings.socksPort)!!
-        Settings.socksUsername = sharedPref.getString("socksUsername", Settings.socksUsername)!!
-        Settings.socksPassword = sharedPref.getString("socksPassword", Settings.socksPassword)!!
         Settings.primaryDns = sharedPref.getString("primaryDns", Settings.primaryDns)!!
         Settings.secondaryDns = sharedPref.getString("secondaryDns", Settings.secondaryDns)!!
         Settings.excludedApps = sharedPref.getString("excludedApps", Settings.excludedApps)!!
         Settings.useXray = sharedPref.getBoolean("useXray", Settings.useXray)
         Settings.socksUdp = sharedPref.getBoolean("socksUdp", Settings.socksUdp)
+        Settings.socksAuth = sharedPref.getBoolean("socksAuth", Settings.socksAuth)
+        Settings.socksUsername = sharedPref.getString("socksUsername", Settings.socksUsername)!!
+        Settings.socksPassword = sharedPref.getString("socksPassword", Settings.socksPassword)!!
     }
 
     private fun onToggleButtonClick() {

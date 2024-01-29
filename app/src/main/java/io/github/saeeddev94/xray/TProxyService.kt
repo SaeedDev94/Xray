@@ -96,10 +96,8 @@ class TProxyService : VpnService() {
             "  address: ${Settings.socksAddress}",
             "  port: ${Settings.socksPort}",
         )
-        if (Settings.socksUsername.trim().isNotEmpty()) {
+        if (Settings.socksAuth) {
             tun2socksConfig.add("  username: ${Settings.socksUsername}")
-        }
-        if (Settings.socksPassword.trim().isNotEmpty()) {
             tun2socksConfig.add("  password: ${Settings.socksPassword}")
         }
         tun2socksConfig.add(if (Settings.socksUdp) "  udp: udp" else "  udp: tcp")
