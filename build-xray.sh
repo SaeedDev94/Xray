@@ -22,12 +22,19 @@ apt-get install -y git openjdk-$JAVA_VERSION-jdk-headless sdkmanager wget unzip 
 sdkmanager "platform-tools" "platforms;$ANDROID_PLATFORM_VERSION" "build-tools;$ANDROID_SDK_VERSION"
 sdkmanager --install "ndk;$ANDROID_NDK_VERSION" --channel=3
 
+# Define dirs
+BUILD_DIR="/home/vagrant/build"
+REPO_DIR="$BUILD_DIR/io.github.saeeddev94.xray"
+GRADLE_DIR="$BUILD_DIR/gradle"
+SRC_DIR="$BUILD_DIR/srclib"
+GO_DIR="$SRC_DIR/go"
+
 # Create directories
-mkdir -p /home/vagrant/gradle
-mkdir -p /home/vagrant/build/srclib
+mkdir -p $GRADLE_DIR
+mkdir -p $SRC_DIR
 
 # Download gradle
-pushd /home/vagrant/gradle
+pushd $GRADLE_DIR
 GRADLE_ARCHIVE="gradle-$GRADLE_VERSION-bin.zip"
 wget "https://services.gradle.org/distributions/$GRADLE_ARCHIVE"
 unzip "$GRADLE_ARCHIVE"
@@ -36,8 +43,8 @@ mv * "$GRADLE_VERSION"
 popd
 
 # Build go
-git clone https://github.com/golang/go.git /home/vagrant/build/srclib/go
-pushd /home/vagrant/build/srclib/go
+git clone https://github.com/golang/go.git $GO_DIR
+pushd $GO_DIR
 git checkout "$GO_VERSION"
 cd src
 ./make.bash
@@ -47,18 +54,18 @@ popd
 export JAVA_HOME="/usr/lib/jvm/java-$JAVA_VERSION-openjdk-amd64"
 export ANDROID_HOME="/opt/android-sdk"
 export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION"
-export GOPATH="/home/vagrant/build/srclib/go"
+export GOPATH="$GO_DIR"
 
 # Set path
 export PATH="$JAVA_HOME/bin:$PATH"
-export PATH="/home/vagrant/gradle/$GRADLE_VERSION/bin:$PATH"
+export PATH="$GRADLE_DIR/$GRADLE_VERSION/bin:$PATH"
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 export PATH="$ANDROID_HOME/build-tools/$ANDROID_SDK_VERSION:$PATH"
 export PATH="$GOPATH/bin:$PATH"
 
 # Clone repo
-git clone https://github.com/SaeedDev94/Xray.git /home/vagrant/build/io.github.saeeddev94.xray
-cd /home/vagrant/build/io.github.saeeddev94.xray
+git clone https://github.com/SaeedDev94/Xray.git $REPO_DIR
+cd $REPO_DIR
 git submodule update --init --recursive
 git checkout "$RELEASE_TAG"
 
