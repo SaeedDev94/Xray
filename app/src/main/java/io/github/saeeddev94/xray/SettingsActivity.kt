@@ -28,6 +28,9 @@ class SettingsActivity : AppCompatActivity() {
         binding.useXray.setOnCheckedChangeListener { _, _ ->
             toggleXraySettings()
         }
+        binding.advancedSettings.setOnCheckedChangeListener { _, _ ->
+            toggleAdvancedSettings()
+        }
         binding.socksAuth.setOnCheckedChangeListener { _, _ ->
             toggleSocksSettings()
         }
@@ -35,6 +38,7 @@ class SettingsActivity : AppCompatActivity() {
             saveSettings()
         }
         toggleXraySettings()
+        toggleAdvancedSettings()
         toggleSocksSettings()
     }
 
@@ -44,6 +48,15 @@ class SettingsActivity : AppCompatActivity() {
             binding.xraySettings.visibility = View.VISIBLE
         } else {
             binding.xraySettings.visibility = View.GONE
+        }
+    }
+
+    private fun toggleAdvancedSettings() {
+        val checked = binding.advancedSettings.isChecked
+        if (checked) {
+            binding.advanced.visibility = View.VISIBLE
+        } else {
+            binding.advanced.visibility = View.GONE
         }
     }
 

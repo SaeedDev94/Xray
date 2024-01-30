@@ -14,6 +14,7 @@
     <string name="excludedApps">Excluded Apps</string>
     <string name="xrayConfig">Xray Config</string>
     <string name="useXray">Use Xray</string>
+    <string name="advancedSettings">Advanced Settings</string>
     <string name="bypassLan">Bypass LAN</string>
     <string name="socksUdp">Socks UDP</string>
     <string name="socksAuth">Socks Auth</string>
