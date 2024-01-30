@@ -62,9 +62,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Build amd32 docker
-        run: docker build -t amd32 -f Dockerfile .
-      - name: Compile amd32 build
+      - name: Build x86 docker
+        run: docker build -t x86 -f Dockerfile .
+      - name: Compile x86 build
         run: |
           docker run --rm \
             -v /opt/dist:/opt/dist \
@@ -77,8 +77,8 @@ jobs:
             -e KS_PASSWORD="${{ secrets.KS_PASSWORD }}" \
             -e KEY_ALIAS="${{ secrets.KEY_ALIAS }}" \
             -e KEY_PASSWORD="${{ secrets.KEY_PASSWORD }}" \
-            amd32
-      - name: Upload amd32 artifact
+            x86
+      - name: Upload x86 artifact
         uses: actions/upload-artifact@v4
         with:
           name: x86-build
@@ -133,7 +133,7 @@ jobs:
         with:
           name: arm64-build
           path: dist
-      - name: Download amd32 artifact
+      - name: Download x86 artifact
         uses: actions/download-artifact@v4
         with:
           name: x86-build
