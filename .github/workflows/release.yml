@@ -143,9 +143,11 @@ jobs:
         with:
           name: amd64-build
           path: dist
-      - name: Get version code
+      - name: Set VERSION_CODE
         run: |
+          ALL_VARIANTS=4
           VERSION_CODE=$(cat "$GITHUB_WORKSPACE/app/versionCode.txt")
+          ((VERSION_CODE += ALL_VARIANTS))
           echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
       - name: Publish release
         uses: softprops/action-gh-release@v1
