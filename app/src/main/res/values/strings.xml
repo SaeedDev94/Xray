@@ -1,5 +1,8 @@
 <resources>
     <string name="appName">Xray</string>
+    <string name="noValue">-</string>
+    <string name="navigationDrawerOpen">Open navigation drawer</string>
+    <string name="navigationDrawerClose">Close navigation drawer</string>
     <string name="appFullName">SaeedDev94/Xray</string>
     <string name="xrayLabel">XTLS/Xray-core</string>
     <string name="tun2socksLabel">heiher/hev-socks5-tunnel</string>

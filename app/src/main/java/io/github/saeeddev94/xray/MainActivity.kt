@@ -9,15 +9,19 @@ import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
+import androidx.core.view.GravityCompat
+import com.google.android.material.navigation.NavigationView
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import libXray.LibXray
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         init {
@@ -51,14 +55,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setAppVersion()
+        setSupportActionBar(binding.toolbar)
         setSettings()
-        checkXrayVersion()
         binding.toggleButton.setOnClickListener { onToggleButtonClick() }
         binding.launchSettings.setOnClickListener {
             val intent = Intent(applicationContext, SettingsActivity::class.java)
             startActivity(intent)
         }
+        binding.navView.menu.findItem(R.id.appVersion).title = BuildConfig.VERSION_NAME
+        binding.navView.menu.findItem(R.id.xrayVersion).title = LibXray.xrayVersion()
+        val toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar, R.string.navigationDrawerOpen, R.string.navigationDrawerClose)
+        binding.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+        binding.navView.setNavigationItemSelectedListener(this)
     }
 
     override fun onStart() {
@@ -84,29 +93,19 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private fun setAppVersion() {
-        binding.appVersion.text = BuildConfig.VERSION_NAME
-    }
-
-    private fun checkXrayVersion() {
-        val xrayVersion = LibXray.xrayVersion()
-        val sharedPref = Settings.sharedPref(applicationContext)
-        val isXrayUpToDate = sharedPref.getString("xrayVersion", "") == xrayVersion
-        if (isXrayUpToDate) {
-            setXrayVersion()
-            return
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.appFullName,
+            R.id.appVersion,
+            R.id.xrayLabel,
+            R.id.xrayVersion,
+            R.id.tun2socksLabel,
+            R.id.tun2socksVersion -> {
+                return false
+            }
         }
-        Thread {
-            sharedPref.edit()
-                .putString("xrayVersion", xrayVersion)
-                .apply()
-            runOnUiThread { setXrayVersion() }
-        }.start()
-    }
-
-    private fun setXrayVersion() {
-        val sharedPref = Settings.sharedPref(applicationContext)
-        binding.xrayVersion.text = sharedPref.getString("xrayVersion", "-")
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
+        return true
     }
 
     private fun setVpnServiceStatus() {

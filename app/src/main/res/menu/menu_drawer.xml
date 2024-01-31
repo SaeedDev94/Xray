@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/toolsVersion">
+        <item
+            android:id="@+id/appFullName"
+            android:title="@string/appFullName" />
+        <item
+            android:id="@+id/appVersion"
+            android:title="@string/noValue" />
+        <item
+            android:id="@+id/xrayLabel"
+            android:title="@string/xrayLabel" />
+        <item
+            android:id="@+id/xrayVersion"
+            android:title="@string/noValue" />
+        <item
+            android:id="@+id/tun2socksLabel"
+            android:title="@string/tun2socksLabel" />
+        <item
+            android:id="@+id/tun2socksVersion"
+            android:title="@string/tun2socksVersion" />
+    </group>
+</menu>
