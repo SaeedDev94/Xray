@@ -1,10 +1,12 @@
 package io.github.saeeddev94.xray
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +18,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import com.google.android.material.navigation.NavigationView
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
@@ -58,10 +61,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(binding.toolbar)
         setSettings()
         binding.toggleButton.setOnClickListener { onToggleButtonClick() }
-        binding.launchSettings.setOnClickListener {
-            val intent = Intent(applicationContext, SettingsActivity::class.java)
-            startActivity(intent)
-        }
         binding.navView.menu.findItem(R.id.appVersion).title = BuildConfig.VERSION_NAME
         binding.navView.menu.findItem(R.id.xrayVersion).title = LibXray.xrayVersion()
         val toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar, R.string.navigationDrawerOpen, R.string.navigationDrawerClose)
@@ -108,9 +107,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setVpnServiceStatus() {
         if (!vpnServiceBound) return
-        binding.vpnService.text = if (vpnService.getIsRunning()) "Enable" else "Disable"
+        if (vpnService.getIsRunning()) {
+            binding.toggleButton.text = "STOP"
+            binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.vpnEnable))
+            binding.pingResult.text = "Connected, tap to check connection"
+        } else {
+            binding.toggleButton.text = "START"
+            binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.vpnDisable))
+            binding.pingResult.text = "Not Connected"
+        }
     }
 
     private fun setSettings() {

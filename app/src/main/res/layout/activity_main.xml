@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
@@ -18,26 +18,41 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize" />
         </com.google.android.material.appbar.AppBarLayout>
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/vpnServiceLabel"
-            android:textStyle="bold" />
-        <TextView
-            android:id="@+id/vpnService"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp" />
-        <Button
-            android:id="@+id/launchSettings"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/settings" />
-        <Button
-            android:id="@+id/toggleButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/toggleButton" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:nextFocusRight="@+id/toggleButton" />
+            <Button
+                android:id="@+id/toggleButton"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/toggleButton" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#000"
+                android:gravity="center|start"
+                android:nextFocusRight="@+id/toggleButton"
+                android:nextFocusLeft="@+id/listRecycler"
+                android:clickable="true"
+                android:focusable="true">
+                <TextView
+                    android:id="@+id/pingResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="2"
+                    android:minLines="1"
+                    android:paddingHorizontal="16dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="#FFF" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navView"
