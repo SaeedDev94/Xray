@@ -1,7 +1,10 @@
+name: Release CI
+
 on:
   push:
     tags:
       - '*'
+
 jobs:
   build-arm32:
     runs-on: ubuntu-latest
