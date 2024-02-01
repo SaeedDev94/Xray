@@ -26,6 +26,28 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/primaryDns"
+                android:labelFor="@id/primaryDns" />
+            <EditText
+                android:id="@+id/primaryDns"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:autofillHints="" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/secondaryDns"
+                android:labelFor="@id/secondaryDns" />
+            <EditText
+                android:id="@+id/secondaryDns"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:autofillHints="" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/socksAddress"
                 android:labelFor="@id/socksAddress" />
             <EditText
@@ -45,120 +67,51 @@
                 android:layout_height="wrap_content"
                 android:inputType="text"
                 android:autofillHints="" />
-            <LinearLayout
-                android:id="@+id/xraySettings"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/xrayConfig"
-                    android:labelFor="@id/xrayConfig" />
-                <EditText
-                    android:id="@+id/xrayConfig"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textMultiLine"
-                    android:autofillHints="" />
-            </LinearLayout>
+                android:text="@string/socksUsername"
+                android:labelFor="@id/socksUsername" />
+            <EditText
+                android:id="@+id/socksUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:autofillHints="" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/socksPassword"
+                android:labelFor="@id/socksPassword" />
+            <EditText
+                android:id="@+id/socksPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:autofillHints="" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/excludedApps"
+                android:labelFor="@id/excludedApps" />
+            <EditText
+                android:id="@+id/excludedApps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:autofillHints="" />
             <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/useXray"
+                android:id="@+id/bypassLan"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
-                android:text="@string/useXray" />
+                android:text="@string/bypassLan" />
             <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/advancedSettings"
+                android:id="@+id/socksUdp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
-                android:text="@string/advancedSettings" />
-            <LinearLayout
-                android:id="@+id/advanced"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/bypassLan"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp"
-                    android:text="@string/bypassLan" />
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/socksUdp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp"
-                    android:text="@string/socksUdp" />
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/socksAuth"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp"
-                    android:text="@string/socksAuth" />
-                <LinearLayout
-                    android:id="@+id/socksSettings"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/socksUsername"
-                        android:labelFor="@id/socksUsername" />
-                    <EditText
-                        android:id="@+id/socksUsername"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="text"
-                        android:autofillHints="" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/socksPassword"
-                        android:labelFor="@id/socksPassword" />
-                    <EditText
-                        android:id="@+id/socksPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"
-                        android:autofillHints="" />
-                </LinearLayout>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/primaryDns"
-                    android:labelFor="@id/primaryDns" />
-                <EditText
-                    android:id="@+id/primaryDns"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:autofillHints="" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/secondaryDns"
-                    android:labelFor="@id/secondaryDns" />
-                <EditText
-                    android:id="@+id/secondaryDns"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:autofillHints="" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/excludedApps"
-                    android:labelFor="@id/excludedApps" />
-                <EditText
-                    android:id="@+id/excludedApps"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textMultiLine"
-                    android:autofillHints="" />
-            </LinearLayout>
+                android:text="@string/socksUdp" />
             <Button
                 android:id="@+id/saveSettings"
                 android:layout_width="match_parent"

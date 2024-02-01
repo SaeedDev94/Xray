@@ -2,7 +2,6 @@ package io.github.saeeddev94.xray
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import io.github.saeeddev94.xray.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
@@ -16,96 +15,42 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.socksAddress.setText(Settings.socksAddress)
-        binding.socksPort.setText(Settings.socksPort)
         binding.primaryDns.setText(Settings.primaryDns)
         binding.secondaryDns.setText(Settings.secondaryDns)
-        binding.excludedApps.setText(Settings.excludedApps)
-        binding.xrayConfig.setText(getXrayConfig())
-        binding.useXray.isChecked = Settings.useXray
-        binding.bypassLan.isChecked = Settings.bypassLan
-        binding.socksUdp.isChecked = Settings.socksUdp
-        binding.socksAuth.isChecked = Settings.socksAuth
+        binding.socksAddress.setText(Settings.socksAddress)
+        binding.socksPort.setText(Settings.socksPort)
         binding.socksUsername.setText(Settings.socksUsername)
         binding.socksPassword.setText(Settings.socksPassword)
-        binding.useXray.setOnCheckedChangeListener { _, _ ->
-            toggleXraySettings()
-        }
-        binding.advancedSettings.setOnCheckedChangeListener { _, _ ->
-            toggleAdvancedSettings()
-        }
-        binding.socksAuth.setOnCheckedChangeListener { _, _ ->
-            toggleSocksSettings()
-        }
+        binding.excludedApps.setText(Settings.excludedApps)
+        binding.bypassLan.isChecked = Settings.bypassLan
+        binding.socksUdp.isChecked = Settings.socksUdp
         binding.saveSettings.setOnClickListener {
             saveSettings()
         }
-        toggleXraySettings()
-        toggleAdvancedSettings()
-        toggleSocksSettings()
-    }
-
-    private fun toggleXraySettings() {
-        val checked = binding.useXray.isChecked
-        if (checked) {
-            binding.xraySettings.visibility = View.VISIBLE
-        } else {
-            binding.xraySettings.visibility = View.GONE
-        }
-    }
-
-    private fun toggleAdvancedSettings() {
-        val checked = binding.advancedSettings.isChecked
-        if (checked) {
-            binding.advanced.visibility = View.VISIBLE
-        } else {
-            binding.advanced.visibility = View.GONE
-        }
-    }
-
-    private fun toggleSocksSettings() {
-        val checked = binding.socksAuth.isChecked
-        if (checked) {
-            binding.socksSettings.visibility = View.VISIBLE
-        } else {
-            binding.socksSettings.visibility = View.GONE
-        }
-    }
-
-    private fun getXrayConfig(): String {
-        val configFile = Settings.xrayConfig(applicationContext)
-        if (!configFile.exists() || !configFile.isFile) return ""
-        val bufferedReader = configFile.bufferedReader()
-        return bufferedReader.use { it.readText() }
     }
 
     private fun saveSettings() {
-        Settings.socksAddress = binding.socksAddress.text.toString()
-        Settings.socksPort = binding.socksPort.text.toString()
         Settings.primaryDns = binding.primaryDns.text.toString()
         Settings.secondaryDns = binding.secondaryDns.text.toString()
-        Settings.excludedApps = binding.excludedApps.text.toString()
-        Settings.useXray = binding.useXray.isChecked
-        Settings.bypassLan = binding.bypassLan.isChecked
-        Settings.socksUdp = binding.socksUdp.isChecked
-        Settings.socksAuth = binding.socksAuth.isChecked
+        Settings.socksAddress = binding.socksAddress.text.toString()
+        Settings.socksPort = binding.socksPort.text.toString()
         Settings.socksUsername = binding.socksUsername.text.toString()
         Settings.socksPassword = binding.socksPassword.text.toString()
+        Settings.excludedApps = binding.excludedApps.text.toString()
+        Settings.bypassLan = binding.bypassLan.isChecked
+        Settings.socksUdp = binding.socksUdp.isChecked
         val sharedPref = Settings.sharedPref(applicationContext)
         sharedPref.edit()
-            .putString("socksAddress", Settings.socksAddress)
-            .putString("socksPort", Settings.socksPort)
             .putString("primaryDns", Settings.primaryDns)
             .putString("secondaryDns", Settings.secondaryDns)
-            .putString("excludedApps", Settings.excludedApps)
-            .putBoolean("useXray", Settings.useXray)
-            .putBoolean("bypassLan", Settings.bypassLan)
-            .putBoolean("socksUdp", Settings.socksUdp)
-            .putBoolean("socksAuth", Settings.socksAuth)
+            .putString("socksAddress", Settings.socksAddress)
+            .putString("socksPort", Settings.socksPort)
             .putString("socksUsername", Settings.socksUsername)
             .putString("socksPassword", Settings.socksPassword)
+            .putString("excludedApps", Settings.excludedApps)
+            .putBoolean("bypassLan", Settings.bypassLan)
+            .putBoolean("socksUdp", Settings.socksUdp)
             .apply()
-        Settings.xrayConfig(applicationContext).writeText(binding.xrayConfig.text.toString())
         finish()
     }
 }

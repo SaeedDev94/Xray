@@ -45,7 +45,7 @@ class TProxyService : VpnService() {
         isRunning = true
 
         /** Start xray */
-        if (Settings.useXray) {
+        if (Settings.xrayProfile != null) {
             val datDir: String = applicationContext.filesDir.absolutePath
             val configPath: String = Settings.xrayConfig(applicationContext).absolutePath
             val maxMemory: Long = 67108864 // 64 MB * 1024 KB * 1024 B
@@ -100,8 +100,10 @@ class TProxyService : VpnService() {
             "  address: ${Settings.socksAddress}",
             "  port: ${Settings.socksPort}",
         )
-        if (Settings.socksAuth) {
+        if (Settings.socksUsername.trim().isNotEmpty()) {
             tun2socksConfig.add("  username: ${Settings.socksUsername}")
+        }
+        if (Settings.socksPassword.trim().isNotEmpty()) {
             tun2socksConfig.add("  password: ${Settings.socksPassword}")
         }
         tun2socksConfig.add(if (Settings.socksUdp) "  udp: udp" else "  udp: tcp")

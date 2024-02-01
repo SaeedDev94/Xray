@@ -127,25 +127,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun setSettings() {
         val sharedPref = Settings.sharedPref(applicationContext)
-        Settings.socksAddress = sharedPref.getString("socksAddress", Settings.socksAddress)!!
-        Settings.socksPort = sharedPref.getString("socksPort", Settings.socksPort)!!
         Settings.primaryDns = sharedPref.getString("primaryDns", Settings.primaryDns)!!
         Settings.secondaryDns = sharedPref.getString("secondaryDns", Settings.secondaryDns)!!
-        Settings.excludedApps = sharedPref.getString("excludedApps", Settings.excludedApps)!!
-        Settings.useXray = sharedPref.getBoolean("useXray", Settings.useXray)
-        Settings.bypassLan = sharedPref.getBoolean("bypassLan", Settings.bypassLan)
-        Settings.socksUdp = sharedPref.getBoolean("socksUdp", Settings.socksUdp)
-        Settings.socksAuth = sharedPref.getBoolean("socksAuth", Settings.socksAuth)
+        Settings.socksAddress = sharedPref.getString("socksAddress", Settings.socksAddress)!!
+        Settings.socksPort = sharedPref.getString("socksPort", Settings.socksPort)!!
         Settings.socksUsername = sharedPref.getString("socksUsername", Settings.socksUsername)!!
         Settings.socksPassword = sharedPref.getString("socksPassword", Settings.socksPassword)!!
+        Settings.excludedApps = sharedPref.getString("excludedApps", Settings.excludedApps)!!
+        Settings.bypassLan = sharedPref.getBoolean("bypassLan", Settings.bypassLan)
+        Settings.socksUdp = sharedPref.getBoolean("socksUdp", Settings.socksUdp)
     }
 
     private fun onToggleButtonClick() {
         if (!vpnServiceBound || !hasPostNotification()) return
-        if (Settings.useXray && !vpnService.isConfigExists()) {
-            Toast.makeText(applicationContext, "Xray config file missed", Toast.LENGTH_SHORT).show()
-            return
-        }
         val vpn = VpnService.prepare(this)
         if (vpn != null) {
             resultLauncher.launch(vpn)
