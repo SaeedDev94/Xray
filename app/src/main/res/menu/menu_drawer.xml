@@ -20,4 +20,10 @@
             android:id="@+id/tun2socksVersion"
             android:title="@string/tun2socksVersion" />
     </group>
+    <group android:id="@+id/drawerMain">
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/baseline_settings"
+            android:title="@string/settings" />
+    </group>
 </menu>

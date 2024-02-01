@@ -102,6 +102,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.tun2socksVersion -> {
                 return false
             }
+            R.id.settings -> {
+                val intent = Intent(applicationContext, SettingsActivity::class.java)
+                startActivity(intent)
+            }
         }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
