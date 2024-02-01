@@ -11,8 +11,11 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        title = getString(R.string.settings)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.socksAddress.setText(Settings.socksAddress)
         binding.socksPort.setText(Settings.socksPort)
         binding.primaryDns.setText(Settings.primaryDns)
