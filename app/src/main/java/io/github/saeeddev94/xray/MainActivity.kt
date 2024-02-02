@@ -11,6 +11,7 @@ import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -193,12 +194,38 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun toggleVpnService() {
         if (vpnService.getIsRunning()) {
-            Toast.makeText(applicationContext, "Stop VPN", Toast.LENGTH_SHORT).show()
-            vpnService.stopVPN()
-        } else {
-            val error = vpnService.startVPN()
-            Toast.makeText(applicationContext, error.ifEmpty { "Start VPN" }, Toast.LENGTH_SHORT).show()
+            stopVPN()
+            return
         }
+        val selectedProfile = Settings.selectedProfile
+        if (selectedProfile == -1) {
+            startVPN(false)
+            return
+        }
+        Thread {
+            val profile = profiles[selectedProfile]
+            val ref = XrayDatabase.ref(applicationContext).profileDao().find(profile.id)
+            val configFile = Settings.xrayConfig(applicationContext)
+            val configContent = if (configFile.exists()) configFile.bufferedReader().use { it.readText() } else ""
+            if (ref.config != configContent) {
+                Log.e("Inja", "Write config")
+                configFile.writeText(ref.config)
+            }
+            runOnUiThread {
+                startVPN(true)
+            }
+        }.start()
+    }
+
+    private fun stopVPN() {
+        Toast.makeText(applicationContext, "Stop VPN", Toast.LENGTH_SHORT).show()
+        vpnService.stopVPN()
+        setVpnServiceStatus()
+    }
+
+    private fun startVPN(useXray: Boolean) {
+        val error = vpnService.startVPN(useXray)
+        Toast.makeText(applicationContext, error.ifEmpty { "Start VPN" }, Toast.LENGTH_SHORT).show()
         setVpnServiceStatus()
     }
 

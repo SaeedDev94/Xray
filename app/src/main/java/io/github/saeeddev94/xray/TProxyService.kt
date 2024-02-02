@@ -36,16 +36,11 @@ class TProxyService : VpnService() {
         super.onDestroy()
     }
 
-    fun isConfigExists(): Boolean {
-        val config = Settings.xrayConfig(applicationContext)
-        return config.exists() && config.isFile
-    }
-
-    fun startVPN(): String {
+    fun startVPN(useXray: Boolean): String {
         isRunning = true
 
         /** Start xray */
-        if (Settings.selectedProfile > 0L) {
+        if (useXray) {
             val datDir: String = applicationContext.filesDir.absolutePath
             val configPath: String = Settings.xrayConfig(applicationContext).absolutePath
             val maxMemory: Long = 67108864 // 64 MB * 1024 KB * 1024 B
