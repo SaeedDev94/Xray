@@ -231,6 +231,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun profileDelete(index: Int, profile: ProfileList) {
         if (!canPerformCrud()) return
+        val selectedProfile = Settings.selectedProfile
+        if (selectedProfile == index) {
+            Toast.makeText(applicationContext, "You can't delete selected profile", Toast.LENGTH_SHORT).show()
+            return
+        }
+        Thread {
+            val db = XrayDatabase.ref(applicationContext)
+            val ref = db.profileDao().find(profile.id)
+            XrayDatabase.ref(applicationContext).profileDao().delete(ref)
+            runOnUiThread {
+                profiles.removeAt(index)
+                profileAdapter.notifyItemRemoved(index)
+            }
+        }.start()
     }
 
     @SuppressLint("NotifyDataSetChanged")
