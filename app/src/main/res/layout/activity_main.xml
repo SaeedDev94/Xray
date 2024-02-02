@@ -23,10 +23,11 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/listRecycler"
+                android:id="@+id/profilesList"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:paddingTop="5dp"
                 android:nextFocusRight="@+id/toggleButton" />
             <Button
                 android:id="@+id/toggleButton"

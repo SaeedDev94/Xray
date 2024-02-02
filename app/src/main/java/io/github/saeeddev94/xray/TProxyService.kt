@@ -45,7 +45,7 @@ class TProxyService : VpnService() {
         isRunning = true
 
         /** Start xray */
-        if (Settings.xrayProfile != null) {
+        if (Settings.selectedProfile > 0L) {
             val datDir: String = applicationContext.filesDir.absolutePath
             val configPath: String = Settings.xrayConfig(applicationContext).absolutePath
             val maxMemory: Long = 67108864 // 64 MB * 1024 KB * 1024 B

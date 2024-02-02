@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="vpnEnable">#009966</color>
-    <color name="vpnDisable">#7C7C7C</color>
+    <color name="active">#009966</color>
+    <color name="cardColor">#4A4A4A</color>
+    <color name="btnColor">#7C7C7C</color>
 </resources>

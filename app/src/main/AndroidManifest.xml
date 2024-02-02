@@ -23,6 +23,10 @@
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity"
             android:exported="true" />
+        <activity
+            android:name=".ProfileActivity"
+            android:parentActivityName=".MainActivity"
+            android:exported="true" />
         <service
             android:name=".TProxyService"
             android:exported="true"

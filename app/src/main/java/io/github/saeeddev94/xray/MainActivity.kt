@@ -11,6 +11,7 @@ import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,7 +21,11 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import io.github.saeeddev94.xray.database.ProfileList
+import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import libXray.LibXray
 
@@ -48,10 +53,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private lateinit var binding: ActivityMainBinding
-    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            toggleVpnService()
-        }
+    private lateinit var profilesList: RecyclerView
+    private lateinit var profileAdapter: ProfileAdapter
+    private var profiles: ArrayList<ProfileList> = arrayListOf()
+    private var vpnLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode != RESULT_OK) return@registerForActivityResult
+        toggleVpnService()
+    }
+    private var profileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode != RESULT_OK || result.data == null) return@registerForActivityResult
+        val id = result.data!!.getLongExtra("id", 0L)
+        val index = result.data!!.getIntExtra("index", -1)
+        updateProfile(id, index)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +80,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         binding.navView.setNavigationItemSelectedListener(this)
+        profilesList = binding.profilesList
+        profileAdapter = ProfileAdapter(applicationContext, profiles, object : ProfileClickListener {
+            override fun profileSelect(index: Int, profile: ProfileList) {
+                // TODO
+            }
+
+            override fun profileEdit(index: Int, profile: ProfileList) {
+                // TODO
+            }
+
+            override fun profileDelete(index: Int, profile: ProfileList) {
+                // TODO
+            }
+        })
+        profilesList.adapter = profileAdapter
+        profilesList.layoutManager = LinearLayoutManager(applicationContext)
+        getProfiles()
     }
 
     override fun onStart() {
@@ -92,6 +122,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.newProfile -> {
+                Intent(applicationContext, ProfileActivity::class.java).also {
+                    it.putExtra("id", 0L)
+                    it.putExtra("index", -1)
+                    profileLauncher.launch(it)
+                }
+            }
+        }
+        return true
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.appFullName,
@@ -103,8 +151,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 return false
             }
             R.id.settings -> {
-                val intent = Intent(applicationContext, SettingsActivity::class.java)
-                startActivity(intent)
+                Intent(applicationContext, SettingsActivity::class.java).also {
+                    startActivity(it)
+                }
             }
         }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -116,11 +165,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (!vpnServiceBound) return
         if (vpnService.getIsRunning()) {
             binding.toggleButton.text = "STOP"
-            binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.vpnEnable))
+            binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.active))
             binding.pingResult.text = "Connected, tap to check connection"
         } else {
             binding.toggleButton.text = "START"
-            binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.vpnDisable))
+            binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.btnColor))
             binding.pingResult.text = "Not Connected"
         }
     }
@@ -142,7 +191,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (!vpnServiceBound || !hasPostNotification()) return
         val vpn = VpnService.prepare(this)
         if (vpn != null) {
-            resultLauncher.launch(vpn)
+            vpnLauncher.launch(vpn)
         } else {
             toggleVpnService()
         }
@@ -157,6 +206,36 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Toast.makeText(applicationContext, error.ifEmpty { "Start VPN" }, Toast.LENGTH_SHORT).show()
         }
         setVpnServiceStatus()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun getProfiles() {
+        Thread {
+            val list = XrayDatabase.ref(applicationContext).profileDao().all()
+            runOnUiThread {
+                profiles.clear()
+                profiles.addAll(list)
+                profileAdapter.notifyDataSetChanged()
+            }
+        }.start()
+    }
+
+    private fun updateProfile(id: Long, index: Int) {
+        Thread {
+            val profile = XrayDatabase.ref(applicationContext).profileDao().find(id)
+            runOnUiThread {
+                if (index == -1) {
+                    profiles.add(0, ProfileList.fromProfile(profile))
+                    profileAdapter.notifyItemRangeInserted(0, 1)
+                    profilesList.post {
+                        profilesList.smoothScrollToPosition(0)
+                    }
+                    return@runOnUiThread
+                }
+                profiles[index] = ProfileList.fromProfile(profile)
+                profileAdapter.notifyItemChanged(index)
+            }
+        }.start()
     }
 
     private fun hasPostNotification(): Boolean {

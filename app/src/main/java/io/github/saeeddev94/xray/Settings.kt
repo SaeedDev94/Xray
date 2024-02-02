@@ -19,7 +19,8 @@ object Settings {
     var tunGateway: String = "10.14.1.1"
     var tunAddress: String = "10.14.1.2"
     var tunPrefix: Int = 24
-    var xrayProfile: Any? = null
+    var selectedProfile: Long = 0L
+    var xrayProfile: Long = 0L
 
     fun xrayConfig(context: Context): File = File(context.filesDir, "config.json")
     fun tun2socksConfig(context: Context): File = File(context.filesDir, "tun2socks.yml")
