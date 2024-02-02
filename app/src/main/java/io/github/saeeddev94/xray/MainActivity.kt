@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.navView.setNavigationItemSelectedListener(this)
         profilesList = binding.profilesList
         profileAdapter = ProfileAdapter(applicationContext, profiles, object : ProfileClickListener {
-            override fun profileSelect(index: Int, profile: ProfileList) = this@MainActivity.profileSelect(index, profile)
+            override fun profileSelect(index: Int) = this@MainActivity.profileSelect(index)
             override fun profileEdit(index: Int, profile: ProfileList) = this@MainActivity.profileEdit(index, profile)
             override fun profileDelete(index: Int, profile: ProfileList) = this@MainActivity.profileDelete(index, profile)
         })
@@ -122,6 +122,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.newProfile -> {
+                if (!canPerformCrud()) return true
                 Intent(applicationContext, ProfileActivity::class.java).also {
                     it.putExtra("id", 0L)
                     it.putExtra("index", -1)
@@ -177,6 +178,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Settings.excludedApps = sharedPref.getString("excludedApps", Settings.excludedApps)!!
         Settings.bypassLan = sharedPref.getBoolean("bypassLan", Settings.bypassLan)
         Settings.socksUdp = sharedPref.getBoolean("socksUdp", Settings.socksUdp)
+        Settings.selectedProfile = sharedPref.getInt("selectedProfile", Settings.selectedProfile)
     }
 
     private fun onToggleButtonClick() {
@@ -200,9 +202,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setVpnServiceStatus()
     }
 
-    private fun profileSelect(index: Int, profile: ProfileList) {}
+    private fun canPerformCrud(): Boolean {
+        if (!vpnServiceBound || vpnService.getIsRunning()) {
+            Toast.makeText(applicationContext, "You can't perform CRUD while VpnService is running", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        return true
+    }
+
+    private fun profileSelect(index: Int) {
+        if (!canPerformCrud()) return
+        val sharedPref = Settings.sharedPref(applicationContext)
+        val selectedProfile = Settings.selectedProfile
+        Settings.selectedProfile = if (selectedProfile == index) -1 else index
+        sharedPref.edit().putInt("selectedProfile", Settings.selectedProfile).apply()
+        profileAdapter.notifyItemChanged(index)
+        if (selectedProfile != index) profileAdapter.notifyItemChanged(selectedProfile)
+    }
 
     private fun profileEdit(index: Int, profile: ProfileList) {
+        if (!canPerformCrud()) return
         Intent(applicationContext, ProfileActivity::class.java).also {
             it.putExtra("id", profile.id)
             it.putExtra("index", index)
@@ -210,7 +229,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun profileDelete(index: Int, profile: ProfileList) {}
+    private fun profileDelete(index: Int, profile: ProfileList) {
+        if (!canPerformCrud()) return
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun getProfiles() {
