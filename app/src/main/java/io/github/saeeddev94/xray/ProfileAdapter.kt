@@ -1,12 +1,14 @@
 package io.github.saeeddev94.xray
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import io.github.saeeddev94.xray.database.ProfileList
 
@@ -29,6 +31,8 @@ class ProfileAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, index: Int) {
         val profile = profiles[index]
+        val color = if (Settings.selectedProfile == profile.id) R.color.active else R.color.cardColor
+        holder.activeIndicator.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, color))
         holder.profileName.text = profile.name
         holder.profileCard.setOnClickListener {
             callback.profileSelect(index, profile)
@@ -42,6 +46,7 @@ class ProfileAdapter(
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item) {
+        var activeIndicator: LinearLayout = item.findViewById(R.id.activeIndicator)
         var profileCard: CardView = item.findViewById(R.id.profileCard)
         var profileName: TextView = item.findViewById(R.id.profileName)
         var profileEdit: LinearLayout = item.findViewById(R.id.profileEdit)
