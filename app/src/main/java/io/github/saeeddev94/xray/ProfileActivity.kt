@@ -2,6 +2,7 @@ package io.github.saeeddev94.xray
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.database.XrayDatabase
@@ -48,6 +49,15 @@ class ProfileActivity : AppCompatActivity() {
         profile.name = binding.profileName.text.toString()
         profile.config = binding.profileConfig.text.toString()
         Thread {
+            val testConfig = Settings.testConfig(applicationContext)
+            testConfig.writeText(profile.config)
+            val error = libXray.LibXray.testXray(applicationContext.filesDir.absolutePath, testConfig.absolutePath)
+            if (error.isNotEmpty()) {
+                runOnUiThread {
+                    Toast.makeText(applicationContext, error, Toast.LENGTH_SHORT).show()
+                }
+                return@Thread
+            }
             val db = XrayDatabase.ref(applicationContext)
             if (profile.id == 0L) {
                 profile.id = db.profileDao().insert(profile)
