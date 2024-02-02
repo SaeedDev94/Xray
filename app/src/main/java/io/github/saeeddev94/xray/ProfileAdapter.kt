@@ -31,11 +31,11 @@ class ProfileAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, index: Int) {
         val profile = profiles[index]
-        val color = if (Settings.selectedProfile == index) R.color.active else R.color.cardColor
+        val color = if (Settings.selectedProfile == profile.id) R.color.active else R.color.cardColor
         holder.activeIndicator.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, color))
         holder.profileName.text = profile.name
         holder.profileCard.setOnClickListener {
-            callback.profileSelect(index)
+            callback.profileSelect(index, profile)
         }
         holder.profileEdit.setOnClickListener {
             callback.profileEdit(index, profile)

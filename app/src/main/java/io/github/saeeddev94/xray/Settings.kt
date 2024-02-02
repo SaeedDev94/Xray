@@ -19,7 +19,7 @@ object Settings {
     var tunGateway: String = "10.14.1.1"
     var tunAddress: String = "10.14.1.2"
     var tunPrefix: Int = 24
-    var selectedProfile: Int = -1
+    var selectedProfile: Long = 0L
 
     fun xrayConfig(context: Context): File = File(context.filesDir, "config.json")
     fun testConfig(context: Context): File = File(context.filesDir, "test.json")

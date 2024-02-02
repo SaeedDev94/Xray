@@ -11,7 +11,6 @@ import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -83,7 +82,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.navView.setNavigationItemSelectedListener(this)
         profilesList = binding.profilesList
         profileAdapter = ProfileAdapter(applicationContext, profiles, object : ProfileClickListener {
-            override fun profileSelect(index: Int) = this@MainActivity.profileSelect(index)
+            override fun profileSelect(index: Int, profile: ProfileList) = this@MainActivity.profileSelect(index, profile)
             override fun profileEdit(index: Int, profile: ProfileList) = this@MainActivity.profileEdit(index, profile)
             override fun profileDelete(index: Int, profile: ProfileList) = this@MainActivity.profileDelete(index, profile)
         })
@@ -179,7 +178,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Settings.excludedApps = sharedPref.getString("excludedApps", Settings.excludedApps)!!
         Settings.bypassLan = sharedPref.getBoolean("bypassLan", Settings.bypassLan)
         Settings.socksUdp = sharedPref.getBoolean("socksUdp", Settings.socksUdp)
-        Settings.selectedProfile = sharedPref.getInt("selectedProfile", Settings.selectedProfile)
+        Settings.selectedProfile = sharedPref.getLong("selectedProfile", Settings.selectedProfile)
     }
 
     private fun onToggleButtonClick() {
@@ -198,17 +197,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             return
         }
         val selectedProfile = Settings.selectedProfile
-        if (selectedProfile == -1) {
+        if (selectedProfile == 0L) {
             startVPN(false)
             return
         }
         Thread {
-            val profile = profiles[selectedProfile]
-            val ref = XrayDatabase.ref(applicationContext).profileDao().find(profile.id)
+            val ref = XrayDatabase.ref(applicationContext).profileDao().find(selectedProfile)
             val configFile = Settings.xrayConfig(applicationContext)
             val configContent = if (configFile.exists()) configFile.bufferedReader().use { it.readText() } else ""
             if (ref.config != configContent) {
-                Log.e("Inja", "Write config")
                 configFile.writeText(ref.config)
             }
             runOnUiThread {
@@ -237,14 +234,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun profileSelect(index: Int) {
+    private fun profileSelect(index: Int, profile: ProfileList) {
         if (!canPerformCrud()) return
         val sharedPref = Settings.sharedPref(applicationContext)
         val selectedProfile = Settings.selectedProfile
-        Settings.selectedProfile = if (selectedProfile == index) -1 else index
-        sharedPref.edit().putInt("selectedProfile", Settings.selectedProfile).apply()
-        profileAdapter.notifyItemChanged(index)
-        if (selectedProfile != index) profileAdapter.notifyItemChanged(selectedProfile)
+        Thread {
+            val ref = if (selectedProfile > 0) XrayDatabase.ref(applicationContext).profileDao().find(selectedProfile) else null
+            runOnUiThread {
+                Settings.selectedProfile = if (selectedProfile == profile.id) 0L else profile.id
+                sharedPref.edit().putLong("selectedProfile", Settings.selectedProfile).apply()
+                profileAdapter.notifyItemChanged(index)
+                if (ref != null && ref.index != index) profileAdapter.notifyItemChanged(ref.index)
+            }
+        }.start()
     }
 
     private fun profileEdit(index: Int, profile: ProfileList) {
@@ -259,18 +261,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun profileDelete(index: Int, profile: ProfileList) {
         if (!canPerformCrud()) return
         val selectedProfile = Settings.selectedProfile
-        if (selectedProfile == index) {
+        if (selectedProfile == profile.id) {
             Toast.makeText(applicationContext, "You can't delete selected profile", Toast.LENGTH_SHORT).show()
             return
         }
         Thread {
             val db = XrayDatabase.ref(applicationContext)
             val ref = db.profileDao().find(profile.id)
-            XrayDatabase.ref(applicationContext).profileDao().delete(ref)
-            runOnUiThread {
-                profiles.removeAt(index)
-                profileAdapter.notifyItemRemoved(index)
-            }
+            db.profileDao().delete(ref)
+            db.profileDao().fixIndex(index)
+            getProfiles()
         }.start()
     }
 
@@ -287,17 +287,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun updateProfile(id: Long, index: Int) {
+        if (index == -1) {
+            getProfiles()
+            return
+        }
         Thread {
             val profile = XrayDatabase.ref(applicationContext).profileDao().find(id)
             runOnUiThread {
-                if (index == -1) {
-                    profiles.add(0, ProfileList.fromProfile(profile))
-                    profileAdapter.notifyItemRangeInserted(0, 1)
-                    profilesList.post {
-                        profilesList.smoothScrollToPosition(0)
-                    }
-                    return@runOnUiThread
-                }
                 profiles[index] = ProfileList.fromProfile(profile)
                 profileAdapter.notifyItemChanged(index)
             }

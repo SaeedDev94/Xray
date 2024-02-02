@@ -8,10 +8,16 @@ import androidx.room.Update
 
 @Dao
 interface ProfileDao {
-    @Query("SELECT id, name FROM profiles ORDER BY id DESC")
+    @Query("SELECT `id`, `index`, `name` FROM profiles ORDER BY `index` ASC")
     fun all(): List<ProfileList>
 
-    @Query("SELECT * FROM profiles WHERE id = :id")
+    @Query("UPDATE profiles SET `index` = `index` + 1")
+    fun shiftIndex()
+
+    @Query("UPDATE profiles SET `index` = `index` - 1 WHERE `index` > :index")
+    fun fixIndex(index: Int)
+
+    @Query("SELECT * FROM profiles WHERE `id` = :id")
     fun find(id: Long): Profile
 
     @Insert

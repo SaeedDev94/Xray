@@ -10,6 +10,9 @@ class Profile {
     @ColumnInfo(name = "id")
     var id: Long = 0L
 
+    @ColumnInfo(name = "index")
+    var index: Int = -1
+
     @ColumnInfo(name = "name")
     var name: String = ""
 

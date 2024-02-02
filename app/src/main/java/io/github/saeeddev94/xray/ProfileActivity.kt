@@ -60,7 +60,8 @@ class ProfileActivity : AppCompatActivity() {
             }
             val db = XrayDatabase.ref(applicationContext)
             if (profile.id == 0L) {
-                profile.id = db.profileDao().insert(profile)
+                db.profileDao().insert(profile)
+                db.profileDao().shiftIndex()
             } else {
                 db.profileDao().update(profile)
             }
