@@ -28,7 +28,7 @@ class ProfileActivity : AppCompatActivity() {
             resolved(Profile())
         } else {
             Thread {
-                val profile = XrayDatabase.ref(applicationContext).profileDao().find(Settings.xrayProfile)
+                val profile = XrayDatabase.ref(applicationContext).profileDao().find(id)
                 runOnUiThread {
                     resolved(profile)
                 }

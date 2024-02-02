@@ -82,17 +82,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.navView.setNavigationItemSelectedListener(this)
         profilesList = binding.profilesList
         profileAdapter = ProfileAdapter(applicationContext, profiles, object : ProfileClickListener {
-            override fun profileSelect(index: Int, profile: ProfileList) {
-                // TODO
-            }
-
-            override fun profileEdit(index: Int, profile: ProfileList) {
-                // TODO
-            }
-
-            override fun profileDelete(index: Int, profile: ProfileList) {
-                // TODO
-            }
+            override fun profileSelect(index: Int, profile: ProfileList) = this@MainActivity.profileSelect(index, profile)
+            override fun profileEdit(index: Int, profile: ProfileList) = this@MainActivity.profileEdit(index, profile)
+            override fun profileDelete(index: Int, profile: ProfileList) = this@MainActivity.profileDelete(index, profile)
         })
         profilesList.adapter = profileAdapter
         profilesList.layoutManager = LinearLayoutManager(applicationContext)
@@ -207,6 +199,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         setVpnServiceStatus()
     }
+
+    private fun profileSelect(index: Int, profile: ProfileList) {}
+
+    private fun profileEdit(index: Int, profile: ProfileList) {
+        Intent(applicationContext, ProfileActivity::class.java).also {
+            it.putExtra("id", profile.id)
+            it.putExtra("index", index)
+            profileLauncher.launch(it)
+        }
+    }
+
+    private fun profileDelete(index: Int, profile: ProfileList) {}
 
     @SuppressLint("NotifyDataSetChanged")
     private fun getProfiles() {
