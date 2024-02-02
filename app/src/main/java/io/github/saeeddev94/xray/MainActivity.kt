@@ -239,7 +239,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val sharedPref = Settings.sharedPref(applicationContext)
         val selectedProfile = Settings.selectedProfile
         Thread {
-            val ref = if (selectedProfile > 0) XrayDatabase.ref(applicationContext).profileDao().find(selectedProfile) else null
+            val ref = if (selectedProfile > 0L) XrayDatabase.ref(applicationContext).profileDao().find(selectedProfile) else null
             runOnUiThread {
                 Settings.selectedProfile = if (selectedProfile == profile.id) 0L else profile.id
                 sharedPref.edit().putLong("selectedProfile", Settings.selectedProfile).apply()
