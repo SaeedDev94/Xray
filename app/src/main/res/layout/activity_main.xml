@@ -35,9 +35,10 @@
                 android:layout_height="60dp"
                 android:text="@string/toggleButton" />
             <LinearLayout
+                android:id="@+id/pingBox"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:background="#000"
+                android:background="@android:color/black"
                 android:gravity="center|start"
                 android:nextFocusRight="@+id/toggleButton"
                 android:nextFocusLeft="@+id/listRecycler"
@@ -51,7 +52,7 @@
                     android:minLines="1"
                     android:paddingHorizontal="16dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                    android:textColor="#FFF" />
+                    android:textColor="@android:color/white" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

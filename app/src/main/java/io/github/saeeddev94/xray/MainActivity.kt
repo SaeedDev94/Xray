@@ -74,6 +74,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(binding.toolbar)
         setSettings()
         binding.toggleButton.setOnClickListener { onToggleButtonClick() }
+        binding.pingBox.setOnClickListener { ping() }
         binding.navView.menu.findItem(R.id.appVersion).title = BuildConfig.VERSION_NAME
         binding.navView.menu.findItem(R.id.xrayVersion).title = LibXray.xrayVersion()
         val toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar, R.string.navigationDrawerOpen, R.string.navigationDrawerClose)
@@ -296,6 +297,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             runOnUiThread {
                 profiles[index] = ProfileList.fromProfile(profile)
                 profileAdapter.notifyItemChanged(index)
+            }
+        }.start()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun ping() {
+        if (!vpnServiceBound || !vpnService.getIsRunning()) return
+        binding.pingResult.text = "Testing..."
+        Thread {
+            val auth: String = if (Settings.socksUsername.trim().isNotEmpty() && Settings.socksPassword.trim().isNotEmpty()) {
+                "${Settings.socksUsername}:${Settings.socksPassword}@"
+            } else {
+                ""
+            }
+            val datDir: String = applicationContext.filesDir.absolutePath
+            val configPath: String = Settings.xrayConfig(applicationContext).absolutePath
+            val timeout: Long = Settings.pingTimeout
+            val url: String = Settings.pingAddress
+            val proxy = "socks5://$auth${Settings.socksAddress}:${Settings.socksPort}"
+            val result = LibXray.ping(datDir, configPath, timeout, url, proxy)
+            runOnUiThread {
+                binding.pingResult.text = result
             }
         }.start()
     }
