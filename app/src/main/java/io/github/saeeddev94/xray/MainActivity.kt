@@ -37,8 +37,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    private lateinit var binding: ActivityMainBinding
     private lateinit var vpnService: TProxyService
     private var vpnServiceBound: Boolean = false
+    private var vpnLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode != RESULT_OK) return@registerForActivityResult
+        toggleVpnService()
+    }
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as TProxyService.ServiceBinder
@@ -52,18 +57,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private lateinit var binding: ActivityMainBinding
     private lateinit var profilesList: RecyclerView
     private lateinit var profileAdapter: ProfileAdapter
     private var profiles: ArrayList<ProfileList> = arrayListOf()
-    private var vpnLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode != RESULT_OK) return@registerForActivityResult
-        toggleVpnService()
-    }
-    private var profileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode != RESULT_OK || result.data == null) return@registerForActivityResult
-        val id = result.data!!.getLongExtra("id", 0L)
-        val index = result.data!!.getIntExtra("index", -1)
+    private var profileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
+        val id = it.data!!.getLongExtra("id", 0L)
+        val index = it.data!!.getIntExtra("index", -1)
         updateProfile(id, index)
     }
 
@@ -93,8 +93,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onStart() {
         super.onStart()
-        Intent(this, TProxyService::class.java).also { intent ->
-            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        Intent(this, TProxyService::class.java).also {
+            bindService(it, connection, Context.BIND_AUTO_CREATE)
         }
     }
 
