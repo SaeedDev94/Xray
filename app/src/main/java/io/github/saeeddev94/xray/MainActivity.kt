@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
         val id = it.data!!.getLongExtra("id", 0L)
         val index = it.data!!.getIntExtra("index", -1)
-        updateProfile(id, index)
+        onProfileActivityResult(id, index)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,14 +81,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         binding.navView.setNavigationItemSelectedListener(this)
-        profilesList = binding.profilesList
-        profileAdapter = ProfileAdapter(applicationContext, profiles, object : ProfileClickListener {
-            override fun profileSelect(index: Int, profile: ProfileList) = this@MainActivity.profileSelect(index, profile)
-            override fun profileEdit(index: Int, profile: ProfileList) = this@MainActivity.profileEdit(index, profile)
-            override fun profileDelete(index: Int, profile: ProfileList) = this@MainActivity.profileDelete(index, profile)
-        })
-        profilesList.adapter = profileAdapter
-        profilesList.layoutManager = LinearLayoutManager(applicationContext)
         getProfiles()
     }
 
@@ -271,25 +263,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val ref = db.profileDao().find(profile.id)
             db.profileDao().delete(ref)
             db.profileDao().fixIndex(index)
-            getProfiles()
-        }.start()
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun getProfiles() {
-        Thread {
-            val list = XrayDatabase.ref(applicationContext).profileDao().all()
             runOnUiThread {
-                profiles.clear()
-                profiles.addAll(list)
-                profileAdapter.notifyDataSetChanged()
+                profiles.removeAt(index)
+                profileAdapter.notifyItemRemoved(index)
+                profileAdapter.notifyItemRangeChanged(index, profiles.size - index)
             }
         }.start()
     }
 
-    private fun updateProfile(id: Long, index: Int) {
+    private fun onProfileActivityResult(id: Long, index: Int) {
         if (index == -1) {
-            getProfiles()
+            Thread {
+                val newProfile = XrayDatabase.ref(applicationContext).profileDao().find(id)
+                runOnUiThread {
+                    profiles.add(0, ProfileList.fromProfile(newProfile))
+                    profileAdapter.notifyItemRangeChanged(0, profiles.size)
+                }
+            }.start()
             return
         }
         Thread {
@@ -297,6 +287,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             runOnUiThread {
                 profiles[index] = ProfileList.fromProfile(profile)
                 profileAdapter.notifyItemChanged(index)
+            }
+        }.start()
+    }
+
+    private fun getProfiles() {
+        Thread {
+            val list = XrayDatabase.ref(applicationContext).profileDao().all()
+            runOnUiThread {
+                profiles.clear()
+                profiles.addAll(list)
+                profilesList = binding.profilesList
+                profileAdapter = ProfileAdapter(applicationContext, profiles, object : ProfileClickListener {
+                    override fun profileSelect(index: Int, profile: ProfileList) = this@MainActivity.profileSelect(index, profile)
+                    override fun profileEdit(index: Int, profile: ProfileList) = this@MainActivity.profileEdit(index, profile)
+                    override fun profileDelete(index: Int, profile: ProfileList) = this@MainActivity.profileDelete(index, profile)
+                })
+                profilesList.adapter = profileAdapter
+                profilesList.layoutManager = LinearLayoutManager(applicationContext)
             }
         }.start()
     }

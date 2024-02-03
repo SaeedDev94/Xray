@@ -20,8 +20,7 @@ class ProfileAdapter(
 
     override fun onCreateViewHolder(container: ViewGroup, type: Int): ViewHolder {
         val linearLayout = LinearLayout(context)
-        val item: View =
-            LayoutInflater.from(context).inflate(R.layout.item_recycler_main, linearLayout, false)
+        val item: View = LayoutInflater.from(context).inflate(R.layout.item_recycler_main, linearLayout, false)
         return ViewHolder(item)
     }
 
@@ -31,6 +30,7 @@ class ProfileAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, index: Int) {
         val profile = profiles[index]
+        profile.index = index
         val color = if (Settings.selectedProfile == profile.id) R.color.active else R.color.cardColor
         holder.activeIndicator.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, color))
         holder.profileName.text = profile.name
