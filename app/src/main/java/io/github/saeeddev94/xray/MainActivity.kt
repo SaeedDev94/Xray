@@ -1,6 +1,5 @@
 package io.github.saeeddev94.xray
 
-import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -77,7 +76,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.pingBox.setOnClickListener { ping() }
         binding.navView.menu.findItem(R.id.appVersion).title = BuildConfig.VERSION_NAME
         binding.navView.menu.findItem(R.id.xrayVersion).title = LibXray.xrayVersion()
-        val toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar, R.string.navigationDrawerOpen, R.string.navigationDrawerClose)
+        val toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar, R.string.drawerOpen, R.string.drawerClose)
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         binding.navView.setNavigationItemSelectedListener(this)
@@ -146,17 +145,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    @SuppressLint("SetTextI18n")
     private fun setVpnServiceStatus() {
         if (!vpnServiceBound) return
         if (vpnService.getIsRunning()) {
-            binding.toggleButton.text = "STOP"
+            binding.toggleButton.text = getString(R.string.vpnStop)
             binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.active))
-            binding.pingResult.text = "Connected, tap to check connection"
+            binding.pingResult.text = getString(R.string.pingConnected)
         } else {
-            binding.toggleButton.text = "START"
+            binding.toggleButton.text = getString(R.string.vpnStart)
             binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.btnColor))
-            binding.pingResult.text = "Not Connected"
+            binding.pingResult.text = getString(R.string.pingNotConnected)
         }
     }
 
@@ -309,10 +307,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }.start()
     }
 
-    @SuppressLint("SetTextI18n")
     private fun ping() {
         if (!vpnServiceBound || !vpnService.getIsRunning()) return
-        binding.pingResult.text = "Testing..."
+        binding.pingResult.text = getString(R.string.pingTesting)
         Thread {
             val auth: String = if (Settings.socksUsername.trim().isNotEmpty() && Settings.socksPassword.trim().isNotEmpty()) {
                 "${Settings.socksUsername}:${Settings.socksPassword}@"

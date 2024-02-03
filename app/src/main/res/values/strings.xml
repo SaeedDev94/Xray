@@ -1,14 +1,18 @@
 <resources>
     <string name="appName">Xray</string>
     <string name="noValue">-</string>
-    <string name="navigationDrawerOpen">Open navigation drawer</string>
-    <string name="navigationDrawerClose">Close navigation drawer</string>
+    <string name="drawerOpen">Open drawer</string>
+    <string name="drawerClose">Close drawer</string>
+    <string name="vpnStart">START</string>
+    <string name="vpnStop">STOP</string>
+    <string name="pingNotConnected">Not Connected</string>
+    <string name="pingConnected">Connected, tap to check connection</string>
+    <string name="pingTesting">Testing…</string>
     <string name="appFullName">SaeedDev94/Xray</string>
     <string name="xrayLabel">XTLS/Xray-core</string>
     <string name="tun2socksLabel">heiher/hev-socks5-tunnel</string>
     <string name="tun2socksVersion">2.6.6</string>
     <string name="settings">Settings</string>
-    <string name="toggleButton">Start / Stop</string>
     <string name="primaryDns">Primary DNS</string>
     <string name="secondaryDns">Secondary DNS</string>
     <string name="socksAddress">Socks Address</string>

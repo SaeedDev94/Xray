@@ -33,7 +33,7 @@
                 android:id="@+id/toggleButton"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="@string/toggleButton" />
+                android:text="@string/vpnStart" />
             <LinearLayout
                 android:id="@+id/pingBox"
                 android:layout_width="match_parent"
