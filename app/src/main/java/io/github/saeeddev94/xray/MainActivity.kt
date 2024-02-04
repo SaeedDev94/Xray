@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var profilesList: RecyclerView
     private lateinit var profileAdapter: ProfileAdapter
-    private var profiles: ArrayList<ProfileList> = arrayListOf()
+    private lateinit var profiles: ArrayList<ProfileList>
     private var profileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
         val id = it.data!!.getLongExtra("id", 0L)
@@ -293,8 +293,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Thread {
             val list = XrayDatabase.ref(applicationContext).profileDao().all()
             runOnUiThread {
-                profiles.clear()
-                profiles.addAll(list)
+                profiles = ArrayList(list)
                 profilesList = binding.profilesList
                 profileAdapter = ProfileAdapter(applicationContext, profiles, object : ProfileClickListener {
                     override fun profileSelect(index: Int, profile: ProfileList) = this@MainActivity.profileSelect(index, profile)
