@@ -311,19 +311,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (!vpnServiceBound || !vpnService.getIsRunning()) return
         binding.pingResult.text = getString(R.string.pingTesting)
         Thread {
-            val auth: String = if (Settings.socksUsername.trim().isNotEmpty() && Settings.socksPassword.trim().isNotEmpty()) {
-                "${Settings.socksUsername}:${Settings.socksPassword}@"
-            } else {
-                ""
-            }
-            val datDir: String = applicationContext.filesDir.absolutePath
-            val configPath: String = Settings.xrayConfig(applicationContext).absolutePath
-            val timeout: Long = Settings.pingTimeout
-            val url: String = Settings.pingAddress
-            val proxy = "socks5://$auth${Settings.socksAddress}:${Settings.socksPort}"
-            val result = LibXray.ping(datDir, configPath, timeout, url, proxy)
+            val delay = HttpDelay().measure()
             runOnUiThread {
-                binding.pingResult.text = result
+                binding.pingResult.text = delay
             }
         }.start()
     }
