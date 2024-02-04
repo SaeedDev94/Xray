@@ -38,22 +38,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var vpnService: TProxyService
-    private var vpnServiceBound: Boolean = false
     private var vpnLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
         toggleVpnService()
-    }
-    private val connection = object : ServiceConnection {
-        override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            val binder = service as TProxyService.ServiceBinder
-            vpnService = binder.getService()
-            vpnServiceBound = true
-            setVpnServiceStatus()
-        }
-
-        override fun onServiceDisconnected(arg0: ComponentName) {
-            vpnServiceBound = false
-        }
     }
 
     private lateinit var profilesList: RecyclerView
@@ -64,6 +51,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val id = it.data!!.getLongExtra("id", 0L)
         val index = it.data!!.getIntExtra("index", -1)
         onProfileActivityResult(id, index)
+    }
+
+    private var vpnServiceBound: Boolean = false
+    private var serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as TProxyService.ServiceBinder
+            vpnService = binder.getService()
+            vpnServiceBound = true
+            setVpnServiceStatus()
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            vpnServiceBound = false
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,13 +87,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onStart() {
         super.onStart()
         Intent(this, TProxyService::class.java).also {
-            bindService(it, connection, Context.BIND_AUTO_CREATE)
+            bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
         }
     }
 
     override fun onStop() {
         super.onStop()
-        unbindService(connection)
+        unbindService(serviceConnection)
         vpnServiceBound = false
     }
 
