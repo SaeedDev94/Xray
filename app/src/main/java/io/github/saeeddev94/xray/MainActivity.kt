@@ -1,8 +1,10 @@
 package io.github.saeeddev94.xray
 
+import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -68,6 +70,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    private val stopVpnAction: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == TProxyService.STOP_VPN_SERVICE_ACTION_NAME) {
+                vpnStopStatus()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -91,11 +101,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Intent(this, TProxyService::class.java).also {
             bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
         }
+        IntentFilter(TProxyService.STOP_VPN_SERVICE_ACTION_NAME).also {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                registerReceiver(stopVpnAction, it, RECEIVER_NOT_EXPORTED)
+            } else {
+                registerReceiver(stopVpnAction, it)
+            }
+        }
     }
 
     override fun onStop() {
         super.onStop()
         unbindService(serviceConnection)
+        unregisterReceiver(stopVpnAction)
         vpnServiceBound = false
     }
 
@@ -165,14 +183,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun setVpnServiceStatus() {
         if (!vpnServiceBound) return
         if (vpnService.getIsRunning()) {
-            binding.toggleButton.text = getString(R.string.vpnStop)
-            binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.active))
-            binding.pingResult.text = getString(R.string.pingConnected)
+            vpnStartStatus()
         } else {
-            binding.toggleButton.text = getString(R.string.vpnStart)
-            binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.btnColor))
-            binding.pingResult.text = getString(R.string.pingNotConnected)
+            vpnStopStatus()
         }
+    }
+
+    private fun vpnStartStatus() {
+        binding.toggleButton.text = getString(R.string.vpnStop)
+        binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.active))
+        binding.pingResult.text = getString(R.string.pingConnected)
+    }
+
+    private fun vpnStopStatus() {
+        binding.toggleButton.text = getString(R.string.vpnStart)
+        binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.btnColor))
+        binding.pingResult.text = getString(R.string.pingNotConnected)
     }
 
     private fun onToggleButtonClick() {

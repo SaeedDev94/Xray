@@ -1,10 +1,19 @@
 package io.github.saeeddev94.xray
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.VpnService
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
+import androidx.core.app.NotificationCompat
 import io.github.saeeddev94.xray.database.Profile
 import libXray.LibXray
 
@@ -14,6 +23,11 @@ class TProxyService : VpnService() {
         init {
             System.loadLibrary("hev-socks5-tunnel")
         }
+
+        const val VPN_SERVICE_NOTIFICATION_ID = 1
+        const val OPEN_MAIN_ACTIVITY_ACTION_ID = 1
+        const val STOP_VPN_SERVICE_ACTION_ID = 2
+        const val STOP_VPN_SERVICE_ACTION_NAME = "XrayVpnServiceStopAction"
     }
 
     private external fun TProxyStartService(configPath: String, fd: Int)
@@ -28,12 +42,31 @@ class TProxyService : VpnService() {
     private var isRunning: Boolean = false
     private var xrayProcess: Boolean = false
     private var tunDevice: ParcelFileDescriptor? = null
+    private val stopVpnAction: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == STOP_VPN_SERVICE_ACTION_NAME) {
+                stopVPN()
+            }
+        }
+    }
 
     fun getIsRunning(): Boolean = isRunning
     override fun onBind(intent: Intent?): IBinder = binder
 
+    override fun onCreate() {
+        IntentFilter(STOP_VPN_SERVICE_ACTION_NAME).also {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                registerReceiver(stopVpnAction, it, RECEIVER_NOT_EXPORTED)
+            } else {
+                registerReceiver(stopVpnAction, it)
+            }
+        }
+        super.onCreate()
+    }
+
     override fun onDestroy() {
         stopVPN()
+        unregisterReceiver(stopVpnAction)
         super.onDestroy()
     }
 
@@ -113,6 +146,9 @@ class TProxyService : VpnService() {
         /** Start tun2socks */
         TProxyStartService(Settings.tun2socksConfig(applicationContext).absolutePath, tunDevice!!.fd)
 
+        /** Service Notification */
+        startForeground(VPN_SERVICE_NOTIFICATION_ID, createNotification(profile))
+
         return ""
     }
 
@@ -126,7 +162,45 @@ class TProxyService : VpnService() {
             tunDevice!!.close()
             tunDevice = null
         }
+        stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
+    }
+
+    private fun createNotification(profile: Profile?): Notification {
+        val pendingActivity = PendingIntent.getActivity(
+            applicationContext,
+            OPEN_MAIN_ACTIVITY_ACTION_ID,
+            Intent(applicationContext, MainActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val pendingStop = PendingIntent.getBroadcast(
+            applicationContext,
+            STOP_VPN_SERVICE_ACTION_ID,
+            Intent(STOP_VPN_SERVICE_ACTION_NAME).also {
+              it.`package` = BuildConfig.APPLICATION_ID
+            },
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        return NotificationCompat
+            .Builder(applicationContext, createNotificationChannel())
+            .setSmallIcon(R.drawable.baseline_vpn_lock)
+            .setContentTitle(profile?.name ?: Settings.tunName)
+            .setContentIntent(pendingActivity)
+            .addAction(0, getString(R.string.vpnStop), pendingStop)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setOngoing(true)
+            .build()
+    }
+
+    private fun createNotificationChannel(): String {
+        val id = "XrayVpnServiceNotification"
+        val name = "Xray VPN Service"
+        val channel = NotificationChannel(id, name, NotificationManager.IMPORTANCE_LOW)
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+        return id
     }
 
 }
