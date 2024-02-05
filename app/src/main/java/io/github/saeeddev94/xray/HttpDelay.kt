@@ -2,8 +2,6 @@ package io.github.saeeddev94.xray
 
 import android.util.Base64.NO_WRAP
 import android.util.Base64.encodeToString
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.InetSocketAddress
@@ -15,18 +13,19 @@ class HttpDelay {
     fun measure(): String {
         val start = System.currentTimeMillis()
         val connection = getConnection()
+        var result = "HTTP {status}, {delay} ms"
 
-        try {
-            BufferedReader(InputStreamReader(connection.inputStream)).use { it.readLine() }
+        result = try {
+            val responseCode = connection.responseCode
+            result.replace("{status}", "$responseCode")
         } catch (error: Exception) {
-            return error.message ?: "Http delay measure failed"
+            error.message ?: "Http delay measure failed"
         } finally {
             connection.disconnect()
         }
 
         val delay = System.currentTimeMillis() - start
-
-        return "$delay ms"
+        return result.replace("{delay}", "$delay")
     }
 
     private fun getConnection(): HttpURLConnection {
