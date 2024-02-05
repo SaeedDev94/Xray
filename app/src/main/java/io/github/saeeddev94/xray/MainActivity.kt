@@ -146,19 +146,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun setVpnServiceStatus() {
-        if (!vpnServiceBound) return
-        if (vpnService.getIsRunning()) {
-            binding.toggleButton.text = getString(R.string.vpnStop)
-            binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.active))
-            binding.pingResult.text = getString(R.string.pingConnected)
-        } else {
-            binding.toggleButton.text = getString(R.string.vpnStart)
-            binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.btnColor))
-            binding.pingResult.text = getString(R.string.pingNotConnected)
-        }
-    }
-
     private fun setSettings() {
         val sharedPref = Settings.sharedPref(applicationContext)
         Settings.primaryDns = sharedPref.getString("primaryDns", Settings.primaryDns)!!
@@ -171,6 +158,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Settings.bypassLan = sharedPref.getBoolean("bypassLan", Settings.bypassLan)
         Settings.socksUdp = sharedPref.getBoolean("socksUdp", Settings.socksUdp)
         Settings.selectedProfile = sharedPref.getLong("selectedProfile", Settings.selectedProfile)
+    }
+
+    private fun setVpnServiceStatus() {
+        if (!vpnServiceBound) return
+        if (vpnService.getIsRunning()) {
+            binding.toggleButton.text = getString(R.string.vpnStop)
+            binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.active))
+            binding.pingResult.text = getString(R.string.pingConnected)
+        } else {
+            binding.toggleButton.text = getString(R.string.vpnStart)
+            binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.btnColor))
+            binding.pingResult.text = getString(R.string.pingNotConnected)
+        }
     }
 
     private fun onToggleButtonClick() {
