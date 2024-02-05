@@ -23,6 +23,7 @@ import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.database.ProfileList
 import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
@@ -192,18 +193,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         val selectedProfile = Settings.selectedProfile
         if (selectedProfile == 0L) {
-            startVPN(false)
+            startVPN()
             return
         }
         Thread {
-            val ref = XrayDatabase.ref(applicationContext).profileDao().find(selectedProfile)
-            val configFile = Settings.xrayConfig(applicationContext)
-            val configContent = if (configFile.exists()) configFile.bufferedReader().use { it.readText() } else ""
-            if (ref.config != configContent) {
-                configFile.writeText(ref.config)
-            }
+            val profile = XrayDatabase.ref(applicationContext).profileDao().find(selectedProfile)
             runOnUiThread {
-                startVPN(true)
+                startVPN(profile)
             }
         }.start()
     }
@@ -214,8 +210,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setVpnServiceStatus()
     }
 
-    private fun startVPN(useXray: Boolean) {
-        val error = vpnService.startVPN(useXray)
+    private fun startVPN(profile: Profile? = null) {
+        val error = vpnService.startVPN(profile)
         Toast.makeText(applicationContext, error.ifEmpty { "Start VPN" }, Toast.LENGTH_SHORT).show()
         setVpnServiceStatus()
     }
