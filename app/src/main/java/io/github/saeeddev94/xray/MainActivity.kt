@@ -176,11 +176,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun onToggleButtonClick() {
         if (!vpnServiceBound || !hasPostNotification()) return
-        val vpn = VpnService.prepare(this)
-        if (vpn != null) {
-            vpnLauncher.launch(vpn)
-        } else {
-            toggleVpnService()
+        VpnService.prepare(this).also {
+            if (it == null) {
+                toggleVpnService()
+                return
+            }
+            vpnLauncher.launch(it)
         }
     }
 
