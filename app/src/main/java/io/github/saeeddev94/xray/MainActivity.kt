@@ -77,10 +77,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.pingBox.setOnClickListener { ping() }
         binding.navView.menu.findItem(R.id.appVersion).title = BuildConfig.VERSION_NAME
         binding.navView.menu.findItem(R.id.xrayVersion).title = LibXray.xrayVersion()
-        val toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar, R.string.drawerOpen, R.string.drawerClose)
-        binding.drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
         binding.navView.setNavigationItemSelectedListener(this)
+        ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar, R.string.drawerOpen, R.string.drawerClose).also {
+            binding.drawerLayout.addDrawerListener(it)
+            it.syncState()
+        }
         getProfiles()
     }
 
