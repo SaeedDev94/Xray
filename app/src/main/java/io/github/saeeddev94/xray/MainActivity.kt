@@ -219,14 +219,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setVpnServiceStatus()
     }
 
-    private fun canPerformCrud(): Boolean {
-        if (!vpnServiceBound || vpnService.getIsRunning()) {
-            Toast.makeText(applicationContext, "You can't perform CRUD while VpnService is running", Toast.LENGTH_SHORT).show()
-            return false
-        }
-        return true
-    }
-
     private fun profileSelect(index: Int, profile: ProfileList) {
         if (!canPerformCrud()) return
         val sharedPref = Settings.sharedPref(applicationContext)
@@ -317,6 +309,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 binding.pingResult.text = delay
             }
         }.start()
+    }
+
+    private fun canPerformCrud(): Boolean {
+        if (!vpnServiceBound || vpnService.getIsRunning()) {
+            Toast.makeText(applicationContext, "You can't perform CRUD while VpnService is running", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        return true
     }
 
     private fun hasPostNotification(): Boolean {
