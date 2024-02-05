@@ -65,7 +65,7 @@
                 android:id="@+id/socksPort"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:inputType="number"
                 android:autofillHints="" />
             <TextView
                 android:layout_width="match_parent"
