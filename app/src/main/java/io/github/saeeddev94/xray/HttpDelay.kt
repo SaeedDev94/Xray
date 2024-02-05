@@ -33,7 +33,7 @@ class HttpDelay {
         val proxy = Proxy(Proxy.Type.SOCKS, address)
         val username = Settings.socksUsername
         val password = Settings.socksPassword
-        val timeout = Settings.pingTimeout.toInt() * 1000
+        val timeout = Settings.pingTimeout * 1000
         val connection = URL(Settings.pingAddress).openConnection(proxy) as HttpURLConnection
 
         connection.requestMethod = "HEAD"

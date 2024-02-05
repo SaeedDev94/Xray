@@ -20,7 +20,7 @@ object Settings {
     var tunAddress: String = "10.14.1.2"
     var tunPrefix: Int = 24
     var selectedProfile: Long = 0L
-    var pingTimeout: Long = 5L
+    var pingTimeout: Int = 5
     var pingAddress: String = "https://developers.google.com"
 
     fun xrayConfig(context: Context): File = File(context.filesDir, "config.json")
