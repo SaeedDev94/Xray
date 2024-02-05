@@ -13,7 +13,7 @@ import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var vpnService: TProxyService
-    private var vpnLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    private var vpnLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
         toggleVpnService()
     }
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var profilesList: RecyclerView
     private lateinit var profileAdapter: ProfileAdapter
     private lateinit var profiles: ArrayList<ProfileList>
-    private var profileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    private var profileLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
         val id = it.data!!.getLongExtra("id", 0L)
         val index = it.data!!.getIntExtra("index", -1)
