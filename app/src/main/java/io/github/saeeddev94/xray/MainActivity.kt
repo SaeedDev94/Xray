@@ -16,6 +16,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -96,17 +97,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         getProfiles()
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onStart() {
         super.onStart()
         Intent(this, TProxyService::class.java).also {
             bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
         }
         IntentFilter(TProxyService.STOP_VPN_SERVICE_ACTION_NAME).also {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                registerReceiver(stopVpnAction, it, RECEIVER_NOT_EXPORTED)
-            } else {
-                registerReceiver(stopVpnAction, it)
-            }
+            registerReceiver(stopVpnAction, it, RECEIVER_NOT_EXPORTED)
         }
     }
 

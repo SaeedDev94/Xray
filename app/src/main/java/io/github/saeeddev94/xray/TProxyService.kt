@@ -13,6 +13,7 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import io.github.saeeddev94.xray.database.Profile
 import libXray.LibXray
@@ -53,13 +54,10 @@ class TProxyService : VpnService() {
     fun getIsRunning(): Boolean = isRunning
     override fun onBind(intent: Intent?): IBinder = binder
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate() {
         IntentFilter(STOP_VPN_SERVICE_ACTION_NAME).also {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                registerReceiver(stopVpnAction, it, RECEIVER_NOT_EXPORTED)
-            } else {
-                registerReceiver(stopVpnAction, it)
-            }
+            registerReceiver(stopVpnAction, it, RECEIVER_NOT_EXPORTED)
         }
         super.onCreate()
     }
