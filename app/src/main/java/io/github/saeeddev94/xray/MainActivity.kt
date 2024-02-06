@@ -161,10 +161,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val sharedPref = Settings.sharedPref(applicationContext)
         Settings.primaryDns = sharedPref.getString("primaryDns", Settings.primaryDns)!!
         Settings.secondaryDns = sharedPref.getString("secondaryDns", Settings.secondaryDns)!!
+        Settings.tunName = sharedPref.getString("tunName", Settings.tunName)!!
+        Settings.tunMtu = sharedPref.getInt("tunMtu", Settings.tunMtu)
         Settings.socksAddress = sharedPref.getString("socksAddress", Settings.socksAddress)!!
         Settings.socksPort = sharedPref.getString("socksPort", Settings.socksPort)!!
         Settings.socksUsername = sharedPref.getString("socksUsername", Settings.socksUsername)!!
         Settings.socksPassword = sharedPref.getString("socksPassword", Settings.socksPassword)!!
+        Settings.pingAddress = sharedPref.getString("pingAddress", Settings.pingAddress)!!
         Settings.excludedApps = sharedPref.getString("excludedApps", Settings.excludedApps)!!
         Settings.bypassLan = sharedPref.getBoolean("bypassLan", Settings.bypassLan)
         Settings.socksUdp = sharedPref.getBoolean("socksUdp", Settings.socksUdp)

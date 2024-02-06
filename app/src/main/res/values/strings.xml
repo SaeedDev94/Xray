@@ -15,10 +15,13 @@
     <string name="settings">Settings</string>
     <string name="primaryDns">Primary DNS</string>
     <string name="secondaryDns">Secondary DNS</string>
+    <string name="tunName">Tun Name</string>
+    <string name="tunMtu">Tun Mtu</string>
     <string name="socksAddress">Socks Address</string>
     <string name="socksPort">Socks Port</string>
     <string name="socksUsername">Socks Username</string>
     <string name="socksPassword">Socks Password</string>
+    <string name="pingAddress">Ping Address</string>
     <string name="excludedApps">Excluded Apps</string>
     <string name="bypassLan">Bypass LAN</string>
     <string name="socksUdp">Socks UDP</string>
