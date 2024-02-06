@@ -1,0 +1,6 @@
+- minSdk 26 (Android 8)
+- Vpn service notification
+- New dark Material3 theme
+- New settings layout
+- New settings: Tun Name, Tun Mtu, Ping Address
+- New output format for ping result
