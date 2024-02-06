@@ -91,7 +91,7 @@ class TProxyService : VpnService() {
         val tun = Builder()
 
         /** Basic tun config */
-        tun.setMetered(false)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) tun.setMetered(false)
         tun.setMtu(Settings.tunMtu)
         tun.setSession(Settings.tunName)
         tun.addAddress(Settings.tunAddress, Settings.tunPrefix)

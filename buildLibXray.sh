@@ -35,7 +35,7 @@ build_android() {
   echo "Building libXray for $TARGET"
   rm -f "$DEST/libXray*"
   gomobile init
-  gomobile bind -o "$DEST/libXray.aar" -androidapi 29 -target android/$TARGET -ldflags="-buildid=" -trimpath
+  gomobile bind -o "$DEST/libXray.aar" -androidapi 26 -target "android/$TARGET" -ldflags="-buildid=" -trimpath
 }
 
 refresh_dependencies() {
