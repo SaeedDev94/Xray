@@ -49,9 +49,10 @@ class ProfileActivity : AppCompatActivity() {
         profile.name = binding.profileName.text.toString()
         profile.config = binding.profileConfig.text.toString()
         Thread {
-            val testConfig = Settings.testConfig(applicationContext)
-            testConfig.writeText(profile.config)
-            val error = libXray.LibXray.testXray(applicationContext.filesDir.absolutePath, testConfig.absolutePath)
+            val testFile = Settings.testConfig(applicationContext)
+            val testConfig = if (testFile.exists()) testFile.bufferedReader().use { it.readText() } else ""
+            if (profile.config != testConfig) testFile.writeText(profile.config)
+            val error = libXray.LibXray.testXray(applicationContext.filesDir.absolutePath, testFile.absolutePath)
             if (error.isNotEmpty()) {
                 runOnUiThread {
                     Toast.makeText(applicationContext, error, Toast.LENGTH_SHORT).show()

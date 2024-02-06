@@ -23,8 +23,8 @@ object Settings {
     var pingTimeout: Int = 5
     var pingAddress: String = "https://developers.google.com"
 
-    fun xrayConfig(context: Context): File = File(context.filesDir, "config.json")
     fun testConfig(context: Context): File = File(context.filesDir, "test.json")
+    fun xrayConfig(context: Context): File = File(context.filesDir, "config.json")
     fun tun2socksConfig(context: Context): File = File(context.filesDir, "tun2socks.yml")
     fun sharedPref(context: Context): SharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 }
