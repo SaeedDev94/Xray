@@ -182,7 +182,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun vpnStartStatus() {
         binding.toggleButton.text = getString(R.string.vpnStop)
-        binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.active))
+        binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primaryColor))
         binding.pingResult.text = getString(R.string.pingConnected)
     }
 

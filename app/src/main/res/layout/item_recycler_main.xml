@@ -13,7 +13,7 @@
     android:nextFocusRight="@+id/editProfile"
     app:cardCornerRadius="5dp">
     <LinearLayout
-        android:background="@color/cardColor"
+        android:background="@color/btnColor"
         android:layout_width="match_parent"
         android:layout_height="72dp"
         android:orientation="horizontal"
@@ -24,7 +24,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:orientation="vertical"
-            android:background="@color/cardColor" />
+            android:background="@color/btnColor" />
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
