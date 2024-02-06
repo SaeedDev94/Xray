@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="2"
                     android:minLines="1"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="20dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:textColor="@android:color/white" />
             </LinearLayout>
