@@ -154,6 +154,7 @@ class TProxyService : VpnService() {
         isRunning = false
         if (xrayProcess) {
             LibXray.stopXray()
+            xrayProcess = false
         }
         if (tunDevice != null) {
             TProxyStopService()
