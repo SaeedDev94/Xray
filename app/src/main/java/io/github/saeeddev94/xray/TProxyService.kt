@@ -16,6 +16,7 @@ import android.os.ParcelFileDescriptor
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import io.github.saeeddev94.xray.database.Profile
+import io.github.saeeddev94.xray.helper.FileHelper
 import libXray.LibXray
 
 class TProxyService : VpnService() {
@@ -73,11 +74,9 @@ class TProxyService : VpnService() {
 
         /** Start xray */
         if (profile != null) {
-            val configFile = Settings.xrayConfig(applicationContext)
-            val configContent = if (configFile.exists()) configFile.bufferedReader().use { it.readText() } else ""
-            if (profile.config != configContent) configFile.writeText(profile.config)
+            FileHelper().createOrUpdate(Settings.xrayConfig(applicationContext), profile.config)
             val datDir: String = applicationContext.filesDir.absolutePath
-            val configPath: String = configFile.absolutePath
+            val configPath: String = Settings.xrayConfig(applicationContext).absolutePath
             val maxMemory: Long = 67108864 // 64 MB * 1024 KB * 1024 B
             val error: String = LibXray.runXray(datDir, configPath, maxMemory)
             xrayProcess = error.isEmpty()
@@ -136,10 +135,7 @@ class TProxyService : VpnService() {
         }
         tun2socksConfig.add(if (Settings.socksUdp) "  udp: udp" else "  udp: tcp")
         tun2socksConfig.add("")
-        val tun2socksYaml = tun2socksConfig.joinToString("\n")
-        val tun2socksFile = Settings.tun2socksConfig(applicationContext)
-        val tun2socksContent = if (tun2socksFile.exists()) tun2socksFile.bufferedReader().use { it.readText() } else ""
-        if (tun2socksYaml != tun2socksContent) tun2socksFile.writeText(tun2socksYaml)
+        FileHelper().createOrUpdate(Settings.tun2socksConfig(applicationContext), tun2socksConfig.joinToString("\n"))
 
         /** Start tun2socks */
         TProxyStartService(Settings.tun2socksConfig(applicationContext).absolutePath, tunDevice!!.fd)
