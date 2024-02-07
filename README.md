@@ -1,5 +1,6 @@
 # Xray
-This is a simple GUI client for [`XTLS/Xray-core`](https://github.com/XTLS/Xray-core)  
+<img src="metadata/en-US/images/featureGraphic.png" alt="App Cover" height="250" />  
+This is a simple GUI client for <a href="https://github.com/XTLS/Xray-core">XTLS/Xray-core</a>  
 Also you can use it independent of Xray-core just for your socks proxy (Like SocksDroid)
 
 # Limitations
