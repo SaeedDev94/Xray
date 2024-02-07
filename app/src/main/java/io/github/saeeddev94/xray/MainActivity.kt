@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.database.ProfileList
@@ -260,17 +261,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Toast.makeText(applicationContext, "You can't delete selected profile", Toast.LENGTH_SHORT).show()
             return
         }
-        Thread {
-            val db = XrayDatabase.ref(applicationContext)
-            val ref = db.profileDao().find(profile.id)
-            db.profileDao().delete(ref)
-            db.profileDao().fixIndex(index)
-            runOnUiThread {
-                profiles.removeAt(index)
-                profileAdapter.notifyItemRemoved(index)
-                profileAdapter.notifyItemRangeChanged(index, profiles.size - index)
-            }
-        }.start()
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Delete Profile#${profile.id} ?")
+            .setMessage("\"${profile.name}\" will delete forever !!")
+            .setNegativeButton("No", null)
+            .setPositiveButton("Yes") { dialog, _ ->
+                dialog?.dismiss()
+                Thread {
+                    val db = XrayDatabase.ref(applicationContext)
+                    val ref = db.profileDao().find(profile.id)
+                    db.profileDao().delete(ref)
+                    db.profileDao().fixIndex(index)
+                    runOnUiThread {
+                        profiles.removeAt(index)
+                        profileAdapter.notifyItemRemoved(index)
+                        profileAdapter.notifyItemRangeChanged(index, profiles.size - index)
+                    }
+                }.start()
+            }.show()
     }
 
     private fun onProfileActivityResult(id: Long, index: Int) {
