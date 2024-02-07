@@ -11,7 +11,7 @@
     android:clickable="true"
     android:focusable="true"
     android:nextFocusRight="@+id/editProfile"
-    app:cardCornerRadius="5dp">
+    app:cardCornerRadius="10dp">
     <LinearLayout
         android:background="@color/btnColor"
         android:layout_width="match_parent"
