@@ -29,6 +29,7 @@ import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.database.ProfileList
 import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
+import io.github.saeeddev94.xray.helper.HttpHelper
 import libXray.LibXray
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -313,7 +314,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (!vpnServiceBound || !vpnService.getIsRunning()) return
         binding.pingResult.text = getString(R.string.pingTesting)
         Thread {
-            val delay = HttpDelay().measure()
+            val delay = HttpHelper().measureDelay()
             runOnUiThread {
                 binding.pingResult.text = delay
             }

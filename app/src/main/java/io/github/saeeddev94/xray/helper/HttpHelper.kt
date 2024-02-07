@@ -1,16 +1,17 @@
-package io.github.saeeddev94.xray
+package io.github.saeeddev94.xray.helper
 
 import android.util.Base64.NO_WRAP
 import android.util.Base64.encodeToString
+import io.github.saeeddev94.xray.Settings
 import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.URL
 
-class HttpDelay {
+class HttpHelper {
 
-    fun measure(): String {
+    fun measureDelay(): String {
         val start = System.currentTimeMillis()
         val connection = getConnection()
         var result = "HTTP {status}, {delay} ms"
