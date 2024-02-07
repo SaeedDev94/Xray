@@ -139,14 +139,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.appFullName,
-            R.id.appVersion,
-            R.id.xrayLabel,
-            R.id.xrayVersion,
-            R.id.tun2socksLabel,
-            R.id.tun2socksVersion -> {
-                return false
-            }
             R.id.settings -> {
                 Intent(applicationContext, SettingsActivity::class.java).also {
                     startActivity(it)
