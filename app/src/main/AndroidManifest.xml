@@ -21,13 +21,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity"
-            android:exported="true" />
-        <activity
             android:name=".ProfileActivity"
-            android:parentActivityName=".MainActivity"
-            android:exported="true" />
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".AssetsActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity" />
         <service
             android:name=".TProxyService"
             android:exported="true"

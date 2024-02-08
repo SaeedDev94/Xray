@@ -141,11 +141,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.settings -> {
-                Intent(applicationContext, SettingsActivity::class.java).also {
-                    startActivity(it)
-                }
-            }
+            R.id.assets -> Intent(applicationContext, AssetsActivity::class.java)
+            R.id.settings -> Intent(applicationContext, SettingsActivity::class.java)
+            else -> null
+        }.also {
+            if (it != null) startActivity(it)
         }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
