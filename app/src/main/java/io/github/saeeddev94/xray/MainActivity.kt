@@ -262,7 +262,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             return
         }
         MaterialAlertDialogBuilder(this)
-            .setTitle("Delete Profile#${profile.id} ?")
+            .setTitle("Delete Profile#${profile.index + 1} ?")
             .setMessage("\"${profile.name}\" will delete forever !!")
             .setNegativeButton("No", null)
             .setPositiveButton("Yes") { dialog, _ ->
