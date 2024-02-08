@@ -3,9 +3,8 @@
 This is a simple GUI client for <a href="https://github.com/XTLS/Xray-core">XTLS/Xray-core</a><br />
 Also you can use it independent of Xray-core just for your socks proxy (Like SocksDroid)
 
-# Limitations
-- You must provide the config only in JSON format
-- Link configs (ex vmess://) are not supported
+# Screenshots
+<img src="metadata/en-US/images/phoneScreenshots/screenshot-01-home.png" alt="MainActivity" height="666" /><img src="metadata/en-US/images/phoneScreenshots/screenshot-02-settings.png" alt="MainActivity" height="666" /><img src="metadata/en-US/images/phoneScreenshots/screenshot-03-assets.png" alt="MainActivity" height="666" />
 
 # Download
 [![Release CI](https://github.com/SaeedDev94/Xray/actions/workflows/release.yml/badge.svg)](https://github.com/SaeedDev94/Xray/actions)  
