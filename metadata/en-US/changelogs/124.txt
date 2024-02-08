@@ -1,0 +1,6 @@
+- Increase profile CardView corner radius
+- Close drawer on app info items click
+- Profile delete confirm dialog
+- Allow selected profile to delete
+- Assets manager (download, select, delete) dat files (GeoIP, GeoSite)
+- Improve ping, thanks to @maskedeken
