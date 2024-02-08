@@ -21,14 +21,18 @@ abstract class XrayDatabase : RoomDatabase() {
         private var db: XrayDatabase? = null
 
         fun ref(context: Context): XrayDatabase {
-            if (db != null) return db!!
-            synchronized(this) {
-                return Room.databaseBuilder(
-                    context.applicationContext,
-                    XrayDatabase::class.java,
-                    "xray"
-                ).build()
+            if (db == null) {
+                synchronized(this) {
+                    if (db == null) {
+                        db = Room.databaseBuilder(
+                            context.applicationContext,
+                            XrayDatabase::class.java,
+                            "xray"
+                        ).build()
+                    }
+                }
             }
+            return db!!
         }
     }
 }
