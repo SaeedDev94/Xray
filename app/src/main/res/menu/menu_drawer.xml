@@ -22,6 +22,10 @@
     </group>
     <group android:id="@+id/drawerMain">
         <item
+            android:id="@+id/assets"
+            android:icon="@drawable/baseline_folder_open"
+            android:title="@string/assets" />
+        <item
             android:id="@+id/settings"
             android:icon="@drawable/baseline_settings"
             android:title="@string/settings" />

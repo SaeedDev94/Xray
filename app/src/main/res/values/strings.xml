@@ -12,6 +12,7 @@
     <string name="xrayLabel">XTLS/Xray-core</string>
     <string name="tun2socksLabel">heiher/hev-socks5-tunnel</string>
     <string name="tun2socksVersion">2.6.6</string>
+    <string name="assets">Assets</string>
     <string name="settings">Settings</string>
     <string name="primaryDns">Primary DNS</string>
     <string name="secondaryDns">Secondary DNS</string>
