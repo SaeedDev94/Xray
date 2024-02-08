@@ -20,6 +20,7 @@ import java.util.Date
 class AssetsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAssetsBinding
+    private var downloading: Boolean = false
 
     private val geoIpLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { writeToFile(it, geoIpFile()) }
     private val geoSiteLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { writeToFile(it, geoSiteFile()) }
@@ -82,10 +83,16 @@ class AssetsActivity : AppCompatActivity() {
     }
 
     private fun download(url: String, file: File, setup: LinearLayout, progressBar: ProgressBar) {
+        if (downloading) {
+            Toast.makeText(applicationContext, "Another download is running, please wait", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         setup.visibility = View.GONE
         progressBar.visibility = View.VISIBLE
         progressBar.progress = 0
 
+        downloading = true
         Thread {
             DownloadHelper(url, file, object : DownloadHelper.DownloadListener {
                 override fun onProgress(progress: Int) {
@@ -94,13 +101,17 @@ class AssetsActivity : AppCompatActivity() {
 
                 override fun onError(exception: Exception) {
                     runOnUiThread {
+                        downloading = false
                         Toast.makeText(applicationContext, exception.message, Toast.LENGTH_SHORT).show()
                         setAssetStatus()
                     }
                 }
 
                 override fun onComplete() {
-                    runOnUiThread { setAssetStatus() }
+                    runOnUiThread {
+                        downloading = false
+                        setAssetStatus()
+                    }
                 }
             }).start()
         }.start()
