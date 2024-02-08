@@ -271,8 +271,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     db.profileDao().delete(ref)
                     db.profileDao().fixIndex(index)
                     runOnUiThread {
-                        Settings.selectedProfile = if (selectedProfile == id) 0L else selectedProfile
-                        sharedPref.edit().putLong("selectedProfile", Settings.selectedProfile).apply()
+                        if (selectedProfile == id) {
+                            Settings.selectedProfile = 0L
+                            sharedPref.edit().putLong("selectedProfile", Settings.selectedProfile).apply()
+                        }
                         profiles.removeAt(index)
                         profileAdapter.notifyItemRemoved(index)
                         profileAdapter.notifyItemRangeChanged(index, profiles.size - index)
