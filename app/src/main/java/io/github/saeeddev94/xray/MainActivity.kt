@@ -257,10 +257,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun profileDelete(index: Int, profile: ProfileList) {
         if (!canPerformCrud()) return
         val selectedProfile = Settings.selectedProfile
-        if (selectedProfile == profile.id) {
-            Toast.makeText(applicationContext, "You can't delete selected profile", Toast.LENGTH_SHORT).show()
-            return
-        }
+        val sharedPref = Settings.sharedPref(applicationContext)
         MaterialAlertDialogBuilder(this)
             .setTitle("Delete Profile#${profile.index + 1} ?")
             .setMessage("\"${profile.name}\" will delete forever !!")
@@ -270,9 +267,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 Thread {
                     val db = XrayDatabase.ref(applicationContext)
                     val ref = db.profileDao().find(profile.id)
+                    val id = ref.id
                     db.profileDao().delete(ref)
                     db.profileDao().fixIndex(index)
                     runOnUiThread {
+                        Settings.selectedProfile = if (selectedProfile == id) 0L else selectedProfile
+                        sharedPref.edit().putLong("selectedProfile", Settings.selectedProfile).apply()
                         profiles.removeAt(index)
                         profileAdapter.notifyItemRemoved(index)
                         profileAdapter.notifyItemRangeChanged(index, profiles.size - index)
