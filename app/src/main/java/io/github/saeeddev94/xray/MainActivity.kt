@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -269,7 +270,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val ref = db.profileDao().find(profile.id)
                     val id = ref.id
                     db.profileDao().delete(ref)
-                    db.profileDao().fixIndex(index)
+                    db.profileDao().fixDeleteIndex(index)
                     runOnUiThread {
                         if (selectedProfile == id) {
                             Settings.selectedProfile = 0L
@@ -316,6 +317,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 })
                 profilesList.adapter = profileAdapter
                 profilesList.layoutManager = LinearLayoutManager(applicationContext)
+                ItemTouchHelper(ProfileTouchHelper(profileAdapter)).also { it.attachToRecyclerView(profilesList) }
             }
         }.start()
     }

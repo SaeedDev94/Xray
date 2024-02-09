@@ -12,10 +12,19 @@ interface ProfileDao {
     fun all(): List<ProfileList>
 
     @Query("UPDATE profiles SET `index` = `index` + 1")
-    fun shiftIndex()
+    fun fixInsertIndex()
 
     @Query("UPDATE profiles SET `index` = `index` - 1 WHERE `index` > :index")
-    fun fixIndex(index: Int)
+    fun fixDeleteIndex(index: Int)
+
+    @Query("UPDATE profiles SET `index` = :index WHERE `id` = :id")
+    fun updateIndex(index: Int, id: Long)
+
+    @Query("UPDATE profiles SET `index` = `index` + 1 WHERE `index` >= :start AND `index` < :end AND `id` NOT IN (:exclude)")
+    fun fixMoveUpIndex(start: Int, end: Int, exclude: Long)
+
+    @Query("UPDATE profiles SET `index` = `index` - 1 WHERE `index` > :start AND `index` <= :end AND `id` NOT IN (:exclude)")
+    fun fixMoveDownIndex(start: Int, end: Int, exclude: Long)
 
     @Query("SELECT * FROM profiles WHERE `id` = :id")
     fun find(id: Long): Profile

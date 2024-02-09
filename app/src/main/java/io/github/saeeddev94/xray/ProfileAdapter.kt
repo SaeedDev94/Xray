@@ -11,12 +11,13 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import io.github.saeeddev94.xray.database.ProfileList
+import io.github.saeeddev94.xray.database.XrayDatabase
 
 class ProfileAdapter(
     private var context: Context,
-    private var profiles: List<ProfileList>,
+    private var profiles: ArrayList<ProfileList>,
     private var callback: ProfileClickListener,
-) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(), ProfileTouchCallback {
 
     override fun onCreateViewHolder(container: ViewGroup, type: Int): ViewHolder {
         val linearLayout = LinearLayout(context)
@@ -43,6 +44,30 @@ class ProfileAdapter(
         holder.profileDelete.setOnClickListener {
             callback.profileDelete(index, profile)
         }
+    }
+
+    override fun onItemMoved(fromPosition: Int, toPosition: Int): Boolean {
+        profiles.add(toPosition, profiles.removeAt(fromPosition))
+        notifyItemMoved(fromPosition, toPosition)
+        if (toPosition > fromPosition) {
+            notifyItemRangeChanged(fromPosition, toPosition - fromPosition + 1)
+        } else {
+            notifyItemRangeChanged(toPosition, fromPosition - toPosition + 1)
+        }
+        return true
+    }
+
+    override fun onItemMoveCompleted(startPosition: Int, endPosition: Int) {
+        val id = profiles[endPosition].id
+        Thread {
+            val db = XrayDatabase.ref(context)
+            db.profileDao().updateIndex(endPosition, id)
+            if (startPosition > endPosition) {
+                db.profileDao().fixMoveUpIndex(endPosition, startPosition, id)
+            } else {
+                db.profileDao().fixMoveDownIndex(startPosition, endPosition, id)
+            }
+        }.start()
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item) {
