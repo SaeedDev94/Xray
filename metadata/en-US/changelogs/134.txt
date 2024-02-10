@@ -1,0 +1,2 @@
+- List drag and drop
+- SmartTV app launcher support
