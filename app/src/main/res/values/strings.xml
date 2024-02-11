@@ -24,6 +24,8 @@
     <string name="socksPort">Socks Port</string>
     <string name="socksUsername">Socks Username</string>
     <string name="socksPassword">Socks Password</string>
+    <string name="geoIpAddress">GeoIP Address</string>
+    <string name="geoSiteAddress">GeoSite Address</string>
     <string name="pingAddress">Ping Address</string>
     <string name="excludedApps">Excluded Apps</string>
     <string name="bypassLan">Bypass LAN</string>

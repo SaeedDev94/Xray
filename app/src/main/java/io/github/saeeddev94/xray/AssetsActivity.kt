@@ -25,9 +25,6 @@ class AssetsActivity : AppCompatActivity() {
     private val geoIpLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { writeToFile(it, geoIpFile()) }
     private val geoSiteLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { writeToFile(it, geoSiteFile()) }
 
-    private val geoIpUrl: String = "https://github.com/v2fly/geoip/releases/latest/download/geoip.dat"
-    private val geoSiteUrl: String = "https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat"
-
     private fun geoIpFile(): File = File(applicationContext.filesDir, "geoip.dat")
     private fun geoSiteFile(): File = File(applicationContext.filesDir, "geosite.dat")
 
@@ -43,14 +40,14 @@ class AssetsActivity : AppCompatActivity() {
 
         // GeoIP
         binding.geoIpDownload.setOnClickListener {
-            download(geoIpUrl, geoIpFile(), binding.geoIpSetup, binding.geoIpProgress)
+            download(Settings.geoIpAddress, geoIpFile(), binding.geoIpSetup, binding.geoIpProgress)
         }
         binding.geoIpFile.setOnClickListener { geoIpLauncher.launch(mimeType) }
         binding.geoIpDelete.setOnClickListener { delete(geoIpFile()) }
 
         // GeoSite
         binding.geoSiteDownload.setOnClickListener {
-            download(geoSiteUrl, geoSiteFile(), binding.geoSiteSetup, binding.geoSiteProgress)
+            download(Settings.geoSiteAddress, geoSiteFile(), binding.geoSiteSetup, binding.geoSiteProgress)
         }
         binding.geoSiteFile.setOnClickListener { geoSiteLauncher.launch(mimeType) }
         binding.geoSiteDelete.setOnClickListener { delete(geoSiteFile()) }

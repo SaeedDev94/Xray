@@ -22,6 +22,8 @@ object Settings {
     var selectedProfile: Long = 0L
     var pingTimeout: Int = 5
     var pingAddress: String = "https://developers.google.com"
+    var geoIpAddress: String = "https://github.com/v2fly/geoip/releases/latest/download/geoip.dat"
+    var geoSiteAddress: String = "https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat"
 
     fun testConfig(context: Context): File = File(context.filesDir, "test.json")
     fun xrayConfig(context: Context): File = File(context.filesDir, "config.json")

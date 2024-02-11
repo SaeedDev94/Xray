@@ -167,6 +167,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Settings.bypassLan = sharedPref.getBoolean("bypassLan", Settings.bypassLan)
         Settings.socksUdp = sharedPref.getBoolean("socksUdp", Settings.socksUdp)
         Settings.selectedProfile = sharedPref.getLong("selectedProfile", Settings.selectedProfile)
+        Settings.geoIpAddress = sharedPref.getString("geoIpAddress", Settings.geoIpAddress)!!
+        Settings.geoSiteAddress = sharedPref.getString("geoSiteAddress", Settings.geoSiteAddress)!!
     }
 
     private fun setVpnServiceStatus() {
