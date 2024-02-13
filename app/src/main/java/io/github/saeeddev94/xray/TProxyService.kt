@@ -107,6 +107,14 @@ class TProxyService : VpnService() {
             tun.addRoute("0.0.0.0", 0)
         }
 
+        /** IPv6 */
+        if (Settings.enableIpV6) {
+            tun.addAddress(Settings.tunAddressV6, Settings.tunPrefixV6)
+            tun.addDnsServer(Settings.primaryDnsV6)
+            tun.addDnsServer(Settings.secondaryDnsV6)
+            tun.addRoute("::", 0)
+        }
+
         /** Exclude apps */
         tun.addDisallowedApplication(applicationContext.packageName)
         Settings.excludedApps.split("\n").forEach { packageName ->
@@ -121,10 +129,6 @@ class TProxyService : VpnService() {
             "tunnel:",
             "  name: ${Settings.tunName}",
             "  mtu: ${Settings.tunMtu}",
-            "  ipv4:",
-            "    gateway: ${Settings.tunGateway}",
-            "    address: ${Settings.tunAddress}",
-            "    prefix: ${Settings.tunPrefix}",
             "socks5:",
             "  address: ${Settings.socksAddress}",
             "  port: ${Settings.socksPort}",
