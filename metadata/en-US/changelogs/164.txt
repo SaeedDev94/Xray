@@ -1,0 +1,6 @@
+- Settings: [Basic, Advanced] Tabs
+- New Settings:
+- ++ Ping Timeout
+- ++ Enable IPv6
+- ++ IPv6 DNS
+- ++ Tun IPv4, IPv6 address
