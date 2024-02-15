@@ -16,21 +16,6 @@
     <string name="settings">Settings</string>
     <string name="geoIp">GeoIP</string>
     <string name="geoSite">GeoSite</string>
-    <string name="primaryDns">Primary DNS</string>
-    <string name="secondaryDns">Secondary DNS</string>
-    <string name="tunName">Tun Name</string>
-    <string name="tunMtu">Tun Mtu</string>
-    <string name="socksAddress">Socks Address</string>
-    <string name="socksPort">Socks Port</string>
-    <string name="socksUsername">Socks Username</string>
-    <string name="socksPassword">Socks Password</string>
-    <string name="geoIpAddress">GeoIP Address</string>
-    <string name="geoSiteAddress">GeoSite Address</string>
-    <string name="pingAddress">Ping Address</string>
-    <string name="excludedApps">Excluded Apps</string>
-    <string name="bypassLan">Bypass LAN</string>
-    <string name="socksUdp">Socks UDP</string>
-    <string name="saveSettings">Save Settings</string>
     <string name="newProfile">New Profile</string>
     <string name="editProfile">Edit Profile</string>
     <string name="profileName">Name</string>
@@ -40,4 +25,31 @@
     <string name="deleteIcon">Delete Icon</string>
     <string name="downloadIcon">Download Icon</string>
     <string name="fileOpenIcon">File Open Icon</string>
+    <string name="saveSettings">Save Settings</string>
+
+    <!-- Basic Settings -->
+    <string name="socksAddress">Socks Address</string>
+    <string name="socksPort">Socks Port</string>
+    <string name="socksUsername">Socks Username</string>
+    <string name="socksPassword">Socks Password</string>
+    <string name="geoIpAddress">GeoIP Address</string>
+    <string name="geoSiteAddress">GeoSite Address</string>
+    <string name="pingAddress">Ping Address</string>
+    <string name="pingTimeout">Timeout</string>
+    <string name="excludedApps">Excluded Apps</string>
+    <string name="bypassLan">Bypass LAN (IPv4)</string>
+    <string name="enableIpV6">Enable IPv6</string>
+    <string name="socksUdp">Socks UDP</string>
+
+    <!-- Advanced Settings -->
+    <string name="primaryDns">Primary DNS (v4)</string>
+    <string name="secondaryDns">Secondary DNS (v4)</string>
+    <string name="primaryDnsV6">Primary DNS (v6)</string>
+    <string name="secondaryDnsV6">Secondary DNS (v6)</string>
+    <string name="tunName">Tun Name</string>
+    <string name="tunMtu">Tun Mtu</string>
+    <string name="tunAddress">Tun Address (IPv4)</string>
+    <string name="tunPrefix">Prefix</string>
+    <string name="tunAddressV6">Tun Address (IPv6)</string>
+    <string name="tunPrefixV6">Prefix</string>
 </resources>

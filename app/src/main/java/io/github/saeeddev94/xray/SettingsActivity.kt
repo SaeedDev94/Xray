@@ -2,11 +2,19 @@ package io.github.saeeddev94.xray
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.EditText
+import com.google.android.material.materialswitch.MaterialSwitch
 import io.github.saeeddev94.xray.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
+    private lateinit var adapter: SettingAdapter
+    private lateinit var basic: View
+    private lateinit var advanced: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -15,46 +23,91 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.primaryDns.setText(Settings.primaryDns)
-        binding.secondaryDns.setText(Settings.secondaryDns)
-        binding.tunName.setText(Settings.tunName)
-        binding.tunMtu.setText(Settings.tunMtu.toString())
-        binding.socksAddress.setText(Settings.socksAddress)
-        binding.socksPort.setText(Settings.socksPort)
-        binding.socksUsername.setText(Settings.socksUsername)
-        binding.socksPassword.setText(Settings.socksPassword)
-        binding.geoIpAddress.setText(Settings.geoIpAddress)
-        binding.geoSiteAddress.setText(Settings.geoSiteAddress)
-        binding.pingAddress.setText(Settings.pingAddress)
-        binding.excludedApps.setText(Settings.excludedApps)
-        binding.bypassLan.isChecked = Settings.bypassLan
-        binding.socksUdp.isChecked = Settings.socksUdp
-        binding.saveSettings.setOnClickListener {
-            saveSettings()
+        val tabs = listOf("Basic", "Advanced")
+        val layouts = listOf(R.layout.tab_basic_settings, R.layout.tab_advanced_settings)
+        adapter = SettingAdapter(this, tabs, layouts, object : SettingAdapter.ViewsReady {
+            override fun rendered(views: List<View>) {
+                basic = views[0]
+                advanced = views[1]
+                setupBasic()
+                setupAdvanced()
+            }
+        })
+        binding.viewPager.adapter = adapter
+        binding.tabLayout.setupWithViewPager(binding.viewPager)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_settings, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.saveSettings -> saveSettings()
+            else -> finish()
         }
+        return true
+    }
+
+    private fun setupBasic() {
+        basic.findViewById<EditText>(R.id.socksAddress).setText(Settings.socksAddress)
+        basic.findViewById<EditText>(R.id.socksPort).setText(Settings.socksPort)
+        basic.findViewById<EditText>(R.id.socksUsername).setText(Settings.socksUsername)
+        basic.findViewById<EditText>(R.id.socksPassword).setText(Settings.socksPassword)
+        basic.findViewById<EditText>(R.id.geoIpAddress).setText(Settings.geoIpAddress)
+        basic.findViewById<EditText>(R.id.geoSiteAddress).setText(Settings.geoSiteAddress)
+        basic.findViewById<EditText>(R.id.pingAddress).setText(Settings.pingAddress)
+        basic.findViewById<EditText>(R.id.pingTimeout).setText(Settings.pingTimeout.toString())
+        basic.findViewById<EditText>(R.id.excludedApps).setText(Settings.excludedApps)
+        basic.findViewById<MaterialSwitch>(R.id.bypassLan).isChecked = Settings.bypassLan
+        basic.findViewById<MaterialSwitch>(R.id.enableIpV6).isChecked = Settings.enableIpV6
+        basic.findViewById<MaterialSwitch>(R.id.socksUdp).isChecked = Settings.socksUdp
+    }
+
+    private fun setupAdvanced() {
+        advanced.findViewById<EditText>(R.id.primaryDns).setText(Settings.primaryDns)
+        advanced.findViewById<EditText>(R.id.secondaryDns).setText(Settings.secondaryDns)
+        advanced.findViewById<EditText>(R.id.primaryDnsV6).setText(Settings.primaryDnsV6)
+        advanced.findViewById<EditText>(R.id.secondaryDnsV6).setText(Settings.secondaryDnsV6)
+        advanced.findViewById<EditText>(R.id.tunName).setText(Settings.tunName)
+        advanced.findViewById<EditText>(R.id.tunMtu).setText(Settings.tunMtu.toString())
+        advanced.findViewById<EditText>(R.id.tunAddress).setText(Settings.tunAddress)
+        advanced.findViewById<EditText>(R.id.tunPrefix).setText(Settings.tunPrefix.toString())
+        advanced.findViewById<EditText>(R.id.tunAddressV6).setText(Settings.tunAddressV6)
+        advanced.findViewById<EditText>(R.id.tunPrefixV6).setText(Settings.tunPrefixV6.toString())
     }
 
     private fun saveSettings() {
-        Settings.primaryDns = binding.primaryDns.text.toString()
-        Settings.secondaryDns = binding.secondaryDns.text.toString()
-        Settings.tunName = binding.tunName.text.toString()
-        Settings.tunMtu = binding.tunMtu.text.toString().toInt()
-        Settings.socksAddress = binding.socksAddress.text.toString()
-        Settings.socksPort = binding.socksPort.text.toString()
-        Settings.socksUsername = binding.socksUsername.text.toString()
-        Settings.socksPassword = binding.socksPassword.text.toString()
-        Settings.geoIpAddress = binding.geoIpAddress.text.toString()
-        Settings.geoSiteAddress = binding.geoSiteAddress.text.toString()
-        Settings.pingAddress = binding.pingAddress.text.toString()
-        Settings.excludedApps = binding.excludedApps.text.toString()
-        Settings.bypassLan = binding.bypassLan.isChecked
-        Settings.socksUdp = binding.socksUdp.isChecked
+        // Basic
+        Settings.socksAddress = basic.findViewById<EditText>(R.id.socksAddress).text.toString()
+        Settings.socksPort = basic.findViewById<EditText>(R.id.socksPort).text.toString()
+        Settings.socksUsername = basic.findViewById<EditText>(R.id.socksUsername).text.toString()
+        Settings.socksPassword = basic.findViewById<EditText>(R.id.socksPassword).text.toString()
+        Settings.geoIpAddress = basic.findViewById<EditText>(R.id.geoIpAddress).text.toString()
+        Settings.geoSiteAddress = basic.findViewById<EditText>(R.id.geoSiteAddress).text.toString()
+        Settings.pingAddress = basic.findViewById<EditText>(R.id.pingAddress).text.toString()
+        Settings.pingTimeout = basic.findViewById<EditText>(R.id.pingTimeout).text.toString().toInt()
+        Settings.excludedApps = basic.findViewById<EditText>(R.id.excludedApps).text.toString()
+        Settings.bypassLan = basic.findViewById<MaterialSwitch>(R.id.bypassLan).isChecked
+        Settings.enableIpV6 = basic.findViewById<MaterialSwitch>(R.id.enableIpV6).isChecked
+        Settings.socksUdp = basic.findViewById<MaterialSwitch>(R.id.socksUdp).isChecked
+
+        // Advanced
+        Settings.primaryDns = advanced.findViewById<EditText>(R.id.primaryDns).text.toString()
+        Settings.secondaryDns = advanced.findViewById<EditText>(R.id.secondaryDns).text.toString()
+        Settings.primaryDnsV6 = advanced.findViewById<EditText>(R.id.primaryDnsV6).text.toString()
+        Settings.secondaryDnsV6 = advanced.findViewById<EditText>(R.id.secondaryDnsV6).text.toString()
+        Settings.tunName = advanced.findViewById<EditText>(R.id.tunName).text.toString()
+        Settings.tunMtu = advanced.findViewById<EditText>(R.id.tunMtu).text.toString().toInt()
+        Settings.tunAddress = advanced.findViewById<EditText>(R.id.tunAddress).text.toString()
+        Settings.tunPrefix = advanced.findViewById<EditText>(R.id.tunPrefix).text.toString().toInt()
+        Settings.tunAddressV6 = advanced.findViewById<EditText>(R.id.tunAddressV6).text.toString()
+        Settings.tunPrefixV6 = advanced.findViewById<EditText>(R.id.tunPrefixV6).text.toString().toInt()
+
         val sharedPref = Settings.sharedPref(applicationContext)
         sharedPref.edit()
-            .putString("primaryDns", Settings.primaryDns)
-            .putString("secondaryDns", Settings.secondaryDns)
-            .putString("tunName", Settings.tunName)
-            .putInt("tunMtu", Settings.tunMtu)
+            // Basic
             .putString("socksAddress", Settings.socksAddress)
             .putString("socksPort", Settings.socksPort)
             .putString("socksUsername", Settings.socksUsername)
@@ -62,10 +115,24 @@ class SettingsActivity : AppCompatActivity() {
             .putString("geoIpAddress", Settings.geoIpAddress)
             .putString("geoSiteAddress", Settings.geoSiteAddress)
             .putString("pingAddress", Settings.pingAddress)
+            .putInt("pingTimeout", Settings.pingTimeout)
             .putString("excludedApps", Settings.excludedApps)
             .putBoolean("bypassLan", Settings.bypassLan)
+            .putBoolean("enableIpV6", Settings.enableIpV6)
             .putBoolean("socksUdp", Settings.socksUdp)
+            // Advanced
+            .putString("primaryDns", Settings.primaryDns)
+            .putString("secondaryDns", Settings.secondaryDns)
+            .putString("primaryDnsV6", Settings.primaryDnsV6)
+            .putString("secondaryDnsV6", Settings.secondaryDnsV6)
+            .putString("tunName", Settings.tunName)
+            .putInt("tunMtu", Settings.tunMtu)
+            .putString("tunAddress", Settings.tunAddress)
+            .putInt("tunPrefix", Settings.tunPrefix)
+            .putString("tunAddressV6", Settings.tunAddressV6)
+            .putInt("tunPrefixV6", Settings.tunPrefixV6)
             .apply()
+
         finish()
     }
 }
