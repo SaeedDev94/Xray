@@ -35,7 +35,7 @@
     <string name="geoIpAddress">GeoIP Address</string>
     <string name="geoSiteAddress">GeoSite Address</string>
     <string name="pingAddress">Ping Address</string>
-    <string name="pingTimeout">Timeout</string>
+    <string name="pingTimeout">Ping Timeout</string>
     <string name="excludedApps">Excluded Apps</string>
     <string name="bypassLan">Bypass LAN (IPv4)</string>
     <string name="enableIpV6">Enable IPv6</string>
