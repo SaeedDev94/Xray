@@ -129,7 +129,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.newProfile -> {
-                if (!canPerformCrud()) return true
                 Intent(applicationContext, ProfileActivity::class.java).also {
                     it.putExtra("id", 0L)
                     it.putExtra("index", -1)
