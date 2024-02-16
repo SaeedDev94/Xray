@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun onToggleButtonClick() {
-        if (!vpnServiceBound || !hasPostNotification()) return
+        if (!hasPostNotification()) return
         VpnService.prepare(this).also {
             if (it == null) {
                 toggleVpnService()
@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun profileSelect(index: Int, profile: ProfileList) {
-        if (!canPerformCrud()) return
+        if (vpnService.getIsRunning()) return
         val sharedPref = Settings.sharedPref(applicationContext)
         val selectedProfile = Settings.selectedProfile
         Thread {
@@ -229,7 +229,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun profileEdit(index: Int, profile: ProfileList) {
-        if (!canPerformCrud()) return
+        if (vpnService.getIsRunning() && Settings.selectedProfile == profile.id) return
         Intent(applicationContext, ProfileActivity::class.java).also {
             it.putExtra("id", profile.id)
             it.putExtra("index", index)
@@ -238,6 +238,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun profileDelete(index: Int, profile: ProfileList) {
+        if (vpnService.getIsRunning() && Settings.selectedProfile == profile.id) return
         val selectedProfile = Settings.selectedProfile
         val sharedPref = Settings.sharedPref(applicationContext)
         MaterialAlertDialogBuilder(this)
@@ -304,7 +305,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun ping() {
-        if (!vpnServiceBound || !vpnService.getIsRunning()) return
+        if (!vpnService.getIsRunning()) return
         binding.pingResult.text = getString(R.string.pingTesting)
         Thread {
             val delay = HttpHelper().measureDelay()
@@ -312,14 +313,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 binding.pingResult.text = delay
             }
         }.start()
-    }
-
-    private fun canPerformCrud(): Boolean {
-        if (!vpnServiceBound || vpnService.getIsRunning()) {
-            Toast.makeText(applicationContext, "You can't perform CRUD while VpnService is running", Toast.LENGTH_SHORT).show()
-            return false
-        }
-        return true
     }
 
     private fun hasPostNotification(): Boolean {
