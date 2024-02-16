@@ -39,4 +39,9 @@ class ProfileTouchHelper(private var adapter: ProfileTouchCallback) : ItemTouchH
         val endPosition = viewHolder.adapterPosition
         adapter.onItemMoveCompleted(startPosition, endPosition)
     }
+
+    interface ProfileTouchCallback {
+        fun onItemMoved(fromPosition: Int, toPosition: Int): Boolean
+        fun onItemMoveCompleted(startPosition: Int, endPosition: Int)
+    }
 }

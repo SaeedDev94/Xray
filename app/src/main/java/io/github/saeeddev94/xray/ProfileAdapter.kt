@@ -17,7 +17,7 @@ class ProfileAdapter(
     private var context: Context,
     private var profiles: ArrayList<ProfileList>,
     private var callback: ProfileClickListener,
-) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(), ProfileTouchCallback {
+) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(), ProfileTouchHelper.ProfileTouchCallback {
 
     override fun onCreateViewHolder(container: ViewGroup, type: Int): ViewHolder {
         val linearLayout = LinearLayout(context)
@@ -76,5 +76,11 @@ class ProfileAdapter(
         var profileName: TextView = item.findViewById(R.id.profileName)
         var profileEdit: LinearLayout = item.findViewById(R.id.profileEdit)
         var profileDelete: LinearLayout = item.findViewById(R.id.profileDelete)
+    }
+
+    interface ProfileClickListener {
+        fun profileSelect(index: Int, profile: ProfileList)
+        fun profileEdit(index: Int, profile: ProfileList)
+        fun profileDelete(index: Int, profile: ProfileList)
     }
 }
