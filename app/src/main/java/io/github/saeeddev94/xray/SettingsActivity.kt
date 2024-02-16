@@ -79,7 +79,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun saveSettings() {
-        // Basic
+        /** Basic */
         Settings.socksAddress = basic.findViewById<EditText>(R.id.socksAddress).text.toString()
         Settings.socksPort = basic.findViewById<EditText>(R.id.socksPort).text.toString()
         Settings.socksUsername = basic.findViewById<EditText>(R.id.socksUsername).text.toString()
@@ -93,7 +93,7 @@ class SettingsActivity : AppCompatActivity() {
         Settings.enableIpV6 = basic.findViewById<MaterialSwitch>(R.id.enableIpV6).isChecked
         Settings.socksUdp = basic.findViewById<MaterialSwitch>(R.id.socksUdp).isChecked
 
-        // Advanced
+        /** Advanced */
         Settings.primaryDns = advanced.findViewById<EditText>(R.id.primaryDns).text.toString()
         Settings.secondaryDns = advanced.findViewById<EditText>(R.id.secondaryDns).text.toString()
         Settings.primaryDnsV6 = advanced.findViewById<EditText>(R.id.primaryDnsV6).text.toString()
@@ -105,34 +105,7 @@ class SettingsActivity : AppCompatActivity() {
         Settings.tunAddressV6 = advanced.findViewById<EditText>(R.id.tunAddressV6).text.toString()
         Settings.tunPrefixV6 = advanced.findViewById<EditText>(R.id.tunPrefixV6).text.toString().toInt()
 
-        val sharedPref = Settings.sharedPref(applicationContext)
-        sharedPref.edit()
-            // Basic
-            .putString("socksAddress", Settings.socksAddress)
-            .putString("socksPort", Settings.socksPort)
-            .putString("socksUsername", Settings.socksUsername)
-            .putString("socksPassword", Settings.socksPassword)
-            .putString("geoIpAddress", Settings.geoIpAddress)
-            .putString("geoSiteAddress", Settings.geoSiteAddress)
-            .putString("pingAddress", Settings.pingAddress)
-            .putInt("pingTimeout", Settings.pingTimeout)
-            .putString("excludedApps", Settings.excludedApps)
-            .putBoolean("bypassLan", Settings.bypassLan)
-            .putBoolean("enableIpV6", Settings.enableIpV6)
-            .putBoolean("socksUdp", Settings.socksUdp)
-            // Advanced
-            .putString("primaryDns", Settings.primaryDns)
-            .putString("secondaryDns", Settings.secondaryDns)
-            .putString("primaryDnsV6", Settings.primaryDnsV6)
-            .putString("secondaryDnsV6", Settings.secondaryDnsV6)
-            .putString("tunName", Settings.tunName)
-            .putInt("tunMtu", Settings.tunMtu)
-            .putString("tunAddress", Settings.tunAddress)
-            .putInt("tunPrefix", Settings.tunPrefix)
-            .putString("tunAddressV6", Settings.tunAddressV6)
-            .putInt("tunPrefixV6", Settings.tunPrefixV6)
-            .apply()
-
+        Settings.save(applicationContext)
         finish()
     }
 }
