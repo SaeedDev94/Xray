@@ -14,7 +14,6 @@ import android.os.Bundle
 import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -27,7 +26,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
-import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.database.ProfileList
 import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
@@ -67,10 +65,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private val stopVpnAction: BroadcastReceiver = object : BroadcastReceiver() {
+    private val toggleVpnAction: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == TProxyService.STOP_VPN_SERVICE_ACTION_NAME) {
-                vpnStopStatus()
+            when (intent?.action) {
+                TProxyService.START_VPN_SERVICE_ACTION_NAME -> vpnStartStatus()
+                TProxyService.STOP_VPN_SERVICE_ACTION_NAME -> vpnStopStatus()
             }
         }
     }
@@ -99,15 +98,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Intent(this, TProxyService::class.java).also {
             bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
         }
-        IntentFilter(TProxyService.STOP_VPN_SERVICE_ACTION_NAME).also {
-            registerReceiver(stopVpnAction, it, RECEIVER_NOT_EXPORTED)
+        IntentFilter().also {
+            it.addAction(TProxyService.START_VPN_SERVICE_ACTION_NAME)
+            it.addAction(TProxyService.STOP_VPN_SERVICE_ACTION_NAME)
+            registerReceiver(toggleVpnAction, it, RECEIVER_NOT_EXPORTED)
         }
     }
 
     override fun onStop() {
         super.onStop()
         unbindService(serviceConnection)
-        unregisterReceiver(stopVpnAction)
+        unregisterReceiver(toggleVpnAction)
         vpnServiceBound = false
     }
 
@@ -179,33 +180,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun toggleVpnService() {
+        Intent(applicationContext, ToggleService::class.java).also {
+            startService(it)
+        }
         if (vpnService.getIsRunning()) {
-            stopVPN()
-            return
-        }
-        val selectedProfile = Settings.selectedProfile
-        if (selectedProfile == 0L) {
-            startVPN()
-            return
-        }
-        Thread {
-            val profile = XrayDatabase.ref(applicationContext).profileDao().find(selectedProfile)
-            runOnUiThread {
-                startVPN(profile)
+            Intent(TProxyService.STOP_VPN_SERVICE_ACTION_NAME).also {
+                it.`package` = BuildConfig.APPLICATION_ID
+                sendBroadcast(it)
             }
-        }.start()
-    }
-
-    private fun stopVPN() {
-        Toast.makeText(applicationContext, "Stop VPN", Toast.LENGTH_SHORT).show()
-        vpnService.stopVPN()
-        setVpnServiceStatus()
-    }
-
-    private fun startVPN(profile: Profile? = null) {
-        val error = vpnService.startVPN(profile)
-        Toast.makeText(applicationContext, error.ifEmpty { "Start VPN" }, Toast.LENGTH_SHORT).show()
-        setVpnServiceStatus()
+            return
+        }
+        Intent(applicationContext, TProxyService::class.java).also {
+            startForegroundService(it)
+        }
     }
 
     private fun profileSelect(index: Int, profile: ProfileList) {

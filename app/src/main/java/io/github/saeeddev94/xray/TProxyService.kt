@@ -11,11 +11,15 @@ import android.content.IntentFilter
 import android.net.VpnService
 import android.os.Binder
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.ParcelFileDescriptor
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import io.github.saeeddev94.xray.database.Profile
+import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.helper.FileHelper
 import libXray.LibXray
 
@@ -29,8 +33,11 @@ class TProxyService : VpnService() {
         const val VPN_SERVICE_NOTIFICATION_ID = 1
         const val OPEN_MAIN_ACTIVITY_ACTION_ID = 1
         const val STOP_VPN_SERVICE_ACTION_ID = 2
+        const val START_VPN_SERVICE_ACTION_NAME = "XrayVpnServiceStartAction"
         const val STOP_VPN_SERVICE_ACTION_NAME = "XrayVpnServiceStopAction"
     }
+
+    private val handler = Handler(Looper.getMainLooper())
 
     private external fun TProxyStartService(configPath: String, fd: Int)
     private external fun TProxyStopService()
@@ -46,8 +53,8 @@ class TProxyService : VpnService() {
     private var tunDevice: ParcelFileDescriptor? = null
     private val stopVpnAction: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == STOP_VPN_SERVICE_ACTION_NAME) {
-                stopVPN()
+            when (intent?.action) {
+                STOP_VPN_SERVICE_ACTION_NAME -> stopVPN()
             }
         }
     }
@@ -57,19 +64,41 @@ class TProxyService : VpnService() {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate() {
-        IntentFilter(STOP_VPN_SERVICE_ACTION_NAME).also {
+        super.onCreate()
+        Settings.sync(applicationContext)
+        IntentFilter().also {
+            it.addAction(STOP_VPN_SERVICE_ACTION_NAME)
             registerReceiver(stopVpnAction, it, RECEIVER_NOT_EXPORTED)
         }
-        super.onCreate()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        findProfileAndStart()
+        return START_STICKY
+    }
+
+    override fun onRevoke() {
+        stopVPN()
     }
 
     override fun onDestroy() {
-        stopVPN()
-        unregisterReceiver(stopVpnAction)
         super.onDestroy()
+        unregisterReceiver(stopVpnAction)
     }
 
-    fun startVPN(profile: Profile?): String {
+    private fun findProfileAndStart() {
+        val selectedProfile = Settings.selectedProfile
+        if (selectedProfile == 0L) {
+            startVPN(null)
+        } else {
+            Thread {
+                val profile = XrayDatabase.ref(applicationContext).profileDao().find(selectedProfile)
+                startVPN(profile)
+            }.start()
+        }
+    }
+
+    private fun startVPN(profile: Profile?) {
         isRunning = true
 
         /** Start xray */
@@ -82,7 +111,8 @@ class TProxyService : VpnService() {
             xrayProcess = error.isEmpty()
             if (!xrayProcess) {
                 isRunning = false
-                return error
+                showToast(error)
+                return
             }
         }
 
@@ -145,12 +175,20 @@ class TProxyService : VpnService() {
         TProxyStartService(Settings.tun2socksConfig(applicationContext).absolutePath, tunDevice!!.fd)
 
         /** Service Notification */
-        startForeground(VPN_SERVICE_NOTIFICATION_ID, createNotification(profile))
+        val name = profile?.name ?: Settings.tunName
+        startForeground(VPN_SERVICE_NOTIFICATION_ID, createNotification(name))
 
-        return ""
+        /** Broadcast start event */
+        Intent(START_VPN_SERVICE_ACTION_NAME).also {
+            it.`package` = BuildConfig.APPLICATION_ID
+            it.putExtra("profile", name)
+            sendBroadcast(it)
+        }
+
+        showToast("Start VPN")
     }
 
-    fun stopVPN() {
+    private fun stopVPN() {
         isRunning = false
         if (xrayProcess) {
             LibXray.stopXray()
@@ -162,10 +200,11 @@ class TProxyService : VpnService() {
             tunDevice = null
         }
         stopForeground(STOP_FOREGROUND_REMOVE)
+        showToast("Stop VPN")
         stopSelf()
     }
 
-    private fun createNotification(profile: Profile?): Notification {
+    private fun createNotification(name: String): Notification {
         val pendingActivity = PendingIntent.getActivity(
             applicationContext,
             OPEN_MAIN_ACTIVITY_ACTION_ID,
@@ -185,7 +224,7 @@ class TProxyService : VpnService() {
         return NotificationCompat
             .Builder(applicationContext, createNotificationChannel())
             .setSmallIcon(R.drawable.baseline_vpn_lock)
-            .setContentTitle(profile?.name ?: Settings.tunName)
+            .setContentTitle(name)
             .setContentIntent(pendingActivity)
             .addAction(0, getString(R.string.vpnStop), pendingStop)
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -200,6 +239,12 @@ class TProxyService : VpnService() {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
         return id
+    }
+
+    private fun showToast(message: String) {
+        handler.post {
+            Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+        }
     }
 
 }
