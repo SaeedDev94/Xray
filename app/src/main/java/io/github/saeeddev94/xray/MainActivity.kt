@@ -111,11 +111,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         vpnServiceBound = false
     }
 
-    override fun onResume() {
-        super.onResume()
-        setVpnServiceStatus()
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == 1) onToggleButtonClick()
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
