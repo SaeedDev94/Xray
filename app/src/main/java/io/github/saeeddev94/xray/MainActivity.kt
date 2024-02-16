@@ -238,7 +238,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun profileDelete(index: Int, profile: ProfileList) {
-        if (!canPerformCrud()) return
         val selectedProfile = Settings.selectedProfile
         val sharedPref = Settings.sharedPref(applicationContext)
         MaterialAlertDialogBuilder(this)
