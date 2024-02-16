@@ -38,4 +38,32 @@ object Settings {
     fun xrayConfig(context: Context): File = File(context.filesDir, "config.json")
     fun tun2socksConfig(context: Context): File = File(context.filesDir, "tun2socks.yml")
     fun sharedPref(context: Context): SharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    fun sync(context: Context) {
+        val sharedPref = sharedPref(context)
+
+        /** Active Profile ID */
+        selectedProfile = sharedPref.getLong("selectedProfile", selectedProfile)
+
+        /** Basic */
+        socksAddress = sharedPref.getString("socksAddress", socksAddress)!!
+        socksPort = sharedPref.getString("socksPort", socksPort)!!
+        socksUsername = sharedPref.getString("socksUsername", socksUsername)!!
+        socksPassword = sharedPref.getString("socksPassword", socksPassword)!!
+        geoIpAddress = sharedPref.getString("geoIpAddress", geoIpAddress)!!
+        geoSiteAddress = sharedPref.getString("geoSiteAddress", geoSiteAddress)!!
+        pingAddress = sharedPref.getString("pingAddress", pingAddress)!!
+        pingTimeout = sharedPref.getInt("pingTimeout", pingTimeout)
+        excludedApps = sharedPref.getString("excludedApps", excludedApps)!!
+        bypassLan = sharedPref.getBoolean("bypassLan", bypassLan)
+        enableIpV6 = sharedPref.getBoolean("enableIpV6", enableIpV6)
+        socksUdp = sharedPref.getBoolean("socksUdp", socksUdp)
+
+        /** Advanced */
+        primaryDns = sharedPref.getString("primaryDns", primaryDns)!!
+        secondaryDns = sharedPref.getString("secondaryDns", secondaryDns)!!
+        primaryDnsV6 = sharedPref.getString("primaryDnsV6", primaryDnsV6)!!
+        secondaryDnsV6 = sharedPref.getString("secondaryDnsV6", secondaryDnsV6)!!
+        tunName = sharedPref.getString("tunName", tunName)!!
+        tunMtu = sharedPref.getInt("tunMtu", tunMtu)
+    }
 }
