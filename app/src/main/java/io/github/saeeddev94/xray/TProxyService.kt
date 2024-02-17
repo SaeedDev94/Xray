@@ -37,8 +37,6 @@ class TProxyService : VpnService() {
         const val STOP_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStop"
     }
 
-    private val handler = Handler(Looper.getMainLooper())
-
     private external fun TProxyStartService(configPath: String, fd: Int)
     private external fun TProxyStopService()
     private external fun TProxyGetStats(): LongArray
@@ -242,7 +240,7 @@ class TProxyService : VpnService() {
     }
 
     private fun showToast(message: String) {
-        handler.post {
+        Handler(Looper.getMainLooper()).post {
             Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
         }
     }
