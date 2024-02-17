@@ -33,8 +33,8 @@ class TProxyService : VpnService() {
         const val VPN_SERVICE_NOTIFICATION_ID = 1
         const val OPEN_MAIN_ACTIVITY_ACTION_ID = 1
         const val STOP_VPN_SERVICE_ACTION_ID = 2
-        const val START_VPN_SERVICE_ACTION_NAME = "XrayVpnServiceStartAction"
-        const val STOP_VPN_SERVICE_ACTION_NAME = "XrayVpnServiceStopAction"
+        const val START_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStart"
+        const val STOP_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStop"
     }
 
     private val handler = Handler(Looper.getMainLooper())

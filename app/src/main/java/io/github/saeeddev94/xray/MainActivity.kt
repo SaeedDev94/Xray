@@ -180,9 +180,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun toggleVpnService() {
-        Intent(applicationContext, ToggleService::class.java).also {
-            startService(it)
-        }
         if (vpnService.getIsRunning()) {
             Intent(TProxyService.STOP_VPN_SERVICE_ACTION_NAME).also {
                 it.`package` = BuildConfig.APPLICATION_ID

@@ -49,7 +49,7 @@
                 android:value="Xray VPN Service" />
         </service>
         <service
-            android:name=".ToggleService"
+            android:name=".VpnTileService"
             android:exported="true"
             android:label="@string/appName"
             android:icon="@drawable/baseline_vpn_key"
@@ -61,5 +61,13 @@
                 android:name="android.service.quicksettings.ACTIVE_TILE"
                 android:value="true" />
         </service>
+        <receiver
+            android:name=".VpnActionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="io.github.saeeddev94.xray.VpnStart" />
+                <action android:name="io.github.saeeddev94.xray.VpnStop" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
