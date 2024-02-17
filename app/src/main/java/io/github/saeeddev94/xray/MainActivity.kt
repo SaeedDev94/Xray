@@ -194,13 +194,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun profileSelect(index: Int, profile: ProfileList) {
         if (vpnService.getIsRunning()) return
-        val sharedPref = Settings.sharedPref(applicationContext)
         val selectedProfile = Settings.selectedProfile
         Thread {
             val ref = if (selectedProfile > 0L) XrayDatabase.ref(applicationContext).profileDao().find(selectedProfile) else null
             runOnUiThread {
                 Settings.selectedProfile = if (selectedProfile == profile.id) 0L else profile.id
-                sharedPref.edit().putLong("selectedProfile", Settings.selectedProfile).apply()
+                Settings.save(applicationContext)
                 profileAdapter.notifyItemChanged(index)
                 if (ref != null && ref.index != index) profileAdapter.notifyItemChanged(ref.index)
             }
@@ -219,7 +218,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun profileDelete(index: Int, profile: ProfileList) {
         if (vpnService.getIsRunning() && Settings.selectedProfile == profile.id) return
         val selectedProfile = Settings.selectedProfile
-        val sharedPref = Settings.sharedPref(applicationContext)
         MaterialAlertDialogBuilder(this)
             .setTitle("Delete Profile#${profile.index + 1} ?")
             .setMessage("\"${profile.name}\" will delete forever !!")
@@ -235,7 +233,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     runOnUiThread {
                         if (selectedProfile == id) {
                             Settings.selectedProfile = 0L
-                            sharedPref.edit().putLong("selectedProfile", Settings.selectedProfile).apply()
+                            Settings.save(applicationContext)
                         }
                         profiles.removeAt(index)
                         profileAdapter.notifyItemRemoved(index)

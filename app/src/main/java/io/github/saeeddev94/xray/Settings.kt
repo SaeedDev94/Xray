@@ -37,7 +37,7 @@ object Settings {
     fun testConfig(context: Context): File = File(context.filesDir, "test.json")
     fun xrayConfig(context: Context): File = File(context.filesDir, "config.json")
     fun tun2socksConfig(context: Context): File = File(context.filesDir, "tun2socks.yml")
-    fun sharedPref(context: Context): SharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    private fun sharedPref(context: Context): SharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
     fun sync(context: Context) {
         val sharedPref = sharedPref(context)
