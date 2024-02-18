@@ -71,6 +71,8 @@ object Settings {
     fun save(context: Context) {
         val sharedPref = sharedPref(context)
         sharedPref.edit()
+            /** Active Profile ID */
+            .putLong("selectedProfile", selectedProfile)
             /** Basic */
             .putString("socksAddress", socksAddress)
             .putString("socksPort", socksPort)
