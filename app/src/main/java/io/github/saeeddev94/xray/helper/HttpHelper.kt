@@ -1,11 +1,11 @@
 package io.github.saeeddev94.xray.helper
 
-import android.util.Base64.NO_WRAP
-import android.util.Base64.encodeToString
 import io.github.saeeddev94.xray.Settings
 import java.lang.Exception
+import java.net.Authenticator
 import java.net.HttpURLConnection
 import java.net.InetSocketAddress
+import java.net.PasswordAuthentication
 import java.net.Proxy
 import java.net.URL
 
@@ -17,12 +17,14 @@ class HttpHelper {
         var result = "HTTP {status}, {delay} ms"
 
         result = try {
+            setSocksAuth(getSocksAuth())
             val responseCode = connection.responseCode
             result.replace("{status}", "$responseCode")
         } catch (error: Exception) {
             error.message ?: "Http delay measure failed"
         } finally {
             connection.disconnect()
+            setSocksAuth(null)
         }
 
         val delay = System.currentTimeMillis() - start
@@ -32,8 +34,6 @@ class HttpHelper {
     private fun getConnection(): HttpURLConnection {
         val address = InetSocketAddress(Settings.socksAddress, Settings.socksPort.toInt())
         val proxy = Proxy(Proxy.Type.SOCKS, address)
-        val username = Settings.socksUsername
-        val password = Settings.socksPassword
         val timeout = Settings.pingTimeout * 1000
         val connection = URL(Settings.pingAddress).openConnection(proxy) as HttpURLConnection
 
@@ -42,13 +42,20 @@ class HttpHelper {
         connection.readTimeout = timeout
         connection.setRequestProperty("Connection", "close")
 
-        if (username.trim().isNotEmpty() && password.trim().isNotEmpty()) {
-            val credentials = "$username:$password"
-            val auth = encodeToString(credentials.toByteArray(), NO_WRAP)
-            connection.setRequestProperty("Proxy-Authorization", auth)
-        }
-
         return connection
+    }
+
+    private fun getSocksAuth(): Authenticator? {
+        if (Settings.socksUsername.trim().isEmpty() || Settings.socksPassword.trim().isEmpty()) return null
+        return object : Authenticator() {
+            override fun getPasswordAuthentication(): PasswordAuthentication {
+                return PasswordAuthentication(Settings.socksUsername, Settings.socksPassword.toCharArray())
+            }
+        }
+    }
+
+    private fun setSocksAuth(auth: Authenticator?) {
+        Authenticator.setDefault(auth)
     }
 
 }
