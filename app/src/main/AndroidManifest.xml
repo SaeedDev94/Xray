@@ -34,6 +34,9 @@
             android:name=".AssetsActivity"
             android:parentActivityName=".MainActivity" />
         <activity
+            android:name=".LogsActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity" />
         <service

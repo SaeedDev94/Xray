@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/deleteLogs"
+        android:title="@string/deleteLogs"
+        android:icon="@drawable/baseline_delete"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/copyLogs"
+        android:title="@string/copyLogs"
+        android:icon="@drawable/baseline_content_copy"
+        app:showAsAction="ifRoom" />
+</menu>
