@@ -61,12 +61,10 @@ class LogsActivity : AppCompatActivity() {
             try {
                 loggingProcess = ProcessBuilder("logcat", "-v", "raw", "-s", "GoLog,${BuildConfig.APPLICATION_ID}").start()
                 val reader = BufferedReader(InputStreamReader(loggingProcess!!.inputStream))
-                var line = ""
-                val logStringBuilder = StringBuilder()
-                while (!Thread.currentThread().isInterrupted && reader.readLine().also { line = it } != null) {
-                    logStringBuilder.append(line).append("\n")
+                val logs = StringBuilder()
+                while (!Thread.currentThread().isInterrupted && reader.readLine().also { logs.append("$it\n") } != null) {
                     runOnUiThread {
-                        binding.logsTextView.text = logStringBuilder.toString()
+                        binding.logsTextView.text = logs.toString()
                         binding.logsScrollView.post {
                             binding.logsScrollView.fullScroll(ScrollView.FOCUS_DOWN)
                         }
