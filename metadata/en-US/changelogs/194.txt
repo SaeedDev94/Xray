@@ -1,0 +1,3 @@
+- Fix ping: socks auth error
+- heiher/hev-socks5-tunnel @ 2.6.7
+- LogsActivity: Xray-core live logs!
