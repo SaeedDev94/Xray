@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import io.github.saeeddev94.xray.database.ProfileList
 import io.github.saeeddev94.xray.database.XrayDatabase
+import io.github.saeeddev94.xray.helper.ProfileTouchHelper
 
 class ProfileAdapter(
     private var context: Context,

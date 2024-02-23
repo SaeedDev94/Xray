@@ -30,6 +30,7 @@ import io.github.saeeddev94.xray.database.ProfileList
 import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import io.github.saeeddev94.xray.helper.HttpHelper
+import io.github.saeeddev94.xray.helper.ProfileTouchHelper
 import libXray.LibXray
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {

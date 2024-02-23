@@ -1,4 +1,4 @@
-package io.github.saeeddev94.xray
+package io.github.saeeddev94.xray.helper
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
