@@ -4,19 +4,20 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.text.method.ScrollingMovementMethod
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.github.saeeddev94.xray.databinding.ActivityLogsBinding
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class LogsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLogsBinding
+    private var loggingThread: Thread? = null
+    private var loggingProcess: Process? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +26,16 @@ class LogsActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        resolve()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        startLoop()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        stopLoop()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -35,36 +45,54 @@ class LogsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.deleteLogs -> resolve(true)
+            R.id.deleteLogs -> {
+                stopLoop()
+                flush()
+                startLoop()
+            }
             R.id.copyLogs -> copyToClipboard(binding.logsTextView.text.toString())
             else -> finish()
         }
         return true
     }
 
-    private fun resolve(flush: Boolean = false) {
-        Thread {
-            if (flush) flush()
-            val logs = logs()
-            runOnUiThread {
-                binding.logsTextView.text = logs
-                binding.logsTextView.movementMethod = ScrollingMovementMethod()
-                Handler(Looper.getMainLooper()).post { binding.logsScrollView.fullScroll(View.FOCUS_DOWN) }
+    private fun startLoop() {
+        loggingThread = Thread {
+            try {
+                loggingProcess = ProcessBuilder("logcat", "-v", "raw", "-s", "GoLog,${BuildConfig.APPLICATION_ID}").start()
+                val reader = BufferedReader(InputStreamReader(loggingProcess!!.inputStream))
+                var line = ""
+                val logStringBuilder = StringBuilder()
+                while (!Thread.currentThread().isInterrupted && reader.readLine().also { line = it } != null) {
+                    logStringBuilder.append(line).append("\n")
+                    runOnUiThread {
+                        binding.logsTextView.text = logStringBuilder.toString()
+                        binding.logsScrollView.post {
+                            binding.logsScrollView.fullScroll(ScrollView.FOCUS_DOWN)
+                        }
+                    }
+                }
+            } catch (error: Exception) {
+                error.printStackTrace()
+            } finally {
+                loggingProcess?.destroy()
             }
-        }.start()
+        }
+        loggingThread?.start()
+    }
+
+    private fun stopLoop() {
+        loggingThread?.interrupt()
+        loggingProcess?.destroy()
+        loggingThread = null
+        loggingProcess = null
     }
 
     private fun flush() {
         val command = listOf("logcat", "-c")
         val process = ProcessBuilder(command).start()
         process.waitFor()
-    }
-
-    private fun logs(): String {
-        val command = listOf("logcat", "-d", "-s", "GoLog,${BuildConfig.APPLICATION_ID}")
-        val process = ProcessBuilder(command).start()
-        process.waitFor()
-        return process.inputStream.bufferedReader().use { it.readText() }
+        binding.logsTextView.text = ""
     }
 
     private fun copyToClipboard(text: String) {
@@ -74,7 +102,7 @@ class LogsActivity : AppCompatActivity() {
             clipboardManager.setPrimaryClip(clipData)
             Toast.makeText(applicationContext, "Logs copied", Toast.LENGTH_SHORT).show()
         } catch (error: Exception) {
-            // ignore
+            error.printStackTrace()
         }
     }
 
