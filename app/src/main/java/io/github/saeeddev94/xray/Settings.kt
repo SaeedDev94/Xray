@@ -66,6 +66,10 @@ object Settings {
         secondaryDnsV6 = sharedPref.getString("secondaryDnsV6", secondaryDnsV6)!!
         tunName = sharedPref.getString("tunName", tunName)!!
         tunMtu = sharedPref.getInt("tunMtu", tunMtu)
+        tunAddress = sharedPref.getString("tunAddress", tunAddress)!!
+        tunPrefix = sharedPref.getInt("tunPrefix", tunPrefix)
+        tunAddressV6 = sharedPref.getString("tunAddressV6", tunAddressV6)!!
+        tunPrefixV6 = sharedPref.getInt("tunPrefixV6", tunPrefixV6)
     }
 
     fun save(context: Context) {

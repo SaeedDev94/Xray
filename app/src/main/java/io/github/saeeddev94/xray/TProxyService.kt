@@ -121,19 +121,11 @@ class TProxyService : VpnService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) tun.setMetered(false)
         tun.setMtu(Settings.tunMtu)
         tun.setSession(Settings.tunName)
+
+        /** IPv4 */
         tun.addAddress(Settings.tunAddress, Settings.tunPrefix)
         tun.addDnsServer(Settings.primaryDns)
         tun.addDnsServer(Settings.secondaryDns)
-
-        /** Routing config */
-        if (Settings.bypassLan) {
-            resources.getStringArray(R.array.publicIpAddresses).forEach {
-                val address = it.split('/')
-                tun.addRoute(address[0], address[1].toInt())
-            }
-        } else {
-            tun.addRoute("0.0.0.0", 0)
-        }
 
         /** IPv6 */
         if (Settings.enableIpV6) {
@@ -141,6 +133,16 @@ class TProxyService : VpnService() {
             tun.addDnsServer(Settings.primaryDnsV6)
             tun.addDnsServer(Settings.secondaryDnsV6)
             tun.addRoute("::", 0)
+        }
+
+        /** Bypass LAN (IPv4) */
+        if (Settings.bypassLan) {
+            resources.getStringArray(R.array.publicIpAddresses).forEach {
+                val address = it.split('/')
+                tun.addRoute(address[0], address[1].toInt())
+            }
+        } else {
+            tun.addRoute("0.0.0.0", 0)
         }
 
         /** Exclude apps */
