@@ -145,6 +145,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.assets -> Intent(applicationContext, AssetsActivity::class.java)
             R.id.logs -> Intent(applicationContext, LogsActivity::class.java)
+            R.id.excludedApps -> Intent(applicationContext, ExcludeActivity::class.java)
             R.id.settings -> Intent(applicationContext, SettingsActivity::class.java)
             else -> null
         }.also {

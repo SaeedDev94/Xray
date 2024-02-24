@@ -168,17 +168,6 @@
                     android:autofillHints="" />
             </LinearLayout>
         </LinearLayout>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/excludedApps"
-            android:labelFor="@id/excludedApps" />
-        <EditText
-            android:id="@+id/excludedApps"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:autofillHints="" />
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/bypassLan"
             android:layout_width="match_parent"

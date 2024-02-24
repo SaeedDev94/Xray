@@ -30,6 +30,10 @@
             android:icon="@drawable/baseline_adb"
             android:title="@string/logs" />
         <item
+            android:id="@+id/excludedApps"
+            android:icon="@drawable/baseline_alt_route"
+            android:title="@string/excludedApps" />
+        <item
             android:id="@+id/settings"
             android:icon="@drawable/baseline_settings"
             android:title="@string/settings" />
