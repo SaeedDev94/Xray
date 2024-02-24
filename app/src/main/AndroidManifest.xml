@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -28,19 +28,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ProfileActivity"
-            android:parentActivityName=".MainActivity" />
+            android:name=".activity.ProfileActivity"
+            android:parentActivityName=".activity.MainActivity" />
         <activity
-            android:name=".AssetsActivity"
-            android:parentActivityName=".MainActivity" />
+            android:name=".activity.AssetsActivity"
+            android:parentActivityName=".activity.MainActivity" />
         <activity
-            android:name=".LogsActivity"
-            android:parentActivityName=".MainActivity" />
+            android:name=".activity.LogsActivity"
+            android:parentActivityName=".activity.MainActivity" />
         <activity
-            android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity" />
+            android:name=".activity.SettingsActivity"
+            android:parentActivityName=".activity.MainActivity" />
         <service
-            android:name=".TProxyService"
+            android:name=".service.TProxyService"
             android:exported="true"
             android:foregroundServiceType="specialUse"
             android:permission="android.permission.BIND_VPN_SERVICE">
@@ -52,7 +52,7 @@
                 android:value="Xray VPN Service" />
         </service>
         <service
-            android:name=".VpnTileService"
+            android:name=".service.VpnTileService"
             android:exported="true"
             android:label="@string/appName"
             android:icon="@drawable/baseline_vpn_key"
@@ -65,7 +65,7 @@
                 android:value="true" />
         </service>
         <receiver
-            android:name=".VpnActionReceiver"
+            android:name=".receiver.VpnActionReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="io.github.saeeddev94.xray.VpnStart" />

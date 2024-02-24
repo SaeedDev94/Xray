@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import io.github.saeeddev94.xray.dto.ProfileList
 
 @Dao
 interface ProfileDao {

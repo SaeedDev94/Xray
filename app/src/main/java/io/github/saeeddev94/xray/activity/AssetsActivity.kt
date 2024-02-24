@@ -1,4 +1,4 @@
-package io.github.saeeddev94.xray
+package io.github.saeeddev94.xray.activity
 
 import android.annotation.SuppressLint
 import android.net.Uri
@@ -9,6 +9,8 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import io.github.saeeddev94.xray.R
+import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.databinding.ActivityAssetsBinding
 import io.github.saeeddev94.xray.helper.DownloadHelper
 import java.io.File

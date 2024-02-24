@@ -1,9 +1,11 @@
-package io.github.saeeddev94.xray
+package io.github.saeeddev94.xray.activity
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import io.github.saeeddev94.xray.R
+import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityProfileBinding

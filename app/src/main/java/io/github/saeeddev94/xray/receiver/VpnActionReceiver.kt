@@ -1,8 +1,10 @@
-package io.github.saeeddev94.xray
+package io.github.saeeddev94.xray.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import io.github.saeeddev94.xray.R
+import io.github.saeeddev94.xray.service.VpnTileService
 
 class VpnActionReceiver : BroadcastReceiver() {
 

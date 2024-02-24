@@ -1,4 +1,4 @@
-package io.github.saeeddev94.xray
+package io.github.saeeddev94.xray.activity
 
 import android.content.BroadcastReceiver
 import android.content.ComponentName
@@ -26,7 +26,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
-import io.github.saeeddev94.xray.database.ProfileList
+import io.github.saeeddev94.xray.BuildConfig
+import io.github.saeeddev94.xray.adapter.ProfileAdapter
+import io.github.saeeddev94.xray.R
+import io.github.saeeddev94.xray.Settings
+import io.github.saeeddev94.xray.service.TProxyService
+import io.github.saeeddev94.xray.dto.ProfileList
 import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import io.github.saeeddev94.xray.helper.HttpHelper

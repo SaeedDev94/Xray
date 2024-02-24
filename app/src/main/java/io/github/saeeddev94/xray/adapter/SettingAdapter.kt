@@ -1,4 +1,4 @@
-package io.github.saeeddev94.xray
+package io.github.saeeddev94.xray.adapter
 
 import android.content.Context
 import android.view.LayoutInflater

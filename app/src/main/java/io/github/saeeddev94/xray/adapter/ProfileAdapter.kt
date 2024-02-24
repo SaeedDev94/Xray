@@ -1,4 +1,4 @@
-package io.github.saeeddev94.xray
+package io.github.saeeddev94.xray.adapter
 
 import android.content.Context
 import android.content.res.ColorStateList
@@ -10,7 +10,9 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import io.github.saeeddev94.xray.database.ProfileList
+import io.github.saeeddev94.xray.R
+import io.github.saeeddev94.xray.Settings
+import io.github.saeeddev94.xray.dto.ProfileList
 import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.helper.ProfileTouchHelper
 

@@ -1,4 +1,4 @@
-package io.github.saeeddev94.xray
+package io.github.saeeddev94.xray.activity
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -9,6 +9,8 @@ import android.view.MenuItem
 import android.widget.ScrollView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import io.github.saeeddev94.xray.BuildConfig
+import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.databinding.ActivityLogsBinding
 import java.io.BufferedReader
 import java.io.InputStreamReader

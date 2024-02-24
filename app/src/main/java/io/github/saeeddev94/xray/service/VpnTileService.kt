@@ -1,10 +1,12 @@
-package io.github.saeeddev94.xray
+package io.github.saeeddev94.xray.service
 
 import android.content.ComponentName
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import io.github.saeeddev94.xray.BuildConfig
+import io.github.saeeddev94.xray.R
 
 class VpnTileService : TileService() {
 

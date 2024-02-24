@@ -1,4 +1,6 @@
-package io.github.saeeddev94.xray.database
+package io.github.saeeddev94.xray.dto
+
+import io.github.saeeddev94.xray.database.Profile
 
 class ProfileList(
     var id: Long,
