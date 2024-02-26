@@ -13,8 +13,8 @@ ANDROID_SDK_VERSION="34.0.0"
 ANDROID_NDK_VERSION="26.1.10909125"
 JAVA_VERSION="17"
 GRADLE_VERSION="8.2.1"
-GO_VERSION="go1.21.6"
-GO_MOBILE_VERSION="v0.0.0-20240112133503-c713f31d574b"
+GO_VERSION="go1.22.0"
+GO_MOBILE_VERSION="v0.0.0-20240213143359-d1f7d3436075"
 
 # Install Tools
 apt-get install -t bullseye-backports -y golang-go
@@ -23,11 +23,13 @@ sdkmanager "platform-tools" "platforms;$ANDROID_PLATFORM_VERSION" "build-tools;$
 sdkmanager --install "ndk;$ANDROID_NDK_VERSION" --channel=3
 
 # Define dirs
-BUILD_DIR="/home/vagrant/build"
+HOME_DIR="/home/vagrant"
+BUILD_DIR="$HOME_DIR/build"
 REPO_DIR="$BUILD_DIR/io.github.saeeddev94.xray"
 GRADLE_DIR="$BUILD_DIR/gradle"
 SRC_DIR="$BUILD_DIR/srclib"
-GO_DIR="$SRC_DIR/go"
+GO_ROOT_DIR="$SRC_DIR/go"
+GO_PATH_DIR="$HOME_DIR/go"
 
 # Create directories
 mkdir -p $GRADLE_DIR
@@ -43,8 +45,8 @@ mv * "$GRADLE_VERSION"
 popd
 
 # Build go
-git clone https://github.com/golang/go.git $GO_DIR
-pushd $GO_DIR
+git clone https://github.com/golang/go.git $GO_ROOT_DIR
+pushd $GO_ROOT_DIR
 git checkout "$GO_VERSION"
 cd src
 ./make.bash
@@ -54,13 +56,15 @@ popd
 export JAVA_HOME="/usr/lib/jvm/java-$JAVA_VERSION-openjdk-amd64"
 export ANDROID_HOME="/opt/android-sdk"
 export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION"
-export GOPATH="$GO_DIR"
+export GOROOT="$GO_ROOT_DIR"
+export GOPATH="$GO_PATH_DIR"
 
 # Set path
 export PATH="$JAVA_HOME/bin:$PATH"
 export PATH="$GRADLE_DIR/$GRADLE_VERSION/bin:$PATH"
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 export PATH="$ANDROID_HOME/build-tools/$ANDROID_SDK_VERSION:$PATH"
+export PATH="$GOROOT/bin:$PATH"
 export PATH="$GOPATH/bin:$PATH"
 
 # Clone repo
@@ -79,7 +83,7 @@ pushd ../libXray
 go install golang.org/x/mobile/cmd/gomobile@$GO_MOBILE_VERSION
 go mod download
 gomobile init
-gomobile bind -o "../app/libs/libXray.aar" -androidapi 26 -target "android/$NATIVE_ARCH" -ldflags="-buildid=" -trimpath
+gomobile bind -o "../app/libs/XrayCore.aar" -androidapi 26 -target "android/$NATIVE_ARCH" -ldflags="-buildid=" -trimpath
 popd
 
 # Build app
