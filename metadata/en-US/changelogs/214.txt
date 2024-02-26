@@ -1,0 +1,1 @@
+- XTLS/Xray-core@v1.8.8
