@@ -78,8 +78,8 @@ rm gradle/wrapper/gradle-wrapper.jar
 cd app
 gradle clean
 
-# Build libXray
-pushd ../libXray
+# Build XrayCore
+pushd ../XrayCore
 go install golang.org/x/mobile/cmd/gomobile@$GO_MOBILE_VERSION
 go mod download
 gomobile init
