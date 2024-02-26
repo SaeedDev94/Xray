@@ -26,16 +26,20 @@ check_target() {
 
 prepare_go() {
   echo "Install dependencies"
-  cd libXray
-  go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20240112133503-c713f31d574b
+  cd XrayCore
+  # go rm go*
+  # go mod init XrayCore
+  # go mod tidy
+  # go get golang.org/x/mobile
+  go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20240213143359-d1f7d3436075
   go mod download
 }
 
 build_android() {
-  echo "Building libXray for $TARGET"
-  rm -f "$DEST/libXray*"
+  echo "Building XrayCore for $TARGET"
+  rm -f "$DEST/XrayCore*"
   gomobile init
-  gomobile bind -o "$DEST/libXray.aar" -androidapi 26 -target "android/$TARGET" -ldflags="-buildid=" -trimpath
+  gomobile bind -o "$DEST/XrayCore.aar" -androidapi 26 -target "android/$TARGET" -ldflags="-buildid=" -trimpath
 }
 
 refresh_dependencies() {

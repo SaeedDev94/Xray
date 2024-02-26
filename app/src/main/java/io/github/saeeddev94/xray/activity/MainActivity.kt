@@ -36,7 +36,7 @@ import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import io.github.saeeddev94.xray.helper.HttpHelper
 import io.github.saeeddev94.xray.helper.ProfileTouchHelper
-import libXray.LibXray
+import XrayCore.XrayCore
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.toggleButton.setOnClickListener { onToggleButtonClick() }
         binding.pingBox.setOnClickListener { ping() }
         binding.navView.menu.findItem(R.id.appVersion).title = BuildConfig.VERSION_NAME
-        binding.navView.menu.findItem(R.id.xrayVersion).title = LibXray.xrayVersion()
+        binding.navView.menu.findItem(R.id.xrayVersion).title = XrayCore.version()
         binding.navView.setNavigationItemSelectedListener(this)
         ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar, R.string.drawerOpen, R.string.drawerClose).also {
             binding.drawerLayout.addDrawerListener(it)

@@ -25,7 +25,7 @@ import io.github.saeeddev94.xray.activity.MainActivity
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.helper.FileHelper
-import libXray.LibXray
+import XrayCore.XrayCore
 
 class TProxyService : VpnService() {
 
@@ -109,7 +109,7 @@ class TProxyService : VpnService() {
             val datDir: String = applicationContext.filesDir.absolutePath
             val configPath: String = Settings.xrayConfig(applicationContext).absolutePath
             val maxMemory: Long = 67108864 // 64 MB * 1024 KB * 1024 B
-            val error: String = LibXray.runXray(datDir, configPath, maxMemory)
+            val error: String = XrayCore.start(datDir, configPath, maxMemory)
             xrayProcess = error.isEmpty()
             if (!xrayProcess) {
                 isRunning = false
@@ -195,7 +195,7 @@ class TProxyService : VpnService() {
     private fun stopVPN() {
         isRunning = false
         if (xrayProcess) {
-            LibXray.stopXray()
+            XrayCore.stop()
             xrayProcess = false
         }
         if (tunDevice != null) {

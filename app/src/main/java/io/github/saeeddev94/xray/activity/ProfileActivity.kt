@@ -10,6 +10,7 @@ import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityProfileBinding
 import io.github.saeeddev94.xray.helper.FileHelper
+import XrayCore.XrayCore
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -53,7 +54,7 @@ class ProfileActivity : AppCompatActivity() {
         profile.config = binding.profileConfig.text.toString()
         Thread {
             FileHelper().createOrUpdate(Settings.testConfig(applicationContext), profile.config)
-            val error = libXray.LibXray.testXray(applicationContext.filesDir.absolutePath, Settings.testConfig(applicationContext).absolutePath)
+            val error = XrayCore.test(applicationContext.filesDir.absolutePath, Settings.testConfig(applicationContext).absolutePath)
             if (error.isNotEmpty()) {
                 runOnUiThread {
                     Toast.makeText(applicationContext, error, Toast.LENGTH_SHORT).show()
