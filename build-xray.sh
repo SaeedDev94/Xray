@@ -3,7 +3,7 @@
 # Update repo
 apt-get update
 apt-get install -y ca-certificates
-echo "deb https://deb.debian.org/debian bullseye-backports main" > /etc/apt/sources.list.d/backports.list
+echo "deb https://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list
 apt-get update || apt-get update
 apt-get dist-upgrade -y
 
@@ -17,7 +17,7 @@ GO_VERSION="go1.22.0"
 GO_MOBILE_VERSION="v0.0.0-20240213143359-d1f7d3436075"
 
 # Install Tools
-apt-get install -t bullseye-backports -y golang-go
+apt-get install -t bookworm-backports -y golang-go
 apt-get install -y git openjdk-$JAVA_VERSION-jdk-headless sdkmanager wget unzip gcc libc-dev
 sdkmanager "platform-tools" "platforms;$ANDROID_PLATFORM_VERSION" "build-tools;$ANDROID_SDK_VERSION"
 sdkmanager --install "ndk;$ANDROID_NDK_VERSION" --channel=3
