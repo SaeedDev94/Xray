@@ -27,7 +27,7 @@ check_target() {
 prepare_go() {
   echo "Install dependencies"
   cd XrayCore
-  # go rm go*
+  # rm go*
   # go mod init XrayCore
   # go mod tidy
   # go get golang.org/x/mobile
