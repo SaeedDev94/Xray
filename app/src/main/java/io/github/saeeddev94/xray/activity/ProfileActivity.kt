@@ -11,6 +11,11 @@ import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityProfileBinding
 import io.github.saeeddev94.xray.helper.FileHelper
 import XrayCore.XrayCore
+import com.blacksquircle.ui.editorkit.plugin.autoindent.autoIndentation
+import com.blacksquircle.ui.editorkit.plugin.base.PluginSupplier
+import com.blacksquircle.ui.editorkit.plugin.delimiters.highlightDelimiters
+import com.blacksquircle.ui.editorkit.plugin.linenumbers.lineNumbers
+import com.blacksquircle.ui.language.json.JsonLanguage
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -46,7 +51,23 @@ class ProfileActivity : AppCompatActivity() {
     private fun resolved(value: Profile) {
         profile = value
         binding.profileName.setText(profile.name)
-        binding.profileConfig.setText(profile.config)
+
+        val editor = binding.profileConfig
+        val pluginSupplier = PluginSupplier.create {
+            lineNumbers {
+                lineNumbers = true
+                highlightCurrentLine = true
+            }
+            highlightDelimiters()
+            autoIndentation {
+                autoIndentLines = true
+                autoCloseBrackets = true
+                autoCloseQuotes = true
+            }
+        }
+        editor.language = JsonLanguage()
+        editor.setTextContent(profile.config)
+        editor.plugins(pluginSupplier)
     }
 
     private fun save() {

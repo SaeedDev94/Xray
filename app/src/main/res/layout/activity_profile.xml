@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/profileConfig"
                 android:labelFor="@id/profileConfig" />
-            <EditText
+            <com.blacksquircle.ui.editorkit.widget.TextProcessor
                 android:id="@+id/profileConfig"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
