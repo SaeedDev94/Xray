@@ -1,0 +1,2 @@
+- Profile: Full width Config Editor
+- Profile: Remove save button and add save to menu
