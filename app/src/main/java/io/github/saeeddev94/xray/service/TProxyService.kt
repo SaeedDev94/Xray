@@ -192,8 +192,8 @@ class TProxyService : VpnService() {
 
     private fun stopVPN() {
         isRunning = false
-        XrayCore.stop()
         TProxyStopService()
+        XrayCore.stop()
         stopForeground(STOP_FOREGROUND_REMOVE)
         showToast("Stop VPN")
         stopSelf()
