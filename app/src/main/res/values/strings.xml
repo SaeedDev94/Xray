@@ -22,7 +22,6 @@
     <string name="editProfile">Edit Profile</string>
     <string name="profileName">Name</string>
     <string name="profileConfig">Config</string>
-    <string name="profileSave">Save</string>
     <string name="editIcon">Edit Icon</string>
     <string name="deleteIcon">Delete Icon</string>
     <string name="downloadIcon">Download Icon</string>
@@ -32,6 +31,7 @@
     <string name="appIcon">App Icon</string>
     <string name="saveExcludedApps">Save Excluded Apps</string>
     <string name="saveSettings">Save Settings</string>
+    <string name="saveProfile">Save Profile</string>
 
     <!-- Basic Settings -->
     <string name="socksAddress">Socks Address</string>

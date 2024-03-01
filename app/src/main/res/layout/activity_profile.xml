@@ -22,36 +22,35 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="15dp">
-            <TextView
+            android:orientation="vertical">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/profileName"
-                android:labelFor="@id/profileName" />
-            <EditText
-                android:id="@+id/profileName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:autofillHints="" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/profileConfig"
-                android:labelFor="@id/profileConfig" />
+                android:orientation="vertical"
+                android:padding="15dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/profileName"
+                    android:labelFor="@id/profileName" />
+                <EditText
+                    android:id="@+id/profileName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:autofillHints="" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/profileConfig"
+                    android:labelFor="@id/profileConfig" />
+            </LinearLayout>
             <com.blacksquircle.ui.editorkit.widget.TextProcessor
                 android:id="@+id/profileConfig"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
-                android:autofillHints="" />
-            <Button
-                android:id="@+id/profileSave"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/profileSave"
-                android:layout_marginTop="12dp" />
+                android:background="@null" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

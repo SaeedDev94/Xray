@@ -11,6 +11,8 @@ import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityProfileBinding
 import io.github.saeeddev94.xray.helper.FileHelper
 import XrayCore.XrayCore
+import android.view.Menu
+import android.view.MenuItem
 import com.blacksquircle.ui.editorkit.plugin.autoindent.autoIndentation
 import com.blacksquircle.ui.editorkit.plugin.base.PluginSupplier
 import com.blacksquircle.ui.editorkit.plugin.delimiters.highlightDelimiters
@@ -33,7 +35,6 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.profileSave.setOnClickListener { save() }
         if (isNew()) {
             resolved(Profile())
         } else {
@@ -44,6 +45,19 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }.start()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_profile, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.saveProfile -> save()
+            else -> finish()
+        }
+        return true
     }
 
     private fun isNew() = id == 0L
