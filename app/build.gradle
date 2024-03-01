@@ -3,63 +3,34 @@ import com.android.tools.profgen.ArtProfileSerializer
 import com.android.tools.profgen.DexFile
 
 plugins {
-    id 'com.android.application'
-    id 'com.google.devtools.ksp'
-    id 'org.jetbrains.kotlin.android'
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
 }
 
 def calcVersionCode() {
-    def versionCodeFile = file('versionCode.txt')
+    def versionCodeFile = file("versionCode.txt")
     def versionCode = versionCodeFile.text.trim().toInteger()
     return versionCode + abiId.toInteger()
 }
 
 android {
-    namespace 'io.github.saeeddev94.xray'
-    compileSdk 34
+    namespace = "io.github.saeeddev94.xray"
+    compileSdk = 34
 
     defaultConfig {
-        applicationId 'io.github.saeeddev94.xray'
-        minSdk 26
-        targetSdk 34
-        versionCode calcVersionCode()
-        versionName '6.0.0'
+        applicationId = "io.github.saeeddev94.xray"
+        minSdk = 26
+        targetSdk = 34
+        versionCode = calcVersionCode()
+        versionName = "6.0.0"
 
-        vectorDrawables {
-            useSupportLibrary true
-        }
-
+        vectorDrawables.useSupportLibrary = true
         vectorDrawables.generatedDensities = []
-
-        externalNativeBuild {
-            ndkBuild {
-                arguments 'LOCAL_LDFLAGS += -Wl,--build-id=none -Wl,--hash-style=gnu'
-            }
-        }
     }
 
     aaptOptions {
         cruncherEnabled = false
-    }
-
-    packagingOptions {
-        doNotStrip '**/*.so'
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = '17'
     }
 
     buildFeatures {
@@ -67,20 +38,38 @@ android {
         viewBinding = true
     }
 
-    externalNativeBuild {
-        ndkVersion = '26.2.11394342'
-        ndkBuild {
-            path = 'src/main/jni/Android.mk'
+    buildTypes {
+        release {
+            minifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    externalNativeBuild {
+        ndkVersion = "26.2.11394342"
+        ndkBuild.path = "src/main/jni/Android.mk"
+    }
+
+    packagingOptions {
+        doNotStrip("**/*.so")
     }
 
     splits {
         abi {
-            enable true
+            enable = true
+            universalApk = false
             reset()
             //noinspection ChromeOsAbiSupport
             include abiTarget.split(',')
-            universalApk false
         }
     }
 }
@@ -107,14 +96,14 @@ project.afterEvaluate {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
-    implementation platform('org.jetbrains.kotlin:kotlin-bom:1.9.22')
-    implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.room:room-ktx:2.6.1'
-    implementation 'androidx.room:room-runtime:2.6.1'
-    ksp 'androidx.room:room-compiler:2.6.1'
-    implementation 'com.blacksquircle.ui:editorkit:2.9.0'
-    implementation 'com.blacksquircle.ui:language-json:2.9.0'
-    implementation 'com.google.android.material:material:1.11.0'
+    implementation(fileTree(dir: "libs", include: ["*.aar", "*.jar"]))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.9.22"))
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("androidx.room:room-runtime:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+    implementation("com.blacksquircle.ui:editorkit:2.9.0")
+    implementation("com.blacksquircle.ui:language-json:2.9.0")
+    implementation("com.google.android.material:material:1.11.0")
 }
