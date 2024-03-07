@@ -12,7 +12,6 @@ import io.github.saeeddev94.xray.databinding.ActivityProfileBinding
 import io.github.saeeddev94.xray.helper.FileHelper
 import XrayCore.XrayCore
 import android.net.Uri
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.blacksquircle.ui.editorkit.plugin.autoindent.autoIndentation
@@ -40,15 +39,11 @@ class ProfileActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val jsonUri = intent.data
-        Log.e("Inja", "${intent.action}")
-        Log.e("Inja", "${intent.data}")
         if (Intent.ACTION_VIEW == intent.action && jsonUri != null) {
-            Log.e("Inja", "file 1")
             val profile = Profile()
             profile.config = readJsonFile(jsonUri)
             resolved(profile)
         } else if (isNew()) {
-            Log.e("Inja", "normal 1")
             resolved(Profile())
         } else {
             Thread {
