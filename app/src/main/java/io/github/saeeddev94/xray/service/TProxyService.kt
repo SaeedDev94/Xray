@@ -88,15 +88,14 @@ class TProxyService : VpnService() {
     }
 
     private fun findProfileAndStart() {
-        val selectedProfile = Settings.selectedProfile
-        if (selectedProfile == 0L) {
-            startVPN(null)
-        } else {
-            Thread {
-                val profile = XrayDatabase.ref(applicationContext).profileDao().find(selectedProfile)
-                startVPN(profile)
-            }.start()
-        }
+        Thread {
+            val profile = if (Settings.selectedProfile == 0L) {
+                null
+            } else {
+                XrayDatabase.ref(applicationContext).profileDao().find(Settings.selectedProfile)
+            }
+            startVPN(profile)
+        }.start()
     }
 
     private fun startVPN(profile: Profile?) {
