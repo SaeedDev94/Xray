@@ -29,6 +29,7 @@
     <string name="copyLogs">Copy Logs</string>
     <string name="deleteLogs">Delete Logs</string>
     <string name="appIcon">App Icon</string>
+    <string name="openJson">Open Json</string>
     <string name="saveExcludedApps">Save Excluded Apps</string>
     <string name="saveSettings">Save Settings</string>
     <string name="saveProfile">Save Profile</string>

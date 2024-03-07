@@ -11,6 +11,8 @@ import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityProfileBinding
 import io.github.saeeddev94.xray.helper.FileHelper
 import XrayCore.XrayCore
+import android.net.Uri
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.blacksquircle.ui.editorkit.plugin.autoindent.autoIndentation
@@ -18,6 +20,8 @@ import com.blacksquircle.ui.editorkit.plugin.base.PluginSupplier
 import com.blacksquircle.ui.editorkit.plugin.delimiters.highlightDelimiters
 import com.blacksquircle.ui.editorkit.plugin.linenumbers.lineNumbers
 import com.blacksquircle.ui.language.json.JsonLanguage
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -35,7 +39,16 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        if (isNew()) {
+        val jsonUri = intent.data
+        Log.e("Inja", "${intent.action}")
+        Log.e("Inja", "${intent.data}")
+        if (Intent.ACTION_VIEW == intent.action && jsonUri != null) {
+            Log.e("Inja", "file 1")
+            val profile = Profile()
+            profile.config = readJsonFile(jsonUri)
+            resolved(profile)
+        } else if (isNew()) {
+            Log.e("Inja", "normal 1")
             resolved(Profile())
         } else {
             Thread {
@@ -61,6 +74,18 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun isNew() = id == 0L
+
+    private fun readJsonFile(uri: Uri): String {
+        val content = StringBuilder()
+        try {
+            contentResolver.openInputStream(uri)?.use { input ->
+                BufferedReader(InputStreamReader(input)).forEachLine { content.append("$it\n") }
+            }
+        } catch (error: Exception) {
+            error.printStackTrace()
+        }
+        return content.toString()
+    }
 
     private fun resolved(value: Profile) {
         profile = value

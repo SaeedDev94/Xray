@@ -32,7 +32,15 @@
         </activity>
         <activity
             android:name=".activity.ProfileActivity"
-            android:parentActivityName=".activity.MainActivity" />
+            android:parentActivityName=".activity.MainActivity"
+            android:label="@string/openJson"
+            android:exported="true">
+            <intent-filter tools:ignore="AppLinkUrlError">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/json" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activity.AssetsActivity"
             android:parentActivityName=".activity.MainActivity" />
