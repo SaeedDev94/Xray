@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var binding: ActivityMainBinding
     private lateinit var vpnService: TProxyService
     private var vpnLauncher = registerForActivityResult(StartActivityForResult()) {
-        if (it.resultCode != RESULT_OK) return@registerForActivityResult
         toggleVpnService()
     }
 
@@ -301,10 +300,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun hasPostNotification(): Boolean {
+        val sharedPref = getSharedPreferences("app", Context.MODE_PRIVATE)
+        val key = "request_notification_permission"
+        val askedBefore = sharedPref.getBoolean(key, false)
+        if (askedBefore) return true
         if (
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
+            sharedPref.edit().putBoolean(key, true).apply()
             ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
             return false
         }
