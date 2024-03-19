@@ -1,0 +1,2 @@
+- Fix qsTile problem on some devices
+- Optional notification permission
