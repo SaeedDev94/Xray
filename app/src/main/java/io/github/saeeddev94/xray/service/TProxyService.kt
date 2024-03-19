@@ -117,11 +117,12 @@ class TProxyService : VpnService() {
 
         /** Create Tun */
         val tun = Builder()
+        val tunName = getString(R.string.appName)
 
         /** Basic tun config */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) tun.setMetered(false)
         tun.setMtu(Settings.tunMtu)
-        tun.setSession(Settings.tunName)
+        tun.setSession(tunName)
 
         /** IPv4 */
         tun.addAddress(Settings.tunAddress, Settings.tunPrefix)
@@ -158,7 +159,7 @@ class TProxyService : VpnService() {
         /** Create, Update tun2socks config */
         val tun2socksConfig = arrayListOf(
             "tunnel:",
-            "  name: ${Settings.tunName}",
+            "  name: $tunName",
             "  mtu: ${Settings.tunMtu}",
             "socks5:",
             "  address: ${Settings.socksAddress}",
