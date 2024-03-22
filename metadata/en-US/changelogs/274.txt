@@ -1,0 +1,2 @@
+- QS Tile: Fix app crash on some scenarios
+- Fix UI update issue on VPN disconnect by system settings
