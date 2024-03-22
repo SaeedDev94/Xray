@@ -28,6 +28,7 @@ import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.helper.FileHelper
 import XrayCore.XrayCore
+import android.util.Log
 
 class TProxyService : VpnService() {
 
@@ -170,6 +171,13 @@ class TProxyService : VpnService() {
 
         /** Build tun device */
         tunDevice = tun.establish()
+
+        /** Check tun device */
+        if (tunDevice == null) {
+            isRunning = false
+            Log.e("TProxyService", "tun#establish failed")
+            return
+        }
 
         /** Register network callback */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
