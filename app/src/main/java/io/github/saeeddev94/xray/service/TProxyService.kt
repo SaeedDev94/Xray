@@ -63,7 +63,6 @@ class TProxyService : VpnService() {
         }
     }
     private val connectivity by lazy { getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager }
-    @delegate:RequiresApi(Build.VERSION_CODES.P)
     private val defaultNetworkCallback by lazy {
         object : ConnectivityManager.NetworkCallback() {
             override fun onLost(network: Network) {
@@ -180,12 +179,10 @@ class TProxyService : VpnService() {
         }
 
         /** Register network callback */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            try {
-                connectivity.registerDefaultNetworkCallback(defaultNetworkCallback)
-            } catch (error: Exception) {
-                error.printStackTrace()
-            }
+        try {
+            connectivity.registerDefaultNetworkCallback(defaultNetworkCallback)
+        } catch (error: Exception) {
+            error.printStackTrace()
         }
 
         /** Create, Update tun2socks config */
@@ -224,11 +221,9 @@ class TProxyService : VpnService() {
 
     private fun stopVPN() {
         isRunning = false
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            try {
-                connectivity.unregisterNetworkCallback(defaultNetworkCallback)
-            } catch (_: Exception) {
-            }
+        try {
+            connectivity.unregisterNetworkCallback(defaultNetworkCallback)
+        } catch (_: Exception) {
         }
         TProxyStopService()
         XrayCore.stop()
