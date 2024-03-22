@@ -3,8 +3,10 @@ package io.github.saeeddev94.xray.service
 import android.content.ComponentName
 import android.content.Intent
 import android.graphics.drawable.Icon
+import android.net.VpnService
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import android.util.Log
 import io.github.saeeddev94.xray.BuildConfig
 import io.github.saeeddev94.xray.R
 
@@ -30,6 +32,8 @@ class VpnTileService : TileService() {
         super.onClick()
         when (qsTile.state) {
             Tile.STATE_INACTIVE -> {
+                val isPrepare = VpnService.prepare(applicationContext) == null
+                if (!isPrepare) return
                 Intent(applicationContext, TProxyService::class.java).also {
                     startForegroundService(it)
                 }
