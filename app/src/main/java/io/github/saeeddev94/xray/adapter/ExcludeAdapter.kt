@@ -38,11 +38,10 @@ class ExcludeAdapter(
         holder.appContainer.setOnClickListener {
             if (isSelected) {
                 excludedApps.remove(app.packageName)
-                holder.isSelected.isChecked = false
             } else {
                 excludedApps.add(app.packageName)
-                holder.isSelected.isChecked = true
             }
+            notifyItemChanged(index)
         }
     }
 
