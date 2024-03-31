@@ -31,7 +31,7 @@ prepare_go() {
   # go mod init XrayCore
   # go mod tidy
   # go get golang.org/x/mobile
-  go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20240213143359-d1f7d3436075
+  go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20240329164231-365c35338770
   go mod download
 }
 
