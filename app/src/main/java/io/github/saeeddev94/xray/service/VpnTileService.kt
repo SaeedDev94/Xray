@@ -30,7 +30,7 @@ class VpnTileService : TileService() {
 
     override fun onClick() {
         super.onClick()
-        when (qsTile.state) {
+        when (qsTile?.state) {
             Tile.STATE_INACTIVE -> {
                 val isPrepare = VpnService.prepare(applicationContext) == null
                 if (!isPrepare) {
