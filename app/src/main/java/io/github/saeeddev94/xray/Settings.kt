@@ -28,7 +28,7 @@ object Settings {
     var primaryDnsV6: String = "2606:4700:4700::1111"
     var secondaryDnsV6: String = "2606:4700:4700::1001"
     var tunName: String = "tun0"
-    var tunMtu: Int = 1500
+    var tunMtu: Int = 8500
     var tunAddress: String = "10.10.10.10"
     var tunPrefix: Int = 32
     var tunAddressV6: String = "fc00::1"
