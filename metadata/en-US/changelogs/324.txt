@@ -1,0 +1,1 @@
+- hev-socks5-tunnel @ v2.7.0
