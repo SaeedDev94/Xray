@@ -59,7 +59,17 @@ class LinkHelper(link: String) {
         socks.put("protocol", "socks")
         val settings = JSONObject()
         settings.put("udp", true)
+
+        val sniffing = JSONObject()
+        sniffing.put("enabled", true)
+        val sniffingDestOverride = JSONArray()
+        sniffingDestOverride.put("http")
+        sniffingDestOverride.put("tls")
+        sniffingDestOverride.put("quic")
+        sniffing.put("destOverride", sniffingDestOverride)
+
         socks.put("settings", settings)
+        socks.put("sniffing", sniffing)
         socks.put("tag", "socks")
 
         inbounds.put(socks)
