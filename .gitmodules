@@ -1,3 +1,6 @@
 [submodule "app/src/main/jni/hev-socks5-tunnel"]
 	path = app/src/main/jni/hev-socks5-tunnel
 	url = https://github.com/heiher/hev-socks5-tunnel.git
+[submodule "XrayCore/libXray"]
+	path = XrayCore/libXray
+	url = https://github.com/XTLS/libXray.git
