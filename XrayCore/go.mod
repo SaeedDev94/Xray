@@ -2,7 +2,12 @@ module XrayCore
 
 go 1.23.0
 
-require github.com/xtls/xray-core v1.8.24
+replace github.com/xtls/libxray => ./libXray
+
+require (
+	github.com/xtls/libxray v0.0.0-00010101000000-000000000000
+	github.com/xtls/xray-core v1.8.24
+)
 
 require (
 	github.com/OmarTariq612/goech v0.0.0-20240405204721-8e2e1dafd3a0 // indirect
@@ -48,6 +53,7 @@ require (
 	google.golang.org/grpc v1.66.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gvisor.dev/gvisor v0.0.0-20231202080848-1f7806d17489 // indirect
 	lukechampine.com/blake3 v1.3.0 // indirect
 )

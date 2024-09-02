@@ -37,6 +37,10 @@ import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import io.github.saeeddev94.xray.helper.HttpHelper
 import io.github.saeeddev94.xray.helper.ProfileTouchHelper
 import XrayCore.XrayCore
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.widget.Toast
+import io.github.saeeddev94.xray.helper.LinkHelper
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -128,13 +132,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val newProfile = Intent(applicationContext, ProfileActivity::class.java).also {
+            it.putExtra("id", 0L)
+            it.putExtra("index", -1)
+        }
         when (item.itemId) {
             R.id.newProfile -> {
-                Intent(applicationContext, ProfileActivity::class.java).also {
-                    it.putExtra("id", 0L)
-                    it.putExtra("index", -1)
-                    profileLauncher.launch(it)
+                profileLauncher.launch(newProfile)
+            }
+            R.id.newLink -> {
+                val clipboardManager: ClipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clipData: ClipData? = clipboardManager.primaryClip
+                val clipText: String = if (clipData != null && clipData.itemCount > 0) clipData.getItemAt(0).text.toString().trim() else ""
+                val link = LinkHelper(clipText)
+                if (!link.isValid()) {
+                    Toast.makeText(applicationContext, "Invalid Link", Toast.LENGTH_SHORT).show()
+                    return false
                 }
+                newProfile.putExtra("name", link.remark())
+                newProfile.putExtra("config", link.json())
+                profileLauncher.launch(newProfile)
             }
         }
         return true

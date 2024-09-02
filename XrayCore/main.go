@@ -1,6 +1,7 @@
 package XrayCore
 
 import "XrayCore/lib"
+import "github.com/xtls/libxray/nodep"
 
 func Test(dir string, config string) string {
   err := lib.Test(dir, config)
@@ -19,4 +20,10 @@ func Stop() string {
 
 func Version() string {
   return lib.Version()
+}
+
+func Json(link string) string {
+  var response nodep.CallResponse[*nodep.XrayJson]
+  xrayJson, err := nodep.ConvertShareLinksToXrayJson(link)
+  return response.EncodeToBase64(xrayJson, err)
 }

@@ -44,7 +44,10 @@ class ProfileActivity : AppCompatActivity() {
             profile.config = readJsonFile(jsonUri)
             resolved(profile)
         } else if (isNew()) {
-            resolved(Profile())
+            val profile = Profile()
+            profile.name = intent.getStringExtra("name") ?: ""
+            profile.config = intent.getStringExtra("config") ?: ""
+            resolved(profile)
         } else {
             Thread {
                 val profile = XrayDatabase.ref(applicationContext).profileDao().find(id)
