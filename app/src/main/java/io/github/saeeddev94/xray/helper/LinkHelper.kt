@@ -57,8 +57,19 @@ class LinkHelper(link: String) {
         socks.put("listen", Settings.socksAddress)
         socks.put("port", Settings.socksPort.toInt())
         socks.put("protocol", "socks")
+
         val settings = JSONObject()
         settings.put("udp", true)
+        if (Settings.socksUsername.trim().isNotEmpty() && Settings.socksPassword.trim().isNotEmpty()) {
+            val account = JSONObject()
+            account.put("user", Settings.socksUsername)
+            account.put("pass", Settings.socksPassword)
+            val accounts = JSONArray()
+            accounts.put(account)
+
+            settings.put("auth", "password")
+            settings.put("accounts", accounts)
+        }
 
         val sniffing = JSONObject()
         sniffing.put("enabled", true)
