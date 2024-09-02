@@ -1,0 +1,2 @@
+- Xray-core @ v1.8.24
+- New: add config via url
