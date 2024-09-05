@@ -97,9 +97,6 @@ class LinkHelper(link: String) {
 
         val direct = JSONObject()
         direct.put("protocol", "freedom")
-        val directSettings = JSONObject()
-        directSettings.put("domainStrategy", "UseIP")
-        direct.put("settings", directSettings)
         direct.put("tag", "direct")
 
         val block = JSONObject()
@@ -112,7 +109,6 @@ class LinkHelper(link: String) {
 
         return outbounds
     }
-
 
     private fun routing(): JSONObject {
         val routing = JSONObject()
