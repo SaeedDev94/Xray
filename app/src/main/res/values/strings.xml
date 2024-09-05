@@ -13,7 +13,7 @@
     <string name="appFullName">SaeedDev94/Xray</string>
     <string name="xrayLabel">XTLS/Xray-core</string>
     <string name="tun2socksLabel">heiher/hev-socks5-tunnel</string>
-    <string name="tun2socksVersion">2.7.1</string>
+    <string name="tun2socksVersion">2.7.4</string>
     <string name="assets">Assets</string>
     <string name="logs">Logs</string>
     <string name="excludedApps">Excluded Apps</string>
