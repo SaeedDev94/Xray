@@ -11,6 +11,7 @@ import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.net.Uri
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
@@ -105,6 +106,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             it.syncState()
         }
         getProfiles()
+        val deepLink: Uri? = intent?.data
+        deepLink?.let {
+            val pathSegments = it.pathSegments
+            if (pathSegments.size > 0) processLink(pathSegments[0])
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -306,7 +312,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun processLink(link: String) {
-        if (link.startsWith("http")) {
+        if (link.startsWith("http://") || link.startsWith("https://")) {
             getConfig(link)
             return
         }
