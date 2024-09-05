@@ -18,7 +18,6 @@ import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -143,23 +142,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.newProfile -> {
                 profileLauncher.launch(profileIntent())
             }
-            R.id.fromLink -> {
-                linkDialog()
-            }
             R.id.fromClipboard -> {
                 val clipboardManager: ClipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clipData: ClipData? = clipboardManager.primaryClip
                 val clipText: String = if (clipData != null && clipData.itemCount > 0) clipData.getItemAt(0).text.toString().trim() else ""
-                if (clipText.startsWith("http")) {
-                    getConfig(clipText)
-                    return true
-                }
-                val link = LinkHelper(clipText)
-                if (!link.isValid()) {
-                    Toast.makeText(applicationContext, "Invalid Link", Toast.LENGTH_SHORT).show()
-                    return false
-                }
-                profileLauncher.launch(profileIntent(name = link.remark(), config = link.json()))
+                processLink(clipText)
             }
         }
         return true
@@ -318,19 +305,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }.start()
     }
 
-    private fun linkDialog() {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.from_link_dialog, LinearLayout(this))
-        val editText = dialogView.findViewById<EditText>(R.id.jsonFileLink)
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Enter Link")
-            .setView(dialogView)
-            .setPositiveButton("GET") { dialog, _ ->
-                val link = editText.text.toString()
-                dialog.dismiss()
-                getConfig(link)
-            }.setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
-            }.create().show()
+    private fun processLink(link: String) {
+        if (link.startsWith("http")) {
+            getConfig(link)
+            return
+        }
+        val linkHelper = LinkHelper(link)
+        if (!linkHelper.isValid()) {
+            Toast.makeText(applicationContext, "Invalid Link", Toast.LENGTH_SHORT).show()
+            return
+        }
+        profileLauncher.launch(profileIntent(name = linkHelper.remark(), config = linkHelper.json()))
     }
 
     private fun getConfig(link: String) {
