@@ -6,6 +6,7 @@
     <string name="fromLink">From Link</string>
     <string name="fromClipboard">From Clipboard</string>
     <string name="jsonFileLink">JSON File Link</string>
+    <string name="loading">Loading…</string>
     <string name="vpnStart">START</string>
     <string name="vpnStop">STOP</string>
     <string name="pingNotConnected">Not Connected</string>

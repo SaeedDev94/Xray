@@ -1,6 +1,9 @@
 package io.github.saeeddev94.xray.activity
 
+import XrayCore.XrayCore
 import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -12,8 +15,12 @@ import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -27,28 +34,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import io.github.saeeddev94.xray.BuildConfig
-import io.github.saeeddev94.xray.adapter.ProfileAdapter
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
-import io.github.saeeddev94.xray.service.TProxyService
-import io.github.saeeddev94.xray.dto.ProfileList
+import io.github.saeeddev94.xray.adapter.ProfileAdapter
 import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
+import io.github.saeeddev94.xray.dto.ProfileList
 import io.github.saeeddev94.xray.helper.HttpHelper
-import io.github.saeeddev94.xray.helper.ProfileTouchHelper
 import io.github.saeeddev94.xray.helper.LinkHelper
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
+import io.github.saeeddev94.xray.helper.ProfileTouchHelper
+import io.github.saeeddev94.xray.service.TProxyService
 import org.json.JSONException
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
-import XrayCore.XrayCore
-import android.view.LayoutInflater
-import android.widget.LinearLayout
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -335,10 +334,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun getConfig(link: String) {
-        val progressBar = ProgressBar(this)
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.loading_dialog, LinearLayout(this))
         val dialog = MaterialAlertDialogBuilder(this)
-            .setTitle("Loading")
-            .setView(progressBar)
+            .setView(dialogView)
             .setCancelable(false)
             .create()
         dialog.show()
