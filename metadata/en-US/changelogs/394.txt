@@ -1,0 +1,3 @@
+- hev-socks5-tunnel @ v2.7.4
+- New Profile > From Clipboard: now supports import json config from http(s)
+- Added deep link: "xray://import-profile/{LINK}"
