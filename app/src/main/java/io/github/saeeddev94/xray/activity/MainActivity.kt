@@ -149,6 +149,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val clipboardManager: ClipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clipData: ClipData? = clipboardManager.primaryClip
                 val clipText: String = if (clipData != null && clipData.itemCount > 0) clipData.getItemAt(0).text.toString().trim() else ""
+                if (clipText.startsWith("http")) {
+                    getConfig(clipText)
+                    return true
+                }
                 val link = LinkHelper(clipText)
                 if (!link.isValid()) {
                     Toast.makeText(applicationContext, "Invalid Link", Toast.LENGTH_SHORT).show()
