@@ -36,11 +36,17 @@ import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import io.github.saeeddev94.xray.helper.HttpHelper
 import io.github.saeeddev94.xray.helper.ProfileTouchHelper
-import XrayCore.XrayCore
+import io.github.saeeddev94.xray.helper.LinkHelper
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.Toast
-import io.github.saeeddev94.xray.helper.LinkHelper
+import org.json.JSONException
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
+import XrayCore.XrayCore
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -55,8 +61,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var profiles: ArrayList<ProfileList>
     private var profileLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
-        val id = it.data!!.getLongExtra("id", 0L)
         val index = it.data!!.getIntExtra("index", -1)
+        val id = it.data!!.getLongExtra("id", 0L)
         onProfileActivityResult(id, index)
     }
 
@@ -132,15 +138,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val newProfile = Intent(applicationContext, ProfileActivity::class.java).also {
-            it.putExtra("id", 0L)
-            it.putExtra("index", -1)
-        }
         when (item.itemId) {
             R.id.newProfile -> {
-                profileLauncher.launch(newProfile)
+                profileLauncher.launch(profileIntent())
             }
-            R.id.newLink -> {
+            R.id.fromLink -> {
+                linkDialog()
+            }
+            R.id.fromClipboard -> {
                 val clipboardManager: ClipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clipData: ClipData? = clipboardManager.primaryClip
                 val clipText: String = if (clipData != null && clipData.itemCount > 0) clipData.getItemAt(0).text.toString().trim() else ""
@@ -149,9 +154,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     Toast.makeText(applicationContext, "Invalid Link", Toast.LENGTH_SHORT).show()
                     return false
                 }
-                newProfile.putExtra("name", link.remark())
-                newProfile.putExtra("config", link.json())
-                profileLauncher.launch(newProfile)
+                profileLauncher.launch(profileIntent(name = link.remark(), config = link.json()))
             }
         }
         return true
@@ -169,6 +172,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun profileIntent(index: Int = -1, id: Long = 0L, name: String = "", config: String = ""): Intent {
+        return Intent(applicationContext, ProfileActivity::class.java).also {
+            it.putExtra("index", index)
+            it.putExtra("id", id)
+            if (name.isNotEmpty()) it.putExtra("name", name)
+            if (config.isNotEmpty()) it.putExtra("config", config)
+        }
     }
 
     private fun setVpnServiceStatus() {
@@ -232,11 +244,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun profileEdit(index: Int, profile: ProfileList) {
         if (vpnService.getIsRunning() && Settings.selectedProfile == profile.id) return
-        Intent(applicationContext, ProfileActivity::class.java).also {
-            it.putExtra("id", profile.id)
-            it.putExtra("index", index)
-            profileLauncher.launch(it)
-        }
+        profileLauncher.launch(profileIntent(index, profile.id))
     }
 
     private fun profileDelete(index: Int, profile: ProfileList) {
@@ -303,6 +311,63 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 ItemTouchHelper(ProfileTouchHelper(profileAdapter)).also { it.attachToRecyclerView(profilesList) }
             }
         }.start()
+    }
+
+    private fun linkDialog() {
+        val editText = EditText(this)
+        editText.hint = "JSON File Link"
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Enter Link")
+            .setView(editText)
+            .setPositiveButton("GET") { dialog, _ ->
+                val link = editText.text.toString()
+                dialog.dismiss()
+                getConfig(link)
+            }.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }.create().show()
+    }
+
+    private fun getConfig(link: String) {
+        val progressBar = ProgressBar(this)
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle("Loading")
+            .setView(progressBar)
+            .setCancelable(false)
+            .create()
+        dialog.show()
+        Thread {
+            try {
+                val config = httpGet(link)
+                runOnUiThread {
+                    dialog.dismiss()
+                    try {
+                        val json = JSONObject(config)
+                        profileLauncher.launch(profileIntent(config = json.toString(2)))
+                    } catch (error: JSONException) {
+                        Toast.makeText(applicationContext, error.message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (error: Exception) {
+                runOnUiThread {
+                    dialog.dismiss()
+                    Toast.makeText(applicationContext, error.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }.start()
+    }
+
+    private fun httpGet(link: String): String {
+        val url = URL(link)
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
+        connection.connect()
+        val responseCode = connection.responseCode
+        return if (responseCode == HttpURLConnection.HTTP_OK) {
+            connection.inputStream.bufferedReader().use { it.readText() }
+        } else {
+            throw Exception("HTTP Error: $responseCode")
+        }
     }
 
     private fun ping() {

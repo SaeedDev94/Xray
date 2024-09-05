@@ -10,7 +10,10 @@
                 android:id="@+id/newProfile"
                 android:title="@string/newProfile" />
             <item
-                android:id="@+id/newLink"
+                android:id="@+id/fromLink"
+                android:title="@string/fromLink" />
+            <item
+                android:id="@+id/fromClipboard"
                 android:title="@string/fromClipboard" />
         </menu>
     </item>
