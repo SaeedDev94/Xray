@@ -47,6 +47,8 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 import XrayCore.XrayCore
+import android.view.LayoutInflater
+import android.widget.LinearLayout
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -318,11 +320,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun linkDialog() {
-        val editText = EditText(this)
-        editText.hint = "JSON File Link"
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.from_link_dialog, LinearLayout(this))
+        val editText = dialogView.findViewById<EditText>(R.id.jsonFileLink)
         MaterialAlertDialogBuilder(this)
             .setTitle("Enter Link")
-            .setView(editText)
+            .setView(dialogView)
             .setPositiveButton("GET") { dialog, _ ->
                 val link = editText.text.toString()
                 dialog.dismiss()
