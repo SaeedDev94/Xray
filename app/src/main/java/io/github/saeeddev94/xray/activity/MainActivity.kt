@@ -170,15 +170,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun profileIntent(index: Int = -1, id: Long = 0L, name: String = "", config: String = ""): Intent {
-        return Intent(applicationContext, ProfileActivity::class.java).also {
-            it.putExtra("index", index)
-            it.putExtra("id", id)
-            if (name.isNotEmpty()) it.putExtra("name", name)
-            if (config.isNotEmpty()) it.putExtra("config", config)
-        }
-    }
-
     private fun setVpnServiceStatus() {
         if (!vpnServiceBound) return
         if (vpnService.getIsRunning()) {
@@ -269,6 +260,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 }.start()
             }.show()
+    }
+
+    private fun profileIntent(index: Int = -1, id: Long = 0L, name: String = "", config: String = ""): Intent {
+        return Intent(applicationContext, ProfileActivity::class.java).also {
+            it.putExtra("index", index)
+            it.putExtra("id", id)
+            if (name.isNotEmpty()) it.putExtra("name", name)
+            if (config.isNotEmpty()) it.putExtra("config", config.replace("\\/", "/"))
+        }
     }
 
     private fun onProfileActivityResult(id: Long, index: Int) {
