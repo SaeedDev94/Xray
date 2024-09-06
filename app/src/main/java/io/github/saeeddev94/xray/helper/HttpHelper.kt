@@ -11,6 +11,19 @@ import java.net.URL
 
 class HttpHelper {
 
+    fun get(link: String): String {
+        val url = URL(link)
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
+        connection.connect()
+        val responseCode = connection.responseCode
+        return if (responseCode == HttpURLConnection.HTTP_OK) {
+            connection.inputStream.bufferedReader().use { it.readText() }
+        } else {
+            throw Exception("HTTP Error: $responseCode")
+        }
+    }
+
     fun measureDelay(): String {
         val start = System.currentTimeMillis()
         val connection = getConnection()

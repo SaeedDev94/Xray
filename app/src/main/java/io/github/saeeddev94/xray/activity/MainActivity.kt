@@ -46,8 +46,6 @@ import io.github.saeeddev94.xray.helper.ProfileTouchHelper
 import io.github.saeeddev94.xray.service.TProxyService
 import org.json.JSONException
 import org.json.JSONObject
-import java.net.HttpURLConnection
-import java.net.URL
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -333,7 +331,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         dialog.show()
         Thread {
             try {
-                val config = httpGet(link)
+                val config = HttpHelper().get(link)
                 runOnUiThread {
                     dialog.dismiss()
                     try {
@@ -350,19 +348,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
         }.start()
-    }
-
-    private fun httpGet(link: String): String {
-        val url = URL(link)
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-        connection.connect()
-        val responseCode = connection.responseCode
-        return if (responseCode == HttpURLConnection.HTTP_OK) {
-            connection.inputStream.bufferedReader().use { it.readText() }
-        } else {
-            throw Exception("HTTP Error: $responseCode")
-        }
     }
 
     private fun ping() {
