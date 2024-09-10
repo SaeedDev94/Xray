@@ -46,6 +46,8 @@ import io.github.saeeddev94.xray.helper.ProfileTouchHelper
 import io.github.saeeddev94.xray.service.TProxyService
 import org.json.JSONException
 import org.json.JSONObject
+import java.net.URI
+import java.net.URISyntaxException
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -310,8 +312,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun processLink(link: String) {
-        if (link.startsWith("http://") || link.startsWith("https://")) {
-            getConfig(link)
+        val uri = try {
+            URI(link)
+        } catch (error: URISyntaxException) {
+            null
+        }
+        if (uri == null) {
+            Toast.makeText(applicationContext, "Invalid Uri", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (uri.scheme == "http" || uri.scheme == "https") {
+            getConfig(uri)
             return
         }
         val linkHelper = LinkHelper(link)
@@ -319,10 +330,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Toast.makeText(applicationContext, "Invalid Link", Toast.LENGTH_SHORT).show()
             return
         }
-        profileLauncher.launch(profileIntent(name = linkHelper.remark(), config = linkHelper.json()))
+        val name = LinkHelper.remark(uri)
+        val json = linkHelper.json()
+        profileLauncher.launch(profileIntent(name = name, config = json))
     }
 
-    private fun getConfig(link: String) {
+    private fun getConfig(uri: URI) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.loading_dialog, LinearLayout(this))
         val dialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
@@ -331,12 +344,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         dialog.show()
         Thread {
             try {
-                val config = HttpHelper().get(link)
+                val config = HttpHelper().get(uri.toString())
                 runOnUiThread {
                     dialog.dismiss()
                     try {
-                        val json = JSONObject(config)
-                        profileLauncher.launch(profileIntent(config = json.toString(2)))
+                        val name = LinkHelper.remark(uri)
+                        val json = JSONObject(config).toString(2)
+                        profileLauncher.launch(profileIntent(name = name, config = json))
                     } catch (error: JSONException) {
                         Toast.makeText(applicationContext, error.message, Toast.LENGTH_SHORT).show()
                     }

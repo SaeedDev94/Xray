@@ -6,6 +6,7 @@ import io.github.saeeddev94.xray.Settings
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.net.URI
 
 class LinkHelper(link: String) {
 
@@ -23,12 +24,15 @@ class LinkHelper(link: String) {
         outbound = if (outbounds.length() > 0) outbounds[0] as JSONObject else null
     }
 
-    fun isValid(): Boolean {
-        return success && outbound != null
+    companion object {
+        fun remark(uri: URI): String {
+            val name = uri.fragment ?: ""
+            return name.ifEmpty { "New Profile" }
+        }
     }
 
-    fun remark(): String {
-        return outbound!!.optString("name", "New Profile")
+    fun isValid(): Boolean {
+        return success && outbound != null
     }
 
     fun json(): String {
