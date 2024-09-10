@@ -1,0 +1,1 @@
+- Take uri fragment as profile name (#32)
