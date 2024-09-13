@@ -1,0 +1,1 @@
+- Logs optimizations by @maskedeken (#27)
