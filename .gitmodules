@@ -4,3 +4,6 @@
 [submodule "XrayCore/libXray"]
 	path = XrayCore/libXray
 	url = https://github.com/XTLS/libXray.git
+[submodule "XrayCore/Xray-core"]
+	path = XrayCore/Xray-core
+	url = https://github.com/XTLS/Xray-core.git
