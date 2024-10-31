@@ -1,7 +1,9 @@
 package io.github.saeeddev94.xray.service
 
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.drawable.Icon
 import android.net.VpnService
 import android.service.quicksettings.Tile
@@ -12,14 +14,16 @@ import io.github.saeeddev94.xray.R
 
 class VpnTileService : TileService() {
 
-    private var action: String = ""
-    private var label: String = ""
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         requestListeningState(this, ComponentName(this, VpnTileService::class.java))
-        action = intent?.getStringExtra("action") ?: ""
-        label = intent?.getStringExtra("label") ?: ""
-        handleUpdate()
+        val action = intent?.getStringExtra("action") ?: ""
+        val label = intent?.getStringExtra("label") ?: ""
+        val sharedPref = sharedPref()
+        sharedPref.edit()
+            .putString("action", action)
+            .putString("label", label)
+            .apply()
+        handleUpdate(action, label)
         return START_STICKY
     }
 
@@ -50,7 +54,10 @@ class VpnTileService : TileService() {
         }
     }
 
-    private fun handleUpdate() {
+    private fun handleUpdate(newAction: String? = null, newLabel: String? = null) {
+        val sharedPref = sharedPref()
+        val action = newAction ?: sharedPref.getString("action", "")!!
+        val label = newLabel ?: sharedPref.getString("label", "")!!
         if (action.isNotEmpty() && label.isNotEmpty()) {
             when (action) {
                 TProxyService.START_VPN_SERVICE_ACTION_NAME -> updateTile(Tile.STATE_ACTIVE, label)
@@ -67,8 +74,10 @@ class VpnTileService : TileService() {
             icon = Icon.createWithResource(applicationContext, R.drawable.vpn_key)
             updateTile()
         }
-        action = ""
-        label = ""
+    }
+
+    private fun sharedPref(): SharedPreferences {
+        return getSharedPreferences("vpn_tile", Context.MODE_PRIVATE)
     }
 
 }
