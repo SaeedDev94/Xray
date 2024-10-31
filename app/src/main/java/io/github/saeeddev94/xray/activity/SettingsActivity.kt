@@ -1,5 +1,6 @@
 package io.github.saeeddev94.xray.activity
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -53,6 +54,7 @@ class SettingsActivity : AppCompatActivity() {
         return true
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setupBasic() {
         basic.findViewById<EditText>(R.id.socksAddress).setText(Settings.socksAddress)
         basic.findViewById<EditText>(R.id.socksPort).setText(Settings.socksPort)
@@ -67,6 +69,7 @@ class SettingsActivity : AppCompatActivity() {
         basic.findViewById<MaterialSwitch>(R.id.socksUdp).isChecked = Settings.socksUdp
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setupAdvanced() {
         advanced.findViewById<EditText>(R.id.primaryDns).setText(Settings.primaryDns)
         advanced.findViewById<EditText>(R.id.secondaryDns).setText(Settings.secondaryDns)
