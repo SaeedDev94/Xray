@@ -97,7 +97,7 @@ project.afterEvaluate {
 
 dependencies {
     implementation(fileTree(dir: "libs", include: ["*.aar", "*.jar"]))
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.9.22"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.0.21"))
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.room:room-ktx:2.6.1")
