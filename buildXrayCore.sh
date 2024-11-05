@@ -33,6 +33,7 @@ prepare_go() {
   # go mod edit -replace github.com/xtls/libxray=./libXray
   # go mod tidy
   # go get golang.org/x/mobile
+  # go get google.golang.org/genproto
   go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20241016134751-7ff83004ec2c
   go mod download
 }
