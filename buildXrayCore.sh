@@ -34,7 +34,7 @@ prepare_go() {
   # go mod tidy
   # go get golang.org/x/mobile
   # go get google.golang.org/genproto
-  go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20241016134751-7ff83004ec2c
+  go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20241213221354-a87c1cf6cf46
   go mod download
 }
 
