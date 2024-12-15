@@ -8,8 +8,8 @@ apt-get update || apt-get update
 apt-get dist-upgrade -y
 
 # Tools version
-ANDROID_PLATFORM_VERSION="android-34"
-ANDROID_SDK_VERSION="34.0.0"
+ANDROID_PLATFORM_VERSION="android-35"
+ANDROID_SDK_VERSION="35.0.0"
 ANDROID_NDK_VERSION="27.1.12297006"
 JAVA_VERSION="17"
 GRADLE_VERSION="8.9"
