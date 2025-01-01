@@ -96,7 +96,7 @@ class LinkHelper(link: String) {
         val outbounds = JSONArray()
 
         val proxy = JSONObject(outbound!!.toString())
-        if (proxy.has("name")) proxy.remove("name")
+        if (proxy.has("sendThrough")) proxy.remove("sendThrough")
         proxy.put("tag", "proxy")
 
         val direct = JSONObject()
