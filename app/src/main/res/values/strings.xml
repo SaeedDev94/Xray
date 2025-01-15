@@ -15,6 +15,7 @@
     <string name="tun2socksLabel">heiher/hev-socks5-tunnel</string>
     <string name="tun2socksVersion">2.7.4</string>
     <string name="assets">Assets</string>
+    <string name="links">Links</string>
     <string name="logs">Logs</string>
     <string name="excludedApps">Excluded Apps</string>
     <string name="settings">Settings</string>

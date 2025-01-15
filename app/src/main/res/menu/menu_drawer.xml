@@ -26,6 +26,10 @@
             android:icon="@drawable/baseline_folder_open"
             android:title="@string/assets" />
         <item
+            android:id="@+id/links"
+            android:icon="@drawable/baseline_link"
+            android:title="@string/links" />
+        <item
             android:id="@+id/logs"
             android:icon="@drawable/baseline_adb"
             android:title="@string/logs" />
