@@ -2,4 +2,5 @@
 <resources>
     <color name="primaryColor">#009966</color>
     <color name="btnColor">#636363</color>
+    <color name="btnColorDisabled">#313131</color>
 </resources>

@@ -51,6 +51,9 @@ abstract class XrayDatabase : RoomDatabase() {
                     )
                 """)
 
+                // create index for link_id
+                db.execSQL("CREATE INDEX profiles_link_id_foreign ON profiles_new(link_id)")
+
                 // importing data from profile to profiles_new
                 db.execSQL("""
                    INSERT INTO profiles_new (id, link_id, "index", name, config)

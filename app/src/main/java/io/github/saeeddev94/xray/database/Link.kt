@@ -6,23 +6,19 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 
 @Entity(tableName = "links")
-class Link {
+data class Link(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    var id: Long = 0L
-
+    var id: Long = 0L,
     @ColumnInfo(name = "name")
-    var name: String = ""
-
+    var name: String = "",
     @ColumnInfo(name = "address")
-    var address: String = ""
-
+    var address: String = "",
     @ColumnInfo(name = "type")
-    var type: Type = Type.Json
-
+    var type: Type = Type.Json,
     @ColumnInfo(name = "is_active")
-    var isActive: Boolean = false
-
+    var isActive: Boolean = false,
+) {
     enum class Type(val value: Int) {
         Json(0),
         Subscription(1);

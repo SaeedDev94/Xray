@@ -3,6 +3,7 @@ package io.github.saeeddev94.xray.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -14,6 +15,12 @@ import androidx.room.PrimaryKey
             childColumns = ["link_id"],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE,
+        ),
+    ],
+    indices = [
+        Index(
+            name = "profiles_link_id_foreign",
+            value = ["link_id"]
         ),
     ],
 )

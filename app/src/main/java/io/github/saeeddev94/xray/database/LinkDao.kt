@@ -5,18 +5,19 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LinkDao {
     @Query("SELECT * FROM links ORDER BY id DESC")
-    fun all(): List<Link>
+    fun all(): Flow<List<Link>>
 
     @Insert
-    fun insert(link: Link): Long
+    suspend fun insert(link: Link): Long
 
     @Update
-    fun update(link: Link)
+    suspend fun update(link: Link)
 
     @Delete
-    fun delete(link: Link)
+    suspend fun delete(link: Link)
 }

@@ -21,6 +21,15 @@
     <string name="settings">Settings</string>
     <string name="geoIp">GeoIP</string>
     <string name="geoSite">GeoSite</string>
+    <string name="refreshLinks">Refresh Links</string>
+    <string name="newLink">New Link</string>
+    <string name="editLink">Edit Link</string>
+    <string name="linkName">Name</string>
+    <string name="linkAddress">Address</string>
+    <string name="linkIsActive">Is Active?</string>
+    <string name="createLink">Create</string>
+    <string name="updateLink">Update</string>
+    <string name="closeLink">Close</string>
     <string name="newProfile">New Profile</string>
     <string name="editProfile">Edit Profile</string>
     <string name="profileName">Name</string>
@@ -29,8 +38,6 @@
     <string name="deleteIcon">Delete Icon</string>
     <string name="downloadIcon">Download Icon</string>
     <string name="fileOpenIcon">File Open Icon</string>
-    <string name="newLink">New Link</string>
-    <string name="refreshLinks">Refresh Links</string>
     <string name="copyLogs">Copy Logs</string>
     <string name="deleteLogs">Delete Logs</string>
     <string name="appIcon">App Icon</string>
