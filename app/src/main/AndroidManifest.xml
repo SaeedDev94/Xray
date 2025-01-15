@@ -55,6 +55,9 @@
             android:name=".activity.AssetsActivity"
             android:parentActivityName=".activity.MainActivity" />
         <activity
+            android:name=".activity.LinksActivity"
+            android:parentActivityName=".activity.MainActivity" />
+        <activity
             android:name=".activity.LogsActivity"
             android:parentActivityName=".activity.MainActivity" />
         <activity

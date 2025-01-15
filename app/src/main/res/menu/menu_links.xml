@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/refreshLinks"
+        android:title="@string/refreshLinks"
+        android:icon="@drawable/baseline_refresh"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/newLink"
+        android:title="@string/newLink"
+        android:icon="@drawable/baseline_add"
+        app:showAsAction="ifRoom" />
+</menu>

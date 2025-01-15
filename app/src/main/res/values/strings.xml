@@ -29,6 +29,8 @@
     <string name="deleteIcon">Delete Icon</string>
     <string name="downloadIcon">Download Icon</string>
     <string name="fileOpenIcon">File Open Icon</string>
+    <string name="newLink">New Link</string>
+    <string name="refreshLinks">Refresh Links</string>
     <string name="copyLogs">Copy Logs</string>
     <string name="deleteLogs">Delete Logs</string>
     <string name="appIcon">App Icon</string>
