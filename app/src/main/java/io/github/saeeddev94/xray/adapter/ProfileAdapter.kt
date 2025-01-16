@@ -1,6 +1,5 @@
 package io.github.saeeddev94.xray.adapter
 
-import android.content.Context
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
@@ -13,18 +12,21 @@ import androidx.recyclerview.widget.RecyclerView
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.dto.ProfileList
-import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.helper.ProfileTouchHelper
+import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 class ProfileAdapter(
-    private var context: Context,
+    private val scope: CoroutineScope,
+    private val profileViewModel: ProfileViewModel,
     private var profiles: ArrayList<ProfileList>,
     private var callback: ProfileClickListener,
 ) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(), ProfileTouchHelper.ProfileTouchCallback {
 
     override fun onCreateViewHolder(container: ViewGroup, type: Int): ViewHolder {
-        val linearLayout = LinearLayout(context)
-        val item: View = LayoutInflater.from(context).inflate(R.layout.item_recycler_main, linearLayout, false)
+        val linearLayout = LinearLayout(container.context)
+        val item: View = LayoutInflater.from(container.context).inflate(R.layout.item_recycler_main, linearLayout, false)
         return ViewHolder(item)
     }
 
@@ -36,7 +38,7 @@ class ProfileAdapter(
         val profile = profiles[index]
         profile.index = index
         val color = if (Settings.selectedProfile == profile.id) R.color.primaryColor else R.color.btnColor
-        holder.activeIndicator.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, color))
+        holder.activeIndicator.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.profileCard.context, color))
         holder.profileName.text = profile.name
         holder.profileCard.setOnClickListener {
             callback.profileSelect(index, profile)
@@ -62,15 +64,14 @@ class ProfileAdapter(
 
     override fun onItemMoveCompleted(startPosition: Int, endPosition: Int) {
         val id = profiles[endPosition].id
-        Thread {
-            val db = XrayDatabase.ref(context)
-            db.profileDao().updateIndex(endPosition, id)
+        scope.launch {
+            profileViewModel.updateIndex(endPosition, id)
             if (startPosition > endPosition) {
-                db.profileDao().fixMoveUpIndex(endPosition, startPosition, id)
+                profileViewModel.fixMoveUpIndex(endPosition, startPosition, id)
             } else {
-                db.profileDao().fixMoveDownIndex(startPosition, endPosition, id)
+                profileViewModel.fixMoveDownIndex(startPosition, endPosition, id)
             }
-        }.start()
+        }
     }
 
     class ViewHolder(item: View) : RecyclerView.ViewHolder(item) {

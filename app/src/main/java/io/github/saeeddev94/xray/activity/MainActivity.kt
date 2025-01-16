@@ -22,12 +22,14 @@ import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,13 +39,16 @@ import io.github.saeeddev94.xray.BuildConfig
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.adapter.ProfileAdapter
-import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import io.github.saeeddev94.xray.dto.ProfileList
 import io.github.saeeddev94.xray.helper.HttpHelper
 import io.github.saeeddev94.xray.helper.LinkHelper
 import io.github.saeeddev94.xray.helper.ProfileTouchHelper
 import io.github.saeeddev94.xray.service.TProxyService
+import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import java.net.URI
@@ -51,6 +56,7 @@ import java.net.URISyntaxException
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    private val profileViewModel: ProfileViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     private lateinit var vpnService: TProxyService
     private var vpnLauncher = registerForActivityResult(StartActivityForResult()) {
@@ -65,6 +71,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val index = it.data!!.getIntExtra("index", -1)
         val id = it.data!!.getLongExtra("id", 0L)
         onProfileActivityResult(id, index)
+    }
+    private val linkLauncher = registerForActivityResult(StartActivityForResult()) {
+        if (it.resultCode != RESULT_OK) return@registerForActivityResult
+        getProfiles(dataOnly = true)
     }
 
     private var vpnServiceBound: Boolean = false
@@ -161,13 +171,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.assets -> Intent(applicationContext, AssetsActivity::class.java)
-            R.id.links -> Intent(applicationContext, LinksActivity::class.java)
             R.id.logs -> Intent(applicationContext, LogsActivity::class.java)
             R.id.excludedApps -> Intent(applicationContext, ExcludeActivity::class.java)
             R.id.settings -> Intent(applicationContext, SettingsActivity::class.java)
             else -> null
         }.also {
             if (it != null) startActivity(it)
+        }
+        if (item.itemId == R.id.links) {
+            linkLauncher.launch(Intent(applicationContext, LinksActivity::class.java))
         }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
@@ -221,15 +233,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun profileSelect(index: Int, profile: ProfileList) {
         if (vpnService.getIsRunning()) return
         val selectedProfile = Settings.selectedProfile
-        Thread {
-            val ref = if (selectedProfile > 0L) XrayDatabase.ref(applicationContext).profileDao().find(selectedProfile) else null
-            runOnUiThread {
+        lifecycleScope.launch {
+            val ref = if (selectedProfile > 0L) profileViewModel.find(selectedProfile) else null
+            withContext(Dispatchers.Main) {
                 Settings.selectedProfile = if (selectedProfile == profile.id) 0L else profile.id
                 Settings.save(applicationContext)
                 profileAdapter.notifyItemChanged(index)
                 if (ref != null && ref.index != index) profileAdapter.notifyItemChanged(ref.index)
             }
-        }.start()
+        }
     }
 
     private fun profileEdit(index: Int, profile: ProfileList) {
@@ -239,20 +251,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun profileDelete(index: Int, profile: ProfileList) {
         if (vpnService.getIsRunning() && Settings.selectedProfile == profile.id) return
-        val selectedProfile = Settings.selectedProfile
         MaterialAlertDialogBuilder(this)
             .setTitle("Delete Profile#${profile.index + 1} ?")
             .setMessage("\"${profile.name}\" will delete forever !!")
             .setNegativeButton("No", null)
             .setPositiveButton("Yes") { dialog, _ ->
                 dialog?.dismiss()
-                Thread {
-                    val db = XrayDatabase.ref(applicationContext)
-                    val ref = db.profileDao().find(profile.id)
+                lifecycleScope.launch {
+                    val ref = profileViewModel.find(profile.id)
                     val id = ref.id
-                    db.profileDao().delete(ref)
-                    db.profileDao().fixDeleteIndex(index)
-                    runOnUiThread {
+                    profileViewModel.delete(ref)
+                    profileViewModel.fixDeleteIndex(index)
+                    withContext(Dispatchers.Main) {
+                        val selectedProfile = Settings.selectedProfile
                         if (selectedProfile == id) {
                             Settings.selectedProfile = 0L
                             Settings.save(applicationContext)
@@ -261,7 +272,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         profileAdapter.notifyItemRemoved(index)
                         profileAdapter.notifyItemRangeChanged(index, profiles.size - index)
                     }
-                }.start()
+                }
             }.show()
     }
 
@@ -276,31 +287,38 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun onProfileActivityResult(id: Long, index: Int) {
         if (index == -1) {
-            Thread {
-                val newProfile = XrayDatabase.ref(applicationContext).profileDao().find(id)
-                runOnUiThread {
+            lifecycleScope.launch {
+                val newProfile = profileViewModel.find(id)
+                withContext(Dispatchers.Main) {
                     profiles.add(0, ProfileList.fromProfile(newProfile))
                     profileAdapter.notifyItemRangeChanged(0, profiles.size)
                 }
-            }.start()
+            }
             return
         }
-        Thread {
-            val profile = XrayDatabase.ref(applicationContext).profileDao().find(id)
-            runOnUiThread {
+        lifecycleScope.launch {
+            val profile = profileViewModel.find(id)
+            withContext(Dispatchers.Main) {
                 profiles[index] = ProfileList.fromProfile(profile)
                 profileAdapter.notifyItemChanged(index)
             }
-        }.start()
+        }
     }
 
-    private fun getProfiles() {
-        Thread {
-            val list = XrayDatabase.ref(applicationContext).profileDao().all()
-            runOnUiThread {
+    private fun getProfiles(dataOnly: Boolean = false) {
+        lifecycleScope.launch {
+            val list = profileViewModel.all()
+            withContext(Dispatchers.Main) {
+                if (dataOnly) {
+                    profiles.clear()
+                    profiles.addAll(ArrayList(list))
+                    @Suppress("NotifyDataSetChanged")
+                    profileAdapter.notifyDataSetChanged()
+                    return@withContext
+                }
                 profiles = ArrayList(list)
                 profilesList = binding.profilesList
-                profileAdapter = ProfileAdapter(applicationContext, profiles, object : ProfileAdapter.ProfileClickListener {
+                profileAdapter = ProfileAdapter(lifecycleScope, profileViewModel, profiles, object : ProfileAdapter.ProfileClickListener {
                     override fun profileSelect(index: Int, profile: ProfileList) = this@MainActivity.profileSelect(index, profile)
                     override fun profileEdit(index: Int, profile: ProfileList) = this@MainActivity.profileEdit(index, profile)
                     override fun profileDelete(index: Int, profile: ProfileList) = this@MainActivity.profileDelete(index, profile)
@@ -309,7 +327,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 profilesList.layoutManager = LinearLayoutManager(applicationContext)
                 ItemTouchHelper(ProfileTouchHelper(profileAdapter)).also { it.attachToRecyclerView(profilesList) }
             }
-        }.start()
+        }
     }
 
     private fun processLink(link: String) {
@@ -331,8 +349,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Toast.makeText(applicationContext, "Invalid Link", Toast.LENGTH_SHORT).show()
             return
         }
-        val name = LinkHelper.remark(uri)
         val json = linkHelper.json()
+        val name = linkHelper.remark()
         profileLauncher.launch(profileIntent(name = name, config = json))
     }
 
@@ -343,10 +361,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .setCancelable(false)
             .create()
         dialog.show()
-        Thread {
+        lifecycleScope.launch {
             try {
-                val config = HttpHelper().get(uri.toString())
-                runOnUiThread {
+                val config = HttpHelper.get(uri.toString())
+                withContext(Dispatchers.Main) {
                     dialog.dismiss()
                     try {
                         val name = LinkHelper.remark(uri)
@@ -357,23 +375,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 }
             } catch (error: Exception) {
-                runOnUiThread {
+                withContext(Dispatchers.Main) {
                     dialog.dismiss()
                     Toast.makeText(applicationContext, error.message, Toast.LENGTH_SHORT).show()
                 }
             }
-        }.start()
+        }
     }
 
     private fun ping() {
         if (!vpnService.getIsRunning()) return
         binding.pingResult.text = getString(R.string.pingTesting)
-        Thread {
-            val delay = HttpHelper().measureDelay()
-            runOnUiThread {
-                binding.pingResult.text = delay
-            }
-        }.start()
+        HttpHelper(lifecycleScope).measureDelay { delay ->
+            binding.pingResult.text = delay
+        }
     }
 
     private fun hasPostNotification(): Boolean {

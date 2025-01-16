@@ -5,25 +5,29 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.github.saeeddev94.xray.R
-import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.database.Profile
-import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.databinding.ActivityProfileBinding
-import io.github.saeeddev94.xray.helper.FileHelper
-import XrayCore.XrayCore
 import android.net.Uri
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.blacksquircle.ui.editorkit.plugin.autoindent.autoIndentation
 import com.blacksquircle.ui.editorkit.plugin.base.PluginSupplier
 import com.blacksquircle.ui.editorkit.plugin.delimiters.highlightDelimiters
 import com.blacksquircle.ui.editorkit.plugin.linenumbers.lineNumbers
 import com.blacksquircle.ui.language.json.JsonLanguage
+import io.github.saeeddev94.xray.helper.ConfigHelper
+import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 class ProfileActivity : AppCompatActivity() {
 
+    private val profileViewModel: ProfileViewModel by viewModels()
     private lateinit var binding: ActivityProfileBinding
     private lateinit var profile: Profile
     private var id: Long = 0L
@@ -49,12 +53,12 @@ class ProfileActivity : AppCompatActivity() {
             profile.config = intent.getStringExtra("config") ?: ""
             resolved(profile)
         } else {
-            Thread {
-                val profile = XrayDatabase.ref(applicationContext).profileDao().find(id)
-                runOnUiThread {
+            lifecycleScope.launch {
+                val profile = profileViewModel.find(id)
+                withContext(Dispatchers.Main) {
                     resolved(profile)
                 }
-            }.start()
+            }
         }
     }
 
@@ -110,23 +114,21 @@ class ProfileActivity : AppCompatActivity() {
     private fun save() {
         profile.name = binding.profileName.text.toString()
         profile.config = binding.profileConfig.text.toString()
-        Thread {
-            FileHelper().createOrUpdate(Settings.testConfig(applicationContext), profile.config)
-            val error = XrayCore.test(applicationContext.filesDir.absolutePath, Settings.testConfig(applicationContext).absolutePath)
+        lifecycleScope.launch {
+            val error = ConfigHelper.isValid(applicationContext, profile.config)
             if (error.isNotEmpty()) {
-                runOnUiThread {
+                withContext(Dispatchers.Main) {
                     Toast.makeText(applicationContext, error, Toast.LENGTH_SHORT).show()
                 }
-                return@Thread
+                return@launch
             }
-            val db = XrayDatabase.ref(applicationContext)
             if (profile.id == 0L) {
-                profile.id = db.profileDao().insert(profile)
-                db.profileDao().fixInsertIndex()
+                profile.id = profileViewModel.insert(profile)
+                profileViewModel.fixInsertIndex()
             } else {
-                db.profileDao().update(profile)
+                profileViewModel.update(profile)
             }
-            runOnUiThread {
+            withContext(Dispatchers.Main) {
                 Intent().also {
                     it.putExtra("id", profile.id)
                     it.putExtra("index", index)
@@ -134,7 +136,7 @@ class ProfileActivity : AppCompatActivity() {
                     finish()
                 }
             }
-        }.start()
+        }
     }
 
 }

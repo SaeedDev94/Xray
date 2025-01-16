@@ -25,10 +25,15 @@ import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.activity.MainActivity
 import io.github.saeeddev94.xray.database.Profile
-import io.github.saeeddev94.xray.database.XrayDatabase
 import io.github.saeeddev94.xray.helper.FileHelper
 import XrayCore.XrayCore
 import android.util.Log
+import io.github.saeeddev94.xray.Xray
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlin.reflect.cast
 
 class TProxyService : VpnService() {
 
@@ -43,6 +48,9 @@ class TProxyService : VpnService() {
         const val START_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStart"
         const val STOP_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStop"
     }
+
+    private val profileRepository by lazy { Xray::class.cast(application).profileRepository }
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private external fun TProxyStartService(configPath: String, fd: Int)
     private external fun TProxyStopService()
@@ -103,14 +111,14 @@ class TProxyService : VpnService() {
     }
 
     private fun findProfileAndStart() {
-        Thread {
+        scope.launch {
             val profile = if (Settings.selectedProfile == 0L) {
                 null
             } else {
-                XrayDatabase.ref(applicationContext).profileDao().find(Settings.selectedProfile)
+                profileRepository.find(Settings.selectedProfile)
             }
             startVPN(profile)
-        }.start()
+        }
     }
 
     private fun startVPN(profile: Profile?) {

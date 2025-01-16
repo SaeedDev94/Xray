@@ -1,6 +1,7 @@
 package io.github.saeeddev94.xray.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -8,6 +9,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -20,19 +22,28 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.radiobutton.MaterialRadioButton
 import io.github.saeeddev94.xray.R
+import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.adapter.LinkAdapter
 import io.github.saeeddev94.xray.database.Link
+import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.databinding.ActivityLinksBinding
+import io.github.saeeddev94.xray.helper.ConfigHelper
+import io.github.saeeddev94.xray.helper.HttpHelper
+import io.github.saeeddev94.xray.helper.LinkHelper
 import io.github.saeeddev94.xray.viewmodel.LinkViewModel
+import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.net.URI
 import kotlin.reflect.cast
 
 class LinksActivity : AppCompatActivity() {
 
     private val linkViewModel: LinkViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by viewModels()
     private val adapter by lazy { LinkAdapter() }
     private val linksRecyclerView by lazy { findViewById<RecyclerView>(R.id.linksRecyclerView) }
     private var links: List<Link> = listOf()
@@ -52,10 +63,8 @@ class LinksActivity : AppCompatActivity() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 linkViewModel.links.collectLatest {
-                    withContext(Dispatchers.Main) {
-                        links = it
-                        adapter.submitList(it)
-                    }
+                    links = it
+                    adapter.submitList(it)
                 }
             }
         }
@@ -76,6 +85,112 @@ class LinksActivity : AppCompatActivity() {
     }
 
     private fun refreshLinks() {
+        Toast.makeText(applicationContext, "Getting update", Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val profiles = profileViewModel.activeLinks()
+            links.filter { it.isActive }.forEach { link ->
+                runCatching {
+                    val content = HttpHelper.get(link.address).trim()
+                    val newProfiles = if (link.type == Link.Type.Json) {
+                        jsonProfile(link, content)
+                    } else {
+                        subscriptionProfiles(link, content)
+                    }
+                    if (newProfiles.isNotEmpty()) {
+                        val linkProfiles = profiles.filter { it.linkId == link.id }
+                        manageProfiles(link, linkProfiles, newProfiles)
+                    }
+                }
+            }
+            withContext(Dispatchers.Main) {
+                setResult(RESULT_OK)
+                Toast.makeText(applicationContext, "Done", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private suspend fun jsonProfile(link: Link, value: String): List<Profile> {
+        val list = arrayListOf<Profile>()
+        runCatching {
+            val error = ConfigHelper.isValid(applicationContext, value)
+            if (error.isEmpty()) {
+                val name = LinkHelper.remark(URI(link.address))
+                val config = JSONObject(value).toString(2)
+                val profile = Profile()
+                profile.linkId = link.id
+                profile.name = name
+                profile.config = config
+                list.add(profile)
+            }
+        }
+        return list.toList()
+    }
+
+    private suspend fun subscriptionProfiles(link: Link, value: String): List<Profile> {
+        return runCatching {
+            val decoded = LinkHelper.decodeBase64(value).trim()
+            decoded.split("\n")
+                .reversed()
+                .map { LinkHelper(it) }
+                .filter { it.isValid() }
+                .map { linkHelper ->
+                    val profile = Profile()
+                    profile.linkId = link.id
+                    profile.config = linkHelper.json()
+                    profile.name = linkHelper.remark()
+                    profile
+                }.filter {
+                    val error = ConfigHelper.isValid(applicationContext, it.config)
+                    error.isEmpty()
+                }
+        }.getOrNull() ?: listOf()
+    }
+
+    private suspend fun manageProfiles(link: Link, linkProfiles: List<Profile>, newProfiles: List<Profile>) {
+        if (newProfiles.size >= linkProfiles.size) {
+            newProfiles.forEachIndexed { index, newProfile ->
+                if (index >= linkProfiles.size) {
+                    newProfile.linkId = link.id
+                    insertProfile(newProfile)
+                } else {
+                    val linkProfile = linkProfiles[index]
+                    updateProfile(linkProfile, newProfile)
+                }
+            }
+            return
+        }
+        linkProfiles.forEachIndexed { index, linkProfile ->
+            if (index >= newProfiles.size) {
+                deleteProfile(linkProfile)
+            } else {
+                val newProfile = newProfiles[index]
+                updateProfile(linkProfile, newProfile)
+            }
+        }
+    }
+
+    private suspend fun insertProfile(newProfile: Profile) {
+        profileViewModel.insert(newProfile)
+        profileViewModel.fixInsertIndex()
+    }
+
+    private suspend fun updateProfile(linkProfile: Profile, newProfile: Profile) {
+        Log.e("INJA", "updateProfile: ${linkProfile.name}, ${newProfile.name}")
+        linkProfile.name = newProfile.name
+        linkProfile.config = newProfile.config
+        profileViewModel.update(linkProfile)
+    }
+
+    private suspend fun deleteProfile(linkProfile: Profile) {
+        profileViewModel.delete(linkProfile)
+        profileViewModel.fixDeleteIndex(linkProfile.index)
+        withContext(Dispatchers.Main) {
+            val selectedProfile = Settings.selectedProfile
+            if (selectedProfile == linkProfile.id) {
+                Settings.selectedProfile = 0L
+                Settings.save(applicationContext)
+            }
+        }
     }
 
     private fun openLink(index: Int = -1, link: Link = Link()) {
@@ -137,7 +252,14 @@ class LinksActivity : AppCompatActivity() {
 
     private fun deleteLink(link: Link) {
         lifecycleScope.launch {
+            profileViewModel.linkProfiles(link.id)
+                .forEach { linkProfile ->
+                    deleteProfile(linkProfile)
+                }
             linkViewModel.delete(link)
+            withContext(Dispatchers.Main) {
+                setResult(RESULT_OK)
+            }
         }
     }
 }

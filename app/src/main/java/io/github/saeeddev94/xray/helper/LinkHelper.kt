@@ -12,11 +12,11 @@ class LinkHelper(link: String) {
 
     private val success: Boolean
     private val outbound: JSONObject?
+    private var remark: String = REMARK_DEFAULT
 
     init {
         val base64: String = XrayCore.json(link)
-        val byteArray = Base64.decode(base64, Base64.DEFAULT)
-        val decoded = String(byteArray)
+        val decoded = decodeBase64(base64)
         val response = try { JSONObject(decoded) } catch (error: JSONException) { JSONObject() }
         val data = response.optJSONObject("data") ?: JSONObject()
         val outbounds = data.optJSONArray("outbounds") ?: JSONArray()
@@ -25,9 +25,16 @@ class LinkHelper(link: String) {
     }
 
     companion object {
+        private const val REMARK_DEFAULT = "New Profile"
+
         fun remark(uri: URI): String {
             val name = uri.fragment ?: ""
-            return name.ifEmpty { "New Profile" }
+            return name.ifEmpty { REMARK_DEFAULT }
+        }
+
+        fun decodeBase64(value: String): String {
+            val byteArray = Base64.decode(value, Base64.DEFAULT)
+            return String(byteArray)
         }
     }
 
@@ -37,6 +44,10 @@ class LinkHelper(link: String) {
 
     fun json(): String {
         return config().toString(2) + "\n"
+    }
+
+    fun remark(): String {
+        return remark
     }
 
     private fun log(): JSONObject {
@@ -96,7 +107,10 @@ class LinkHelper(link: String) {
         val outbounds = JSONArray()
 
         val proxy = JSONObject(outbound!!.toString())
-        if (proxy.has("sendThrough")) proxy.remove("sendThrough")
+        if (proxy.has("sendThrough")) {
+            remark = proxy.optString("sendThrough", REMARK_DEFAULT)
+            proxy.remove("sendThrough")
+        }
         proxy.put("tag", "proxy")
 
         val direct = JSONObject()

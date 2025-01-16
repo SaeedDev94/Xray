@@ -10,32 +10,55 @@ import io.github.saeeddev94.xray.dto.ProfileList
 @Dao
 interface ProfileDao {
     @Query("SELECT `id`, `index`, `name` FROM profiles ORDER BY `index` ASC")
-    fun all(): List<ProfileList>
+    suspend fun all(): List<ProfileList>
 
-    @Query("UPDATE profiles SET `index` = `index` + 1")
-    fun fixInsertIndex()
+    @Query(
+        "SELECT profiles.* FROM profiles" +
+        "  INNER JOIN links ON profiles.link_id = links.id" +
+        "  WHERE links.is_active = 1" +
+        "  ORDER BY links.id DESC, `index` DESC"
+    )
+    suspend fun activeLinks(): List<Profile>
 
-    @Query("UPDATE profiles SET `index` = `index` - 1 WHERE `index` > :index")
-    fun fixDeleteIndex(index: Int)
-
-    @Query("UPDATE profiles SET `index` = :index WHERE `id` = :id")
-    fun updateIndex(index: Int, id: Long)
-
-    @Query("UPDATE profiles SET `index` = `index` + 1 WHERE `index` >= :start AND `index` < :end AND `id` NOT IN (:exclude)")
-    fun fixMoveUpIndex(start: Int, end: Int, exclude: Long)
-
-    @Query("UPDATE profiles SET `index` = `index` - 1 WHERE `index` > :start AND `index` <= :end AND `id` NOT IN (:exclude)")
-    fun fixMoveDownIndex(start: Int, end: Int, exclude: Long)
+    @Query("SELECT * FROM profiles WHERE link_id = :linkId")
+    suspend fun linkProfiles(linkId: Long): List<Profile>
 
     @Query("SELECT * FROM profiles WHERE `id` = :id")
-    fun find(id: Long): Profile
+    suspend fun find(id: Long): Profile
 
     @Insert
-    fun insert(profile: Profile): Long
+    suspend fun insert(profile: Profile): Long
 
     @Update
-    fun update(profile: Profile)
+    suspend fun update(profile: Profile)
 
     @Delete
-    fun delete(profile: Profile)
+    suspend fun delete(profile: Profile)
+
+    @Query("UPDATE profiles SET `index` = :index WHERE `id` = :id")
+    suspend fun updateIndex(index: Int, id: Long)
+
+    @Query("UPDATE profiles SET `index` = `index` + 1")
+    suspend fun fixInsertIndex()
+
+    @Query("UPDATE profiles SET `index` = `index` - 1 WHERE `index` > :index")
+    suspend fun fixDeleteIndex(index: Int)
+
+    @Query(
+        "UPDATE profiles" +
+        "  SET `index` = `index` + 1" +
+        "  WHERE `index` >= :start" +
+        "  AND `index` < :end" +
+        "  AND `id` NOT IN (:exclude)"
+    )
+    suspend fun fixMoveUpIndex(start: Int, end: Int, exclude: Long)
+
+    @Query(
+        "UPDATE profiles" +
+        "  SET `index` = `index` - 1" +
+        "  WHERE `index` > :start" +
+        "  AND `index` <= :end" +
+        "  AND `id` NOT IN (:exclude)"
+    )
+    suspend fun fixMoveDownIndex(start: Int, end: Int, exclude: Long)
 }

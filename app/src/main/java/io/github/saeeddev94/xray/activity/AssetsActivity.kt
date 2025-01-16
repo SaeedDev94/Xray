@@ -9,10 +9,14 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.databinding.ActivityAssetsBinding
 import io.github.saeeddev94.xray.helper.DownloadHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.Exception
@@ -92,47 +96,45 @@ class AssetsActivity : AppCompatActivity() {
         progressBar.progress = 0
 
         downloading = true
-        Thread {
-            DownloadHelper(url, file, object : DownloadHelper.DownloadListener {
-                override fun onProgress(progress: Int) {
-                    runOnUiThread { progressBar.progress = progress }
-                }
+        DownloadHelper(lifecycleScope, url, file, object : DownloadHelper.DownloadListener {
+            override fun onProgress(progress: Int) {
+                progressBar.progress = progress
+            }
 
-                override fun onError(exception: Exception) {
-                    runOnUiThread {
-                        downloading = false
-                        Toast.makeText(applicationContext, exception.message, Toast.LENGTH_SHORT).show()
-                        setAssetStatus()
-                    }
-                }
+            override fun onError(exception: Exception) {
+                downloading = false
+                Toast.makeText(applicationContext, exception.message, Toast.LENGTH_SHORT).show()
+                setAssetStatus()
+            }
 
-                override fun onComplete() {
-                    runOnUiThread {
-                        downloading = false
-                        setAssetStatus()
-                    }
-                }
-            }).start()
-        }.start()
+            override fun onComplete() {
+                downloading = false
+                setAssetStatus()
+            }
+        }).start()
     }
 
     private fun writeToFile(uri: Uri?, file: File) {
         if (uri == null) return
-        Thread {
+        lifecycleScope.launch {
             contentResolver.openInputStream(uri).use { input ->
                 FileOutputStream(file).use { output ->
                     input?.copyTo(output)
                 }
             }
-            runOnUiThread { setAssetStatus() }
-        }.start()
+            withContext(Dispatchers.Main) {
+                setAssetStatus()
+            }
+        }
     }
 
     private fun delete(file: File) {
-        Thread {
+        lifecycleScope.launch {
             file.delete()
-            runOnUiThread { setAssetStatus() }
-        }.start()
+            withContext(Dispatchers.Main) {
+                setAssetStatus()
+            }
+        }
     }
 
 }

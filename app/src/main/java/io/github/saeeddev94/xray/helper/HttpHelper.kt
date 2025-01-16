@@ -1,6 +1,10 @@
 package io.github.saeeddev94.xray.helper
 
 import io.github.saeeddev94.xray.Settings
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.net.Authenticator
 import java.net.HttpURLConnection
@@ -9,53 +13,63 @@ import java.net.PasswordAuthentication
 import java.net.Proxy
 import java.net.URL
 
-class HttpHelper {
+class HttpHelper(var scope: CoroutineScope) {
 
-    fun get(link: String): String {
-        val url = URL(link)
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-        connection.connect()
-        val responseCode = connection.responseCode
-        return if (responseCode == HttpURLConnection.HTTP_OK) {
-            connection.inputStream.bufferedReader().use { it.readText() }
-        } else {
-            throw Exception("HTTP Error: $responseCode")
+    companion object {
+        suspend fun get(link: String): String {
+            return withContext(Dispatchers.IO) {
+                val url = URL(link)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.connect()
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    connection.inputStream.bufferedReader().use { it.readText() }
+                } else {
+                    throw Exception("HTTP Error: $responseCode")
+                }
+            }
         }
     }
 
-    fun measureDelay(): String {
-        val start = System.currentTimeMillis()
-        val connection = getConnection()
-        var result = "HTTP {status}, {delay} ms"
+    fun measureDelay(callback: (result: String) -> Unit) {
+        scope.launch(Dispatchers.IO) {
+            val start = System.currentTimeMillis()
+            val connection = getConnection()
+            var result = "HTTP {status}, {delay} ms"
 
-        result = try {
-            setSocksAuth(getSocksAuth())
-            val responseCode = connection.responseCode
-            result.replace("{status}", "$responseCode")
-        } catch (error: Exception) {
-            error.message ?: "Http delay measure failed"
-        } finally {
-            connection.disconnect()
-            setSocksAuth(null)
+            result = try {
+                setSocksAuth(getSocksAuth())
+                val responseCode = connection.responseCode
+                result.replace("{status}", "$responseCode")
+            } catch (error: Exception) {
+                error.message ?: "Http delay measure failed"
+            } finally {
+                connection.disconnect()
+                setSocksAuth(null)
+            }
+
+            val delay = System.currentTimeMillis() - start
+            withContext(Dispatchers.Main) {
+                callback(result.replace("{delay}", "$delay"))
+            }
         }
-
-        val delay = System.currentTimeMillis() - start
-        return result.replace("{delay}", "$delay")
     }
 
-    private fun getConnection(): HttpURLConnection {
-        val address = InetSocketAddress(Settings.socksAddress, Settings.socksPort.toInt())
-        val proxy = Proxy(Proxy.Type.SOCKS, address)
-        val timeout = Settings.pingTimeout * 1000
-        val connection = URL(Settings.pingAddress).openConnection(proxy) as HttpURLConnection
+    private suspend fun getConnection(): HttpURLConnection {
+        return withContext(Dispatchers.IO) {
+            val address = InetSocketAddress(Settings.socksAddress, Settings.socksPort.toInt())
+            val proxy = Proxy(Proxy.Type.SOCKS, address)
+            val timeout = Settings.pingTimeout * 1000
+            val connection = URL(Settings.pingAddress).openConnection(proxy) as HttpURLConnection
 
-        connection.requestMethod = "HEAD"
-        connection.connectTimeout = timeout
-        connection.readTimeout = timeout
-        connection.setRequestProperty("Connection", "close")
+            connection.requestMethod = "HEAD"
+            connection.connectTimeout = timeout
+            connection.readTimeout = timeout
+            connection.setRequestProperty("Connection", "close")
 
-        return connection
+            connection
+        }
     }
 
     private fun getSocksAuth(): Authenticator? {
