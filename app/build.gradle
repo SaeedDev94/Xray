@@ -16,7 +16,7 @@ def calcVersionCode() {
 
 android {
     namespace = "io.github.saeeddev94.xray"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "io.github.saeeddev94.xray"
@@ -98,8 +98,8 @@ project.afterEvaluate {
 dependencies {
     implementation(fileTree(dir: "libs", include: ["*.aar", "*.jar"]))
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.0.21"))
-    implementation("androidx.activity:activity-ktx:1.9.3")
-    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.activity:activity-ktx:1.10.0")
+    implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation("androidx.room:room-ktx:2.6.1")
