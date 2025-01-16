@@ -1,0 +1,4 @@
+- Migrate to kotlin CoroutineScope
+- New Activity: LinksActivity
+- Ability to add and manage "Json and Subscription" Links
+- Manual update profiles via links
