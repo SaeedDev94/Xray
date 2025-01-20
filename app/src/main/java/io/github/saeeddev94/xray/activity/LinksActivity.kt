@@ -1,7 +1,6 @@
 package io.github.saeeddev94.xray.activity
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -175,7 +174,6 @@ class LinksActivity : AppCompatActivity() {
     }
 
     private suspend fun updateProfile(linkProfile: Profile, newProfile: Profile) {
-        Log.e("INJA", "updateProfile: ${linkProfile.name}, ${newProfile.name}")
         linkProfile.name = newProfile.name
         linkProfile.config = newProfile.config
         profileViewModel.update(linkProfile)
@@ -238,16 +236,14 @@ class LinksActivity : AppCompatActivity() {
                         linkViewModel.insert(link)
                     } else {
                         linkViewModel.update(link)
-                        withContext(Dispatchers.Main) {
-                            adapter.notifyItemChanged(index)
-                        }
+                        adapter.notifyItemChanged(index)
                     }
                 }
             }
             setNegativeButton(cancel) { dialog, _ ->
                 dialog.dismiss()
             }
-        }.create().show()
+        }.show()
     }
 
     private fun deleteLink(link: Link) {
