@@ -97,7 +97,7 @@
         </service>
         <receiver
             android:name=".receiver.VpnActionReceiver"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="io.github.saeeddev94.xray.VpnStart" />
                 <action android:name="io.github.saeeddev94.xray.VpnStop" />
