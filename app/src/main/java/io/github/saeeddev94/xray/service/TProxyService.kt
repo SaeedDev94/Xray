@@ -32,6 +32,7 @@ import io.github.saeeddev94.xray.Xray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlin.reflect.cast
 
@@ -107,6 +108,7 @@ class TProxyService : VpnService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        scope.cancel()
         unregisterReceiver(stopVpnAction)
     }
 
