@@ -18,7 +18,6 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import io.github.saeeddev94.xray.BuildConfig
 import io.github.saeeddev94.xray.R
@@ -27,6 +26,7 @@ import io.github.saeeddev94.xray.activity.MainActivity
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.helper.FileHelper
 import XrayCore.XrayCore
+import android.annotation.SuppressLint
 import android.util.Log
 import io.github.saeeddev94.xray.Xray
 import kotlinx.coroutines.CoroutineScope
@@ -87,13 +87,17 @@ class TProxyService : VpnService() {
     fun getIsRunning(): Boolean = isRunning
     override fun onBind(intent: Intent?): IBinder = binder
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate() {
         super.onCreate()
         Settings.sync(applicationContext)
         IntentFilter().also {
             it.addAction(STOP_VPN_SERVICE_ACTION_NAME)
-            registerReceiver(stopVpnAction, it, RECEIVER_NOT_EXPORTED)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(stopVpnAction, it, RECEIVER_NOT_EXPORTED)
+            } else {
+                registerReceiver(stopVpnAction, it)
+            }
         }
     }
 

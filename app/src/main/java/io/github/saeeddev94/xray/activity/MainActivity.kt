@@ -1,6 +1,7 @@
 package io.github.saeeddev94.xray.activity
 
 import XrayCore.XrayCore
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -23,7 +24,6 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onStart() {
         super.onStart()
         Intent(this, TProxyService::class.java).also {
@@ -132,7 +132,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         IntentFilter().also {
             it.addAction(TProxyService.START_VPN_SERVICE_ACTION_NAME)
             it.addAction(TProxyService.STOP_VPN_SERVICE_ACTION_NAME)
-            registerReceiver(toggleVpnAction, it, RECEIVER_NOT_EXPORTED)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(toggleVpnAction, it, RECEIVER_NOT_EXPORTED)
+            } else {
+                registerReceiver(toggleVpnAction, it)
+            }
         }
     }
 
