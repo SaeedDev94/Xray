@@ -7,7 +7,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.net.VpnService
@@ -18,11 +17,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
@@ -60,7 +59,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var profileAdapter: ProfileAdapter
     private lateinit var profiles: ArrayList<ProfileList>
 
-    private var profileLauncher = registerForActivityResult(StartActivityForResult()) {
+    private val profileLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
         val index = it.data!!.getIntExtra("index", -1)
         val id = it.data!!.getLongExtra("id", 0L)
@@ -70,10 +69,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
         getProfiles(dataOnly = true)
     }
-    private var vpnLauncher = registerForActivityResult(StartActivityForResult()) {
+    private val vpnLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
         toggleVpnService()
     }
+    private val vpnServiceNotificationPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            onToggleButtonClick()
+        }
     private val vpnServiceEventReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
@@ -134,11 +137,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onStop() {
         super.onStop()
         unregisterReceiver(vpnServiceEventReceiver)
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == 1) onToggleButtonClick()
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -383,12 +381,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val key = "request_notification_permission"
         val askedBefore = sharedPref.getBoolean(key, false)
         if (askedBefore) return true
-        if (
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             sharedPref.edit().putBoolean(key, true).apply()
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
+            vpnServiceNotificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
             return false
         }
         return true
