@@ -1,22 +1,18 @@
 package io.github.saeeddev94.xray.activity
 
 import XrayCore.XrayCore
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -57,15 +53,13 @@ import java.net.URISyntaxException
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private val profileViewModel: ProfileViewModel by viewModels()
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var vpnService: TProxyService
-    private var vpnLauncher = registerForActivityResult(StartActivityForResult()) {
-        toggleVpnService()
-    }
+    private var isRunning: Boolean = false
 
+    private lateinit var binding: ActivityMainBinding
     private lateinit var profilesList: RecyclerView
     private lateinit var profileAdapter: ProfileAdapter
     private lateinit var profiles: ArrayList<ProfileList>
+
     private var profileLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
         val index = it.data!!.getIntExtra("index", -1)
@@ -76,26 +70,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
         getProfiles(dataOnly = true)
     }
-
-    private var vpnServiceBound: Boolean = false
-    private var serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            val binder = service as TProxyService.ServiceBinder
-            vpnService = binder.getService()
-            vpnServiceBound = true
-            setVpnServiceStatus()
-        }
-
-        override fun onServiceDisconnected(arg0: ComponentName) {
-            vpnServiceBound = false
-        }
+    private var vpnLauncher = registerForActivityResult(StartActivityForResult()) {
+        toggleVpnService()
     }
-
-    private val toggleVpnAction: BroadcastReceiver = object : BroadcastReceiver() {
+    private val vpnServiceEventReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 TProxyService.START_VPN_SERVICE_ACTION_NAME -> vpnStartStatus()
                 TProxyService.STOP_VPN_SERVICE_ACTION_NAME -> vpnStopStatus()
+                TProxyService.STATUS_VPN_SERVICE_ACTION_NAME -> {
+                    intent.getBooleanExtra("isRunning", false).let { isRunning ->
+                        if (isRunning) vpnStartStatus()
+                        else vpnStopStatus()
+                    }
+                }
             }
         }
     }
@@ -123,28 +111,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onStart() {
         super.onStart()
-        Intent(this, TProxyService::class.java).also {
-            bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
-        }
         IntentFilter().also {
             it.addAction(TProxyService.START_VPN_SERVICE_ACTION_NAME)
             it.addAction(TProxyService.STOP_VPN_SERVICE_ACTION_NAME)
+            it.addAction(TProxyService.STATUS_VPN_SERVICE_ACTION_NAME)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                registerReceiver(toggleVpnAction, it, RECEIVER_NOT_EXPORTED)
+                registerReceiver(vpnServiceEventReceiver, it, RECEIVER_NOT_EXPORTED)
             } else {
-                registerReceiver(toggleVpnAction, it)
+                @Suppress("UnspecifiedRegisterReceiverFlag")
+                registerReceiver(vpnServiceEventReceiver, it)
             }
+        }
+        Intent(this, TProxyService::class.java).also {
+            it.action = TProxyService.STATUS_VPN_SERVICE_ACTION_NAME
+            startService(it)
         }
     }
 
     override fun onStop() {
         super.onStop()
-        unbindService(serviceConnection)
-        unregisterReceiver(toggleVpnAction)
-        vpnServiceBound = false
+        unregisterReceiver(vpnServiceEventReceiver)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -189,22 +177,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun setVpnServiceStatus() {
-        if (!vpnServiceBound) return
-        if (vpnService.getIsRunning()) {
-            vpnStartStatus()
-        } else {
-            vpnStopStatus()
-        }
-    }
-
     private fun vpnStartStatus() {
+        isRunning = true
         binding.toggleButton.text = getString(R.string.vpnStop)
         binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primaryColor))
         binding.pingResult.text = getString(R.string.pingConnected)
     }
 
     private fun vpnStopStatus() {
+        isRunning = false
         binding.toggleButton.text = getString(R.string.vpnStart)
         binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.btnColor))
         binding.pingResult.text = getString(R.string.pingNotConnected)
@@ -222,7 +203,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun toggleVpnService() {
-        if (vpnService.getIsRunning()) {
+        if (isRunning) {
             Intent(applicationContext, TProxyService::class.java).also {
                 it.action = TProxyService.STOP_VPN_SERVICE_ACTION_NAME
                 startService(it)
@@ -236,7 +217,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun profileSelect(index: Int, profile: ProfileList) {
-        if (vpnService.getIsRunning()) return
+        if (isRunning) return
         val selectedProfile = Settings.selectedProfile
         lifecycleScope.launch {
             val ref = if (selectedProfile > 0L) profileViewModel.find(selectedProfile) else null
@@ -250,12 +231,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun profileEdit(index: Int, profile: ProfileList) {
-        if (vpnService.getIsRunning() && Settings.selectedProfile == profile.id) return
+        if (isRunning && Settings.selectedProfile == profile.id) return
         profileLauncher.launch(profileIntent(index, profile.id))
     }
 
     private fun profileDelete(index: Int, profile: ProfileList) {
-        if (vpnService.getIsRunning() && Settings.selectedProfile == profile.id) return
+        if (isRunning && Settings.selectedProfile == profile.id) return
         MaterialAlertDialogBuilder(this)
             .setTitle("Delete Profile#${profile.index + 1} ?")
             .setMessage("\"${profile.name}\" will delete forever !!")
@@ -389,7 +370,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun ping() {
-        if (!vpnService.getIsRunning()) return
+        if (!isRunning) return
         binding.pingResult.text = getString(R.string.pingTesting)
         HttpHelper(lifecycleScope).measureDelay { delay ->
             binding.pingResult.text = delay

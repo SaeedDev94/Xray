@@ -6,10 +6,8 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.net.VpnService
-import android.os.Binder
 import android.os.Build
 import android.os.Handler
-import android.os.IBinder
 import android.os.Looper
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
@@ -42,26 +40,19 @@ class TProxyService : VpnService() {
         const val STOP_VPN_SERVICE_ACTION_ID = 2
         const val START_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStart"
         const val STOP_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStop"
+        const val STATUS_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStatus"
     }
 
     private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
     private val profileRepository by lazy { Xray::class.cast(application).profileRepository }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private external fun TProxyStartService(configPath: String, fd: Int)
-    private external fun TProxyStopService()
-    private external fun TProxyGetStats(): LongArray
-
-    inner class ServiceBinder : Binder() {
-        fun getService(): TProxyService = this@TProxyService
-    }
-
-    private val binder: ServiceBinder = ServiceBinder()
     private var isRunning: Boolean = false
     private var tunDevice: ParcelFileDescriptor? = null
 
-    fun getIsRunning(): Boolean = isRunning
-    override fun onBind(intent: Intent?): IBinder = binder
+    private external fun TProxyStartService(configPath: String, fd: Int)
+    private external fun TProxyStopService()
+    private external fun TProxyGetStats(): LongArray
 
     override fun onCreate() {
         super.onCreate()
@@ -73,6 +64,7 @@ class TProxyService : VpnService() {
             when (intent?.action) {
                 START_VPN_SERVICE_ACTION_NAME -> findProfileAndStart()
                 STOP_VPN_SERVICE_ACTION_NAME -> stopVPN()
+                STATUS_VPN_SERVICE_ACTION_NAME -> statusVPN()
             }
         }
         return START_STICKY
@@ -97,8 +89,6 @@ class TProxyService : VpnService() {
     }
 
     private fun startVPN(profile: Profile?) {
-        isRunning = true
-
         /** Start xray */
         if (profile != null) {
             FileHelper().createOrUpdate(Settings.xrayConfig(applicationContext), profile.config)
@@ -107,7 +97,6 @@ class TProxyService : VpnService() {
             val maxMemory: Long = 67108864 // 64 MB * 1024 KB * 1024 B
             val error: String = XrayCore.start(datDir, configPath, maxMemory)
             if (error.isNotEmpty()) {
-                isRunning = false
                 showToast(error)
                 return
             }
@@ -156,7 +145,6 @@ class TProxyService : VpnService() {
 
         /** Check tun device */
         if (tunDevice == null) {
-            isRunning = false
             Log.e("TProxyService", "tun#establish failed")
             return
         }
@@ -186,31 +174,39 @@ class TProxyService : VpnService() {
         startForeground(VPN_SERVICE_NOTIFICATION_ID, createNotification(name))
 
         /** Broadcast start event */
+        showToast("Start VPN")
+        isRunning = true
         Intent(START_VPN_SERVICE_ACTION_NAME).also {
             it.`package` = BuildConfig.APPLICATION_ID
             it.putExtra("profile", name)
             sendBroadcast(it)
         }
-
-        showToast("Start VPN")
     }
 
     private fun stopVPN() {
         showToast("Stop VPN")
+        isRunning = false
         Intent(STOP_VPN_SERVICE_ACTION_NAME).also {
             it.`package` = BuildConfig.APPLICATION_ID
             sendBroadcast(it)
         }
-        isRunning = false
         TProxyStopService()
         XrayCore.stop()
-        stopForeground(STOP_FOREGROUND_REMOVE)
-        stopSelf()
         try {
             tunDevice?.close()
         } catch (_: Exception) {
         } finally {
             tunDevice = null
+        }
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+    }
+
+    private fun statusVPN() {
+        Intent(STATUS_VPN_SERVICE_ACTION_NAME).also {
+            it.`package` = BuildConfig.APPLICATION_ID
+            it.putExtra("isRunning", isRunning)
+            sendBroadcast(it)
         }
     }
 
