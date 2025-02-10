@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         getProfiles(dataOnly = true)
     }
     private var vpnLauncher = registerForActivityResult(StartActivityForResult()) {
+        if (it.resultCode != RESULT_OK) return@registerForActivityResult
         toggleVpnService()
     }
     private val vpnServiceEventReceiver: BroadcastReceiver = object : BroadcastReceiver() {
