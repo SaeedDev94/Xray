@@ -37,7 +37,10 @@ class VpnTileService : TileService() {
             Tile.STATE_INACTIVE -> {
                 val isPrepare = VpnService.prepare(applicationContext) == null
                 if (!isPrepare) {
-                    Log.e("VpnTileService", "Can't start: VpnService#prepare: needs user permission")
+                    Log.e(
+                        "VpnTileService",
+                        "Can't start: VpnService#prepare: needs user permission"
+                    )
                     return
                 }
                 Intent(applicationContext, TProxyService::class.java).also {
