@@ -104,7 +104,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.navView.menu.findItem(R.id.appVersion).title = BuildConfig.VERSION_NAME
         binding.navView.menu.findItem(R.id.xrayVersion).title = XrayCore.version()
         binding.navView.setNavigationItemSelectedListener(this)
-        ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar, R.string.drawerOpen, R.string.drawerClose).also {
+        ActionBarDrawerToggle(
+            this, binding.drawerLayout, binding.toolbar,
+            R.string.drawerOpen, R.string.drawerClose
+        ).also {
             binding.drawerLayout.addDrawerListener(it)
             it.syncState()
         }
@@ -181,14 +184,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun vpnStartStatus() {
         isRunning = true
         binding.toggleButton.text = getString(R.string.vpnStop)
-        binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primaryColor))
+        binding.toggleButton.backgroundTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(this, R.color.primaryColor)
+        )
         binding.pingResult.text = getString(R.string.pingConnected)
     }
 
     private fun vpnStopStatus() {
         isRunning = false
         binding.toggleButton.text = getString(R.string.vpnStart)
-        binding.toggleButton.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.btnColor))
+        binding.toggleButton.backgroundTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(this, R.color.btnColor)
+        )
         binding.pingResult.text = getString(R.string.pingNotConnected)
     }
 
@@ -263,12 +270,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }.show()
     }
 
-    private fun profileIntent(index: Int = -1, id: Long = 0L, name: String = "", config: String = ""): Intent {
+    private fun profileIntent(
+        index: Int = -1, id: Long = 0L, name: String = "", config: String = ""
+    ): Intent {
         return Intent(applicationContext, ProfileActivity::class.java).also {
             it.putExtra("index", index)
             it.putExtra("id", id)
             if (name.isNotEmpty()) it.putExtra("name", name)
-            if (config.isNotEmpty()) it.putExtra("config", config.replace("\\/", "/"))
+            if (config.isNotEmpty()) it.putExtra(
+                "config",
+                config.replace("\\/", "/")
+            )
         }
     }
 
@@ -305,14 +317,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 profiles = ArrayList(list)
                 profilesList = binding.profilesList
-                profileAdapter = ProfileAdapter(lifecycleScope, profileViewModel, profiles, object : ProfileAdapter.ProfileClickListener {
-                    override fun profileSelect(index: Int, profile: ProfileList) = this@MainActivity.profileSelect(index, profile)
-                    override fun profileEdit(index: Int, profile: ProfileList) = this@MainActivity.profileEdit(index, profile)
-                    override fun profileDelete(index: Int, profile: ProfileList) = this@MainActivity.profileDelete(index, profile)
-                })
+                profileAdapter = ProfileAdapter(
+                    lifecycleScope,
+                    profileViewModel,
+                    profiles, object : ProfileAdapter.ProfileClickListener {
+                        override fun profileSelect(index: Int, profile: ProfileList) =
+                            this@MainActivity.profileSelect(index, profile)
+                        override fun profileEdit(index: Int, profile: ProfileList) =
+                            this@MainActivity.profileEdit(index, profile)
+                        override fun profileDelete(index: Int, profile: ProfileList) =
+                            this@MainActivity.profileDelete(index, profile)
+                    })
                 profilesList.adapter = profileAdapter
                 profilesList.layoutManager = LinearLayoutManager(applicationContext)
-                ItemTouchHelper(ProfileTouchHelper(profileAdapter)).also { it.attachToRecyclerView(profilesList) }
+                ItemTouchHelper(ProfileTouchHelper(profileAdapter)).also {
+                    it.attachToRecyclerView(profilesList)
+                }
             }
         }
     }
@@ -342,7 +362,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun getConfig(uri: URI) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.loading_dialog, LinearLayout(this))
+        val dialogView = LayoutInflater.from(this).inflate(
+            R.layout.loading_dialog,
+            LinearLayout(this)
+        )
         val dialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .setCancelable(false)
