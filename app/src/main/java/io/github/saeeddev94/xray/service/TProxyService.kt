@@ -8,8 +8,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.net.ConnectivityManager
-import android.net.Network
 import android.net.VpnService
 import android.os.Binder
 import android.os.Build
@@ -50,6 +48,7 @@ class TProxyService : VpnService() {
         const val STOP_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStop"
     }
 
+    private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
     private val profileRepository by lazy { Xray::class.cast(application).profileRepository }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -68,18 +67,6 @@ class TProxyService : VpnService() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 STOP_VPN_SERVICE_ACTION_NAME -> stopVPN()
-            }
-        }
-    }
-    private val connectivity by lazy { getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager }
-    private val defaultNetworkCallback by lazy {
-        object : ConnectivityManager.NetworkCallback() {
-            override fun onLost(network: Network) {
-                super.onLost(network)
-                Intent(STOP_VPN_SERVICE_ACTION_NAME).also {
-                    it.`package` = BuildConfig.APPLICATION_ID
-                    sendBroadcast(it)
-                }
             }
         }
     }
@@ -192,13 +179,6 @@ class TProxyService : VpnService() {
             return
         }
 
-        /** Register network callback */
-        try {
-            connectivity.registerDefaultNetworkCallback(defaultNetworkCallback)
-        } catch (error: Exception) {
-            error.printStackTrace()
-        }
-
         /** Create, Update tun2socks config */
         val tun2socksConfig = arrayListOf(
             "tunnel:",
@@ -235,10 +215,6 @@ class TProxyService : VpnService() {
 
     private fun stopVPN() {
         isRunning = false
-        try {
-            connectivity.unregisterNetworkCallback(defaultNetworkCallback)
-        } catch (_: Exception) {
-        }
         TProxyStopService()
         XrayCore.stop()
         stopForeground(STOP_FOREGROUND_REMOVE)
@@ -284,7 +260,6 @@ class TProxyService : VpnService() {
         val id = "XrayVpnServiceNotification"
         val name = "Xray VPN Service"
         val channel = NotificationChannel(id, name, NotificationManager.IMPORTANCE_LOW)
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
         return id
     }
