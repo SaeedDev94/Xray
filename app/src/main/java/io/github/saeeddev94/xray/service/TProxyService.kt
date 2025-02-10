@@ -158,13 +158,19 @@ class TProxyService : VpnService() {
             "  address: ${Settings.socksAddress}",
             "  port: ${Settings.socksPort}",
         )
-        if (Settings.socksUsername.trim().isNotEmpty() && Settings.socksPassword.trim().isNotEmpty()) {
+        if (
+            Settings.socksUsername.trim().isNotEmpty() &&
+            Settings.socksPassword.trim().isNotEmpty()
+        ) {
             tun2socksConfig.add("  username: ${Settings.socksUsername}")
             tun2socksConfig.add("  password: ${Settings.socksPassword}")
         }
         tun2socksConfig.add(if (Settings.socksUdp) "  udp: udp" else "  udp: tcp")
         tun2socksConfig.add("")
-        FileHelper().createOrUpdate(Settings.tun2socksConfig(applicationContext), tun2socksConfig.joinToString("\n"))
+        FileHelper().createOrUpdate(
+            Settings.tun2socksConfig(applicationContext),
+            tun2socksConfig.joinToString("\n")
+        )
 
         /** Start tun2socks */
         TProxyStartService(Settings.tun2socksConfig(applicationContext).absolutePath, tunDevice!!.fd)
