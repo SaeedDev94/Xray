@@ -51,6 +51,7 @@ import java.net.URISyntaxException
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    private val clipboardManager by lazy { getSystemService(ClipboardManager::class.java) }
     private val profileViewModel: ProfileViewModel by viewModels()
     private var isRunning: Boolean = false
 
@@ -150,9 +151,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 profileLauncher.launch(profileIntent())
             }
             R.id.fromClipboard -> {
-                val clipboardManager: ClipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clipData: ClipData? = clipboardManager.primaryClip
-                val clipText: String = if (clipData != null && clipData.itemCount > 0) clipData.getItemAt(0).text.toString().trim() else ""
+                val clipText: String = if (clipData != null && clipData.itemCount > 0) {
+                    clipData.getItemAt(0).text.toString().trim()
+                } else ""
                 processLink(clipText)
             }
         }
