@@ -1,0 +1,1 @@
+- Some optimizations for lower android versions (8-12)
