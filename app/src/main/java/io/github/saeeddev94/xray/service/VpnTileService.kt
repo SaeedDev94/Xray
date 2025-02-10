@@ -42,6 +42,7 @@ class VpnTileService : TileService() {
                     return
                 }
                 Intent(applicationContext, TProxyService::class.java).also {
+                    it.action = TProxyService.START_VPN_SERVICE_ACTION_NAME
                     startForegroundService(it)
                 }
             }

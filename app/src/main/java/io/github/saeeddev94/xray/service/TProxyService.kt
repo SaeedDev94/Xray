@@ -89,7 +89,11 @@ class TProxyService : VpnService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        findProfileAndStart()
+        scope.launch {
+            when (intent?.action) {
+                START_VPN_SERVICE_ACTION_NAME -> findProfileAndStart()
+            }
+        }
         return START_STICKY
     }
 
@@ -103,15 +107,13 @@ class TProxyService : VpnService() {
         unregisterReceiver(stopVpnAction)
     }
 
-    private fun findProfileAndStart() {
-        scope.launch {
-            val profile = if (Settings.selectedProfile == 0L) {
-                null
-            } else {
-                profileRepository.find(Settings.selectedProfile)
-            }
-            startVPN(profile)
+    private suspend fun findProfileAndStart() {
+        val profile = if (Settings.selectedProfile == 0L) {
+            null
+        } else {
+            profileRepository.find(Settings.selectedProfile)
         }
+        startVPN(profile)
     }
 
     private fun startVPN(profile: Profile?) {
