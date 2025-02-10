@@ -223,9 +223,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun toggleVpnService() {
         if (vpnService.getIsRunning()) {
-            Intent(TProxyService.STOP_VPN_SERVICE_ACTION_NAME).also {
-                it.`package` = BuildConfig.APPLICATION_ID
-                sendBroadcast(it)
+            Intent(applicationContext, TProxyService::class.java).also {
+                it.action = TProxyService.STOP_VPN_SERVICE_ACTION_NAME
+                startService(it)
             }
             return
         }

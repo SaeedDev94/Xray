@@ -9,7 +9,6 @@ import android.net.VpnService
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
-import io.github.saeeddev94.xray.BuildConfig
 import io.github.saeeddev94.xray.R
 
 class VpnTileService : TileService() {
@@ -47,9 +46,9 @@ class VpnTileService : TileService() {
                 }
             }
             Tile.STATE_ACTIVE -> {
-                Intent(TProxyService.STOP_VPN_SERVICE_ACTION_NAME).also {
-                    it.`package` = BuildConfig.APPLICATION_ID
-                    sendBroadcast(it)
+                Intent(applicationContext, TProxyService::class.java).also {
+                    it.action = TProxyService.STOP_VPN_SERVICE_ACTION_NAME
+                    startService(it)
                 }
             }
         }
