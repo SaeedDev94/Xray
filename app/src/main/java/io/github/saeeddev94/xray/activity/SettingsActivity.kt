@@ -67,6 +67,7 @@ class SettingsActivity : AppCompatActivity() {
         basic.findViewById<MaterialSwitch>(R.id.bypassLan).isChecked = Settings.bypassLan
         basic.findViewById<MaterialSwitch>(R.id.enableIpV6).isChecked = Settings.enableIpV6
         basic.findViewById<MaterialSwitch>(R.id.socksUdp).isChecked = Settings.socksUdp
+        basic.findViewById<MaterialSwitch>(R.id.bootAutoStart).isChecked = Settings.bootAutoStart
     }
 
     @SuppressLint("SetTextI18n")
@@ -96,6 +97,7 @@ class SettingsActivity : AppCompatActivity() {
         Settings.bypassLan = basic.findViewById<MaterialSwitch>(R.id.bypassLan).isChecked
         Settings.enableIpV6 = basic.findViewById<MaterialSwitch>(R.id.enableIpV6).isChecked
         Settings.socksUdp = basic.findViewById<MaterialSwitch>(R.id.socksUdp).isChecked
+        Settings.bootAutoStart = basic.findViewById<MaterialSwitch>(R.id.bootAutoStart).isChecked
 
         /** Advanced */
         Settings.primaryDns = advanced.findViewById<EditText>(R.id.primaryDns).text.toString()

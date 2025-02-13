@@ -58,6 +58,7 @@
     <string name="bypassLan">Bypass LAN (IPv4)</string>
     <string name="enableIpV6">Enable IPv6</string>
     <string name="socksUdp">Socks UDP</string>
+    <string name="bootAutoStart">Boot Auto Start</string>
 
     <!-- Advanced Settings -->
     <string name="primaryDns">Primary DNS (v4)</string>

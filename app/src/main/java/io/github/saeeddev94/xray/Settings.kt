@@ -21,6 +21,7 @@ object Settings {
     var bypassLan: Boolean = true
     var enableIpV6: Boolean = true
     var socksUdp: Boolean = true
+    var bootAutoStart: Boolean = false
 
     /** Advanced */
     var primaryDns: String = "1.1.1.1"
@@ -58,6 +59,7 @@ object Settings {
         bypassLan = sharedPref.getBoolean("bypassLan", bypassLan)
         enableIpV6 = sharedPref.getBoolean("enableIpV6", enableIpV6)
         socksUdp = sharedPref.getBoolean("socksUdp", socksUdp)
+        bootAutoStart = sharedPref.getBoolean("bootAutoStart", bootAutoStart)
 
         /** Advanced */
         primaryDns = sharedPref.getString("primaryDns", primaryDns)!!
@@ -90,6 +92,7 @@ object Settings {
             .putBoolean("bypassLan", bypassLan)
             .putBoolean("enableIpV6", enableIpV6)
             .putBoolean("socksUdp", socksUdp)
+            .putBoolean("bootAutoStart", bootAutoStart)
             /** Advanced */
             .putString("primaryDns", primaryDns)
             .putString("secondaryDns", secondaryDns)

@@ -183,5 +183,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/socksUdp" />
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/bootAutoStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/bootAutoStart" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
