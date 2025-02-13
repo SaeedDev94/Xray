@@ -224,11 +224,11 @@ class TProxyService : VpnService() {
             PendingIntent.FLAG_IMMUTABLE
         )
 
-        val pendingStop = PendingIntent.getBroadcast(
+        val pendingStop = PendingIntent.getService(
             applicationContext,
             STOP_VPN_SERVICE_ACTION_ID,
-            Intent(STOP_VPN_SERVICE_ACTION_NAME).also {
-              it.`package` = BuildConfig.APPLICATION_ID
+            Intent(applicationContext, TProxyService::class.java).also {
+                it.action = STOP_VPN_SERVICE_ACTION_NAME
             },
             PendingIntent.FLAG_IMMUTABLE
         )
