@@ -1,0 +1,3 @@
+- Remove redundant permissions
+- New Settings: Boot Auto Start
+- Fix notification stop action
