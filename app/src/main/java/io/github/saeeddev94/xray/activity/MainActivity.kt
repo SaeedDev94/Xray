@@ -80,7 +80,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     private val vpnServiceEventReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            when (intent?.action) {
+            if (context == null || intent == null) return
+            when (intent.action) {
                 TProxyService.START_VPN_SERVICE_ACTION_NAME -> vpnStartStatus()
                 TProxyService.STOP_VPN_SERVICE_ACTION_NAME -> vpnStopStatus()
                 TProxyService.STATUS_VPN_SERVICE_ACTION_NAME -> {
@@ -212,16 +213,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun toggleVpnService() {
         if (isRunning) {
-            Intent(applicationContext, TProxyService::class.java).also {
-                it.action = TProxyService.STOP_VPN_SERVICE_ACTION_NAME
-                startService(it)
-            }
+            TProxyService.stop(applicationContext)
             return
         }
-        Intent(applicationContext, TProxyService::class.java).also {
-            it.action = TProxyService.START_VPN_SERVICE_ACTION_NAME
-            startForegroundService(it)
-        }
+        TProxyService.start(applicationContext, false)
     }
 
     private fun profileSelect(index: Int, profile: ProfileList) {

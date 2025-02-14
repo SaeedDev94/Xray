@@ -5,10 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.drawable.Icon
-import android.net.VpnService
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import android.util.Log
 import io.github.saeeddev94.xray.R
 
 class VpnTileService : TileService() {
@@ -34,26 +32,8 @@ class VpnTileService : TileService() {
     override fun onClick() {
         super.onClick()
         when (qsTile?.state) {
-            Tile.STATE_INACTIVE -> {
-                val isPrepare = VpnService.prepare(applicationContext) == null
-                if (!isPrepare) {
-                    Log.e(
-                        "VpnTileService",
-                        "Can't start: VpnService#prepare: needs user permission"
-                    )
-                    return
-                }
-                Intent(applicationContext, TProxyService::class.java).also {
-                    it.action = TProxyService.START_VPN_SERVICE_ACTION_NAME
-                    startForegroundService(it)
-                }
-            }
-            Tile.STATE_ACTIVE -> {
-                Intent(applicationContext, TProxyService::class.java).also {
-                    it.action = TProxyService.STOP_VPN_SERVICE_ACTION_NAME
-                    startService(it)
-                }
-            }
+            Tile.STATE_INACTIVE -> TProxyService.start(applicationContext)
+            Tile.STATE_ACTIVE -> TProxyService.stop(applicationContext)
         }
     }
 

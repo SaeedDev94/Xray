@@ -19,6 +19,7 @@ import io.github.saeeddev94.xray.activity.MainActivity
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.helper.FileHelper
 import XrayCore.XrayCore
+import android.content.Context
 import android.util.Log
 import io.github.saeeddev94.xray.Xray
 import kotlinx.coroutines.CoroutineScope
@@ -35,12 +36,37 @@ class TProxyService : VpnService() {
             System.loadLibrary("hev-socks5-tunnel")
         }
 
-        const val VPN_SERVICE_NOTIFICATION_ID = 1
-        const val OPEN_MAIN_ACTIVITY_ACTION_ID = 1
-        const val STOP_VPN_SERVICE_ACTION_ID = 2
-        const val START_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStart"
-        const val STOP_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStop"
         const val STATUS_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStatus"
+        const val STOP_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStop"
+        const val START_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStart"
+        private const val VPN_SERVICE_NOTIFICATION_ID = 1
+        private const val OPEN_MAIN_ACTIVITY_ACTION_ID = 2
+        private const val STOP_VPN_SERVICE_ACTION_ID = 3
+
+        fun status(context: Context) = startCommand(context, STATUS_VPN_SERVICE_ACTION_NAME)
+        fun stop(context: Context) = startCommand(context, STOP_VPN_SERVICE_ACTION_NAME)
+
+        fun start(context: Context, check: Boolean = true) {
+            if (check && prepare(context) != null) {
+                Log.e(
+                    "TProxyService",
+                    "Can't start: VpnService#prepare(): needs user permission"
+                )
+                return
+            }
+            startCommand(context, START_VPN_SERVICE_ACTION_NAME, true)
+        }
+
+        private fun startCommand(context: Context, name: String, foreground: Boolean = false) {
+            Intent(context, TProxyService::class.java).also {
+                it.action = name
+                if (foreground) {
+                    context.startForegroundService(it)
+                } else {
+                    context.startService(it)
+                }
+            }
+        }
     }
 
     private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
