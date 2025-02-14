@@ -1,0 +1,6 @@
+- Breaking Change:
+- **The app expects a list of configs for a Json link**
+- The app doesn't accept HTTP link anymore
+- Details: https://github.com/XTLS/Xray-core/discussions/3765
+- Only prevent invalid config on start
+- Show Invalid Profile error message on save inside a dialog
