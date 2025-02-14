@@ -35,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URI
 import kotlin.reflect.cast
@@ -91,7 +92,7 @@ class LinksActivity : AppCompatActivity() {
                 runCatching {
                     val content = HttpHelper.get(link.address).trim()
                     val newProfiles = if (link.type == Link.Type.Json) {
-                        jsonProfile(link, content)
+                        jsonProfiles(link, content)
                     } else {
                         subscriptionProfiles(link, content)
                     }
@@ -108,21 +109,30 @@ class LinksActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun jsonProfile(link: Link, value: String): List<Profile> {
+    private suspend fun jsonProfiles(link: Link, value: String): List<Profile> {
         val list = arrayListOf<Profile>()
-        runCatching {
-            val error = ConfigHelper.isValid(applicationContext, value)
-            if (error.isEmpty()) {
-                val name = LinkHelper.remark(URI(link.address))
-                val config = JSONObject(value).toString(2)
-                val profile = Profile()
-                profile.linkId = link.id
-                profile.name = name
-                profile.config = config
-                list.add(profile)
+        val configs = runCatching { JSONArray(value) }.getOrNull() ?: JSONArray()
+        for (i in 0 until configs.length()) {
+            runCatching { JSONObject::class.cast(configs[i]) }.getOrNull()?.let { config ->
+                val name = if (config.has("remarks")) {
+                    val remarks = config.getString("remarks")
+                    config.remove("remarks")
+                    remarks
+                } else {
+                    LinkHelper.REMARK_DEFAULT
+                }
+                val json = config.toString(2)
+                val error = ConfigHelper.isValid(applicationContext, json)
+                if (error.isBlank()) {
+                    val profile = Profile()
+                    profile.linkId = link.id
+                    profile.name = name
+                    profile.config = json
+                    list.add(profile)
+                }
             }
         }
-        return list.toList()
+        return list.reversed().toList()
     }
 
     private suspend fun subscriptionProfiles(link: Link, value: String): List<Profile> {

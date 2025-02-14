@@ -25,7 +25,7 @@ class LinkHelper(link: String) {
     }
 
     companion object {
-        private const val REMARK_DEFAULT = "New Profile"
+        const val REMARK_DEFAULT = "New Profile"
 
         fun remark(uri: URI): String {
             val name = uri.fragment ?: ""
