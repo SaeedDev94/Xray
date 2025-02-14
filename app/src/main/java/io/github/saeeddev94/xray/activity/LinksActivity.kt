@@ -26,7 +26,6 @@ import io.github.saeeddev94.xray.adapter.LinkAdapter
 import io.github.saeeddev94.xray.database.Link
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.databinding.ActivityLinksBinding
-import io.github.saeeddev94.xray.helper.ConfigHelper
 import io.github.saeeddev94.xray.helper.HttpHelper
 import io.github.saeeddev94.xray.helper.LinkHelper
 import io.github.saeeddev94.xray.viewmodel.LinkViewModel
@@ -109,33 +108,31 @@ class LinksActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun jsonProfiles(link: Link, value: String): List<Profile> {
+    private fun jsonProfiles(link: Link, value: String): List<Profile> {
         val list = arrayListOf<Profile>()
         val configs = runCatching { JSONArray(value) }.getOrNull() ?: JSONArray()
         for (i in 0 until configs.length()) {
-            runCatching { JSONObject::class.cast(configs[i]) }.getOrNull()?.let { config ->
-                val name = if (config.has("remarks")) {
-                    val remarks = config.getString("remarks")
-                    config.remove("remarks")
+            runCatching { JSONObject::class.cast(configs[i]) }.getOrNull()?.let { configuration ->
+                val label = if (configuration.has("remarks")) {
+                    val remarks = configuration.getString("remarks")
+                    configuration.remove("remarks")
                     remarks
                 } else {
                     LinkHelper.REMARK_DEFAULT
                 }
-                val json = config.toString(2)
-                val error = ConfigHelper.isValid(applicationContext, json)
-                if (error.isBlank()) {
-                    val profile = Profile()
-                    profile.linkId = link.id
-                    profile.name = name
-                    profile.config = json
-                    list.add(profile)
+                val json = configuration.toString(2)
+                val profile = Profile().apply {
+                    linkId = link.id
+                    name = label
+                    config = json
                 }
+                list.add(profile)
             }
         }
         return list.reversed().toList()
     }
 
-    private suspend fun subscriptionProfiles(link: Link, value: String): List<Profile> {
+    private fun subscriptionProfiles(link: Link, value: String): List<Profile> {
         return runCatching {
             val decoded = LinkHelper.decodeBase64(value).trim()
             decoded.split("\n")
@@ -148,9 +145,6 @@ class LinksActivity : AppCompatActivity() {
                     profile.config = linkHelper.json()
                     profile.name = linkHelper.remark()
                     profile
-                }.filter {
-                    val error = ConfigHelper.isValid(applicationContext, it.config)
-                    error.isEmpty()
                 }
         }.getOrNull() ?: listOf()
     }

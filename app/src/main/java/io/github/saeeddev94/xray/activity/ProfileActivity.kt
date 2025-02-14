@@ -2,7 +2,6 @@ package io.github.saeeddev94.xray.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.database.Profile
@@ -17,6 +16,7 @@ import com.blacksquircle.ui.editorkit.plugin.base.PluginSupplier
 import com.blacksquircle.ui.editorkit.plugin.delimiters.highlightDelimiters
 import com.blacksquircle.ui.editorkit.plugin.linenumbers.lineNumbers
 import com.blacksquircle.ui.language.json.JsonLanguage
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.saeeddev94.xray.helper.ConfigHelper
 import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
@@ -111,14 +111,14 @@ class ProfileActivity : AppCompatActivity() {
         editor.plugins(pluginSupplier)
     }
 
-    private fun save() {
+    private fun save(check: Boolean = true) {
         profile.name = binding.profileName.text.toString()
         profile.config = binding.profileConfig.text.toString()
         lifecycleScope.launch {
             val error = ConfigHelper.isValid(applicationContext, profile.config)
-            if (error.isNotEmpty()) {
+            if (check && error.isNotEmpty()) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(applicationContext, error, Toast.LENGTH_SHORT).show()
+                    showError(error)
                 }
                 return@launch
             }
@@ -137,6 +137,15 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun showError(message: String) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.invalidProfile))
+            .setMessage(message)
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
+            .setPositiveButton(getString(R.string.ignore)) { _, _ -> save(false) }
+            .show()
     }
 
 }
