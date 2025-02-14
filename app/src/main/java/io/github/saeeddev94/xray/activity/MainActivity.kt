@@ -47,7 +47,6 @@ import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import java.net.URI
-import java.net.URISyntaxException
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -333,22 +332,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun processLink(link: String) {
-        val uri = try {
-            URI(link)
-        } catch (error: URISyntaxException) {
-            null
-        }
+        val uri = runCatching { URI(link) }.getOrNull()
+        val invalidLink = getString(R.string.invalidLink)
+        val forbiddenHttp = getString(R.string.forbiddenHttp)
         if (uri == null) {
-            Toast.makeText(applicationContext, "Invalid Uri", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, invalidLink, Toast.LENGTH_SHORT).show()
             return
         }
-        if (uri.scheme == "http" || uri.scheme == "https") {
+        if (uri.scheme == "http") {
+            Toast.makeText(applicationContext, forbiddenHttp, Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (uri.scheme == "https") {
             getConfig(uri)
             return
         }
         val linkHelper = LinkHelper(link)
         if (!linkHelper.isValid()) {
-            Toast.makeText(applicationContext, "Invalid Link", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, invalidLink, Toast.LENGTH_SHORT).show()
             return
         }
         val json = linkHelper.json()

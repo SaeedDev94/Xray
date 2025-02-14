@@ -145,7 +145,9 @@ class LinksActivity : AppCompatActivity() {
         }.getOrNull() ?: listOf()
     }
 
-    private suspend fun manageProfiles(link: Link, linkProfiles: List<Profile>, newProfiles: List<Profile>) {
+    private suspend fun manageProfiles(
+        link: Link, linkProfiles: List<Profile>, newProfiles: List<Profile>
+    ) {
         if (newProfiles.size >= linkProfiles.size) {
             newProfiles.forEachIndexed { index, newProfile ->
                 if (index >= linkProfiles.size) {
@@ -224,12 +226,24 @@ class LinksActivity : AppCompatActivity() {
             setView(layout)
             setPositiveButton(confirm) { dialog, _ ->
                 dialog.dismiss()
+                val address = addressEditText.text.toString()
                 val typeRadioButton = typeRadioGroup.findViewById<RadioButton>(
                     typeRadioGroup.checkedRadioButtonId
                 )
+                val uri = runCatching { URI(address) }.getOrNull()
+                val invalidLink = getString(R.string.invalidLink)
+                val onlyHttps = getString(R.string.onlyHttps)
+                if (uri == null) {
+                    Toast.makeText(applicationContext, invalidLink, Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                if (uri.scheme != "https") {
+                    Toast.makeText(applicationContext, onlyHttps, Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
                 link.type = Link.Type::class.cast(typeRadioButton.tag)
                 link.name = nameEditText.text.toString()
-                link.address = addressEditText.text.toString()
+                link.address = address
                 link.isActive = isActiveSwitch.isChecked
                 lifecycleScope.launch {
                     if (link.id == 0L) {

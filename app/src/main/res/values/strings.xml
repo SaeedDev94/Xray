@@ -45,6 +45,9 @@
     <string name="saveExcludedApps">Save Excluded Apps</string>
     <string name="saveSettings">Save Settings</string>
     <string name="saveProfile">Save Profile</string>
+    <string name="invalidLink">Invalid Link</string>
+    <string name="forbiddenHttp">HTTP is forbidden</string>
+    <string name="onlyHttps">Only HTTPS is acceptable</string>
 
     <!-- Basic Settings -->
     <string name="socksAddress">Socks Address</string>
