@@ -12,11 +12,11 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.dto.AppList
 
-class ExcludeAdapter(
+class AppsRoutingAdapter(
     private var context: Context,
     private var apps: MutableList<AppList>,
-    private var excludedApps: MutableSet<String>,
-) : RecyclerView.Adapter<ExcludeAdapter.ViewHolder>() {
+    private var appsRouting: MutableSet<String>,
+) : RecyclerView.Adapter<AppsRoutingAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(container: ViewGroup, type: Int): ViewHolder {
         val linearLayout = LinearLayout(context)
@@ -30,16 +30,16 @@ class ExcludeAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, index: Int) {
         val app = apps[index]
-        val isSelected = excludedApps.contains(app.packageName)
+        val isSelected = appsRouting.contains(app.packageName)
         holder.appIcon.setImageDrawable(app.appIcon)
         holder.appName.text = app.appName
         holder.packageName.text = app.packageName
         holder.isSelected.isChecked = isSelected
         holder.appContainer.setOnClickListener {
             if (isSelected) {
-                excludedApps.remove(app.packageName)
+                appsRouting.remove(app.packageName)
             } else {
-                excludedApps.add(app.packageName)
+                appsRouting.add(app.packageName)
             }
             notifyItemChanged(index)
         }

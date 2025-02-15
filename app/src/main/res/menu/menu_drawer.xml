@@ -34,9 +34,9 @@
             android:icon="@drawable/baseline_adb"
             android:title="@string/logs" />
         <item
-            android:id="@+id/excludedApps"
+            android:id="@+id/appsRouting"
             android:icon="@drawable/baseline_alt_route"
-            android:title="@string/excludedApps" />
+            android:title="@string/appsRouting" />
         <item
             android:id="@+id/settings"
             android:icon="@drawable/baseline_settings"

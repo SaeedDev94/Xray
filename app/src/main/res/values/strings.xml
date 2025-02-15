@@ -17,7 +17,7 @@
     <string name="assets">Assets</string>
     <string name="links">Links</string>
     <string name="logs">Logs</string>
-    <string name="excludedApps">Excluded Apps</string>
+    <string name="appsRouting">Apps Routing</string>
     <string name="settings">Settings</string>
     <string name="geoIp">GeoIP</string>
     <string name="geoSite">GeoSite</string>
@@ -42,7 +42,9 @@
     <string name="deleteLogs">Delete Logs</string>
     <string name="appIcon">App Icon</string>
     <string name="openJson">Open Json</string>
-    <string name="saveExcludedApps">Save Excluded Apps</string>
+    <string name="appsRoutingSave">Save</string>
+    <string name="appsRoutingExcludeMode">Mode: Exclude</string>
+    <string name="appsRoutingIncludeMode">Mode: Include</string>
     <string name="saveSettings">Save Settings</string>
     <string name="saveProfile">Save Profile</string>
     <string name="invalidProfile">Invalid Profile</string>

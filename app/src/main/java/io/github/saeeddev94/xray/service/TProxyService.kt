@@ -160,10 +160,13 @@ class TProxyService : VpnService() {
             tun.addRoute("0.0.0.0", 0)
         }
 
-        /** Exclude apps */
-        tun.addDisallowedApplication(applicationContext.packageName)
-        Settings.excludedApps.split("\n").forEach { packageName ->
-            if (packageName.trim().isNotEmpty()) tun.addDisallowedApplication(packageName)
+        /** Apps Routing */
+        if (Settings.appsRoutingMode) tun.addDisallowedApplication(applicationContext.packageName)
+        Settings.appsRouting.split("\n").forEach {
+            val packageName = it.trim()
+            if (packageName.isBlank()) return@forEach
+            if (Settings.appsRoutingMode) tun.addDisallowedApplication(packageName)
+            else tun.addAllowedApplication(packageName)
         }
 
         /** Build tun device */

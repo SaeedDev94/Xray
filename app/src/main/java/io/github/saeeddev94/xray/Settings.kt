@@ -8,6 +8,14 @@ object Settings {
     /** Active Profile ID */
     var selectedProfile: Long = 0L
 
+    /**
+     * Apps Routing
+     * Mode: true -> exclude, false -> include
+     * Default: exclude
+     */
+    var appsRoutingMode: Boolean = true
+    var appsRouting: String = ""
+
     /** Basic */
     var socksAddress: String = "127.0.0.1"
     var socksPort: String = "10808"
@@ -17,7 +25,6 @@ object Settings {
     var geoSiteAddress: String = "https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat"
     var pingAddress: String = "https://developers.google.com"
     var pingTimeout: Int = 5
-    var excludedApps: String = ""
     var bypassLan: Boolean = true
     var enableIpV6: Boolean = true
     var socksUdp: Boolean = true
@@ -46,6 +53,10 @@ object Settings {
         /** Active Profile ID */
         selectedProfile = sharedPref.getLong("selectedProfile", selectedProfile)
 
+        /** Apps Routing */
+        appsRoutingMode = sharedPref.getBoolean("appsRoutingMode", appsRoutingMode)
+        appsRouting = sharedPref.getString("excludedApps", appsRouting)!!
+
         /** Basic */
         socksAddress = sharedPref.getString("socksAddress", socksAddress)!!
         socksPort = sharedPref.getString("socksPort", socksPort)!!
@@ -55,7 +66,6 @@ object Settings {
         geoSiteAddress = sharedPref.getString("geoSiteAddress", geoSiteAddress)!!
         pingAddress = sharedPref.getString("pingAddress", pingAddress)!!
         pingTimeout = sharedPref.getInt("pingTimeout", pingTimeout)
-        excludedApps = sharedPref.getString("excludedApps", excludedApps)!!
         bypassLan = sharedPref.getBoolean("bypassLan", bypassLan)
         enableIpV6 = sharedPref.getBoolean("enableIpV6", enableIpV6)
         socksUdp = sharedPref.getBoolean("socksUdp", socksUdp)
@@ -79,6 +89,9 @@ object Settings {
         sharedPref.edit()
             /** Active Profile ID */
             .putLong("selectedProfile", selectedProfile)
+            /** Apps Routing Mode */
+            .putBoolean("appsRoutingMode", appsRoutingMode)
+            .putString("excludedApps", appsRouting)
             /** Basic */
             .putString("socksAddress", socksAddress)
             .putString("socksPort", socksPort)
@@ -88,7 +101,6 @@ object Settings {
             .putString("geoSiteAddress", geoSiteAddress)
             .putString("pingAddress", pingAddress)
             .putInt("pingTimeout", pingTimeout)
-            .putString("excludedApps", excludedApps)
             .putBoolean("bypassLan", bypassLan)
             .putBoolean("enableIpV6", enableIpV6)
             .putBoolean("socksUdp", socksUdp)

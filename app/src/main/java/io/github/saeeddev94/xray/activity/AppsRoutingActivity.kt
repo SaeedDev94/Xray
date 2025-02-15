@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
@@ -15,26 +16,28 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
-import io.github.saeeddev94.xray.adapter.ExcludeAdapter
-import io.github.saeeddev94.xray.databinding.ActivityExcludeBinding
+import io.github.saeeddev94.xray.adapter.AppsRoutingAdapter
+import io.github.saeeddev94.xray.databinding.ActivityAppsRoutingBinding
 import io.github.saeeddev94.xray.dto.AppList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ExcludeActivity : AppCompatActivity() {
+class AppsRoutingActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityExcludeBinding
+    private lateinit var binding: ActivityAppsRoutingBinding
     private lateinit var appsList: RecyclerView
-    private lateinit var excludeAdapter: ExcludeAdapter
+    private lateinit var appsRoutingAdapter: AppsRoutingAdapter
     private lateinit var apps: ArrayList<AppList>
     private lateinit var filtered: MutableList<AppList>
-    private lateinit var excludedApps: MutableSet<String>
+    private lateinit var appsRouting: MutableSet<String>
+    private lateinit var menu: Menu
+    private var appsRoutingMode: Boolean = Settings.appsRoutingMode
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = ""
-        binding = ActivityExcludeBinding.inflate(layoutInflater)
+        binding = ActivityAppsRoutingBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -62,16 +65,44 @@ class ExcludeActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_exclude, menu)
+        this.menu = menu
+        menuInflater.inflate(R.menu.menu_apps_routing, menu)
+        handleMode()
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.saveExcludedApps -> saveExcludedApps()
+            R.id.appsRoutingSave -> saveAppsRouting()
+            R.id.appsRoutingExcludeMode -> setMode(false)
+            R.id.appsRoutingIncludeMode -> setMode(true)
             else -> finish()
         }
         return true
+    }
+
+    private fun setMode(appsRoutingMode: Boolean) {
+        this.appsRoutingMode = appsRoutingMode
+        handleMode().also { message ->
+            Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun handleMode(): String {
+        val excludeItem = menu.findItem(R.id.appsRoutingExcludeMode)
+        val includeItem = menu.findItem(R.id.appsRoutingIncludeMode)
+        return when (this.appsRoutingMode) {
+            true -> {
+                excludeItem.isVisible = true
+                includeItem.isVisible = false
+                getString(R.string.appsRoutingExcludeMode)
+            }
+            false -> {
+                excludeItem.isVisible = false
+                includeItem.isVisible = true
+                getString(R.string.appsRoutingIncludeMode)
+            }
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -81,7 +112,7 @@ class ExcludeActivity : AppCompatActivity() {
             if (apps.size > filtered.size) {
                 filtered.clear()
                 filtered.addAll(apps.toMutableList())
-                excludeAdapter.notifyDataSetChanged()
+                appsRoutingAdapter.notifyDataSetChanged()
             }
             return
         }
@@ -93,7 +124,7 @@ class ExcludeActivity : AppCompatActivity() {
         }
         filtered.clear()
         filtered.addAll(list.toMutableList())
-        excludeAdapter.notifyDataSetChanged()
+        appsRoutingAdapter.notifyDataSetChanged()
     }
 
     private fun getApps() {
@@ -102,29 +133,34 @@ class ExcludeActivity : AppCompatActivity() {
             val unselected = ArrayList<AppList>()
             packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS).forEach {
                 val permissions = it.requestedPermissions
-                if (permissions == null || !permissions.contains(Manifest.permission.INTERNET)) return@forEach
+                if (
+                    permissions == null || !permissions.contains(Manifest.permission.INTERNET)
+                ) return@forEach
                 val appIcon = it.applicationInfo!!.loadIcon(packageManager)
                 val appName = it.applicationInfo!!.loadLabel(packageManager).toString()
                 val packageName = it.packageName
                 val app = AppList(appIcon, appName, packageName)
-                val isSelected = Settings.excludedApps.contains(packageName)
+                val isSelected = Settings.appsRouting.contains(packageName)
                 if (isSelected) selected.add(app) else unselected.add(app)
             }
             withContext(Dispatchers.Main) {
                 apps = ArrayList(selected + unselected)
                 filtered = apps.toMutableList()
-                excludedApps = Settings.excludedApps.split("\n").toMutableSet()
+                appsRouting = Settings.appsRouting.split("\n").toMutableSet()
                 appsList = binding.appsList
-                excludeAdapter = ExcludeAdapter(this@ExcludeActivity, filtered, excludedApps)
-                appsList.adapter = excludeAdapter
+                appsRoutingAdapter = AppsRoutingAdapter(
+                    this@AppsRoutingActivity, filtered, appsRouting
+                )
+                appsList.adapter = appsRoutingAdapter
                 appsList.layoutManager = LinearLayoutManager(applicationContext)
             }
         }
     }
 
-    private fun saveExcludedApps() {
+    private fun saveAppsRouting() {
         binding.search.clearFocus()
-        Settings.excludedApps = excludedApps.joinToString("\n")
+        Settings.appsRoutingMode = appsRoutingMode
+        Settings.appsRouting = appsRouting.joinToString("\n")
         Settings.save(applicationContext)
         finish()
     }

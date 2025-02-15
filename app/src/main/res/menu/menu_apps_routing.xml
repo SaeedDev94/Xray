@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/appsRoutingSave"
+        android:title="@string/appsRoutingSave"
+        android:icon="@drawable/baseline_done"
+        android:visible="true"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/appsRoutingExcludeMode"
+        android:title="@string/appsRoutingExcludeMode"
+        android:icon="@drawable/baseline_alt_route"
+        android:visible="true"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/appsRoutingIncludeMode"
+        android:title="@string/appsRoutingIncludeMode"
+        android:icon="@drawable/baseline_alt_route"
+        android:visible="false"
+        app:showAsAction="never" />
+</menu>

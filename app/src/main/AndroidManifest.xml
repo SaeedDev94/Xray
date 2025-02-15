@@ -62,7 +62,7 @@
             android:name=".activity.LogsActivity"
             android:parentActivityName=".activity.MainActivity" />
         <activity
-            android:name=".activity.ExcludeActivity"
+            android:name=".activity.AppsRoutingActivity"
             android:parentActivityName=".activity.MainActivity" />
         <activity
             android:name=".activity.SettingsActivity"
