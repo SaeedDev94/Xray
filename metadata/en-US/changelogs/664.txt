@@ -1,0 +1,3 @@
+- Rename Excluded Apps to Apps Routing
+- Apps Routing has 2 modes: Exclude, Include
+- Default mode is Exclude
