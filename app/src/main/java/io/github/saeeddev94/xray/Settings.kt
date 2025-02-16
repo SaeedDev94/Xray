@@ -89,7 +89,7 @@ object Settings {
         sharedPref.edit()
             /** Active Profile ID */
             .putLong("selectedProfile", selectedProfile)
-            /** Apps Routing Mode */
+            /** Apps Routing */
             .putBoolean("appsRoutingMode", appsRoutingMode)
             .putString("excludedApps", appsRouting)
             /** Basic */
