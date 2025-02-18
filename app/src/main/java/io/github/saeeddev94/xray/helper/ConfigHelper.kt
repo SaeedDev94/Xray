@@ -1,6 +1,6 @@
 package io.github.saeeddev94.xray.helper
 
-import XrayCore.XrayCore
+import io.github.saeeddev94.xray.utils.XrayCore
 import android.content.Context
 import io.github.saeeddev94.xray.Settings
 import kotlinx.coroutines.Dispatchers

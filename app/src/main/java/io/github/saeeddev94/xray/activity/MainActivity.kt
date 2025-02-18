@@ -1,6 +1,6 @@
 package io.github.saeeddev94.xray.activity
 
-import XrayCore.XrayCore
+import io.github.saeeddev94.xray.utils.XrayCore
 import android.content.BroadcastReceiver
 import android.content.ClipData
 import android.content.ClipboardManager

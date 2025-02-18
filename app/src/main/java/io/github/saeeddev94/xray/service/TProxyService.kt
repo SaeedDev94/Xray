@@ -18,7 +18,7 @@ import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.activity.MainActivity
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.helper.FileHelper
-import XrayCore.XrayCore
+import io.github.saeeddev94.xray.utils.XrayCore
 import android.content.Context
 import android.util.Log
 import io.github.saeeddev94.xray.Xray
@@ -120,7 +120,7 @@ class TProxyService : VpnService() {
             FileHelper().createOrUpdate(Settings.xrayConfig(applicationContext), profile.config)
             val datDir: String = applicationContext.filesDir.absolutePath
             val configPath: String = Settings.xrayConfig(applicationContext).absolutePath
-            val maxMemory: Long = 67108864 // 64 MB * 1024 KB * 1024 B
+            val maxMemory: Long = 0
             val error: String = XrayCore.start(datDir, configPath, maxMemory)
             if (error.isNotEmpty()) {
                 showToast(error)

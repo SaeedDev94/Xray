@@ -26,7 +26,7 @@ check_target() {
 
 prepare_go() {
   echo "Install dependencies"
-  cd XrayCore
+  cd XrayCore/libXray
   # rm go*
   # go mod init XrayCore
   # go mod edit -replace github.com/xtls/xray-core=./Xray-core
