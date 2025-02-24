@@ -12,7 +12,7 @@ class ConfigHelper {
             return withContext(Dispatchers.IO) {
                 val pwd = context.filesDir.absolutePath
                 val testConfig = Settings.testConfig(context)
-                FileHelper().createOrUpdate(testConfig, json)
+                FileHelper.createOrUpdate(testConfig, json)
                 XrayCore.test(pwd, testConfig.absolutePath)
             }
         }

@@ -117,7 +117,7 @@ class TProxyService : VpnService() {
     private fun startVPN(profile: Profile?) {
         /** Start xray */
         if (profile != null) {
-            FileHelper().createOrUpdate(Settings.xrayConfig(applicationContext), profile.config)
+            FileHelper.createOrUpdate(Settings.xrayConfig(applicationContext), profile.config)
             val datDir: String = applicationContext.filesDir.absolutePath
             val configPath: String = Settings.xrayConfig(applicationContext).absolutePath
             val error: String = XrayCore.start(datDir, configPath)
@@ -195,7 +195,7 @@ class TProxyService : VpnService() {
         }
         tun2socksConfig.add(if (Settings.socksUdp) "  udp: udp" else "  udp: tcp")
         tun2socksConfig.add("")
-        FileHelper().createOrUpdate(
+        FileHelper.createOrUpdate(
             Settings.tun2socksConfig(applicationContext),
             tun2socksConfig.joinToString("\n")
         )
