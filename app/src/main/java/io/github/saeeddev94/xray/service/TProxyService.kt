@@ -120,8 +120,7 @@ class TProxyService : VpnService() {
             FileHelper().createOrUpdate(Settings.xrayConfig(applicationContext), profile.config)
             val datDir: String = applicationContext.filesDir.absolutePath
             val configPath: String = Settings.xrayConfig(applicationContext).absolutePath
-            val maxMemory: Long = 67108864 // 64 MB * 1024 KB * 1024 B
-            val error: String = XrayCore.start(datDir, configPath, maxMemory)
+            val error: String = XrayCore.start(datDir, configPath)
             if (error.isNotEmpty()) {
                 showToast(error)
                 return

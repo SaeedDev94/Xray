@@ -10,8 +10,8 @@ func Test(dir string, config string) string {
   return lib.WrapError(err)
 }
 
-func Start(dir string, config string, memory int64) string {
-  err := lib.Start(dir, config, memory)
+func Start(dir string, config string) string {
+  err := lib.Start(dir, config)
   return lib.WrapError(err)
 }
 

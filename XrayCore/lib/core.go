@@ -21,9 +21,8 @@ func Server(config string) (*core.Instance, error) {
   return server, nil
 }
 
-func Start(dir string, config string, memory int64) (err error) {
+func Start(dir string, config string) (err error) {
   SetEnv(dir)
-  MaxMemory(memory)
   coreServer, err = Server(config)
   if err != nil {
     return
@@ -31,7 +30,6 @@ func Start(dir string, config string, memory int64) (err error) {
   if err = coreServer.Start(); err != nil {
     return
   }
-  FreeOSMemory()
   return nil
 }
 
