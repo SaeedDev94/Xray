@@ -1,0 +1,3 @@
+- Xray-core @ v25.3.31
+- hev-socks5-tunnel @ v2.10.0
+- open app on qs tile long press
