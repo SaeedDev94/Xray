@@ -120,11 +120,12 @@ class TProxyService : VpnService() {
             FileHelper.createOrUpdate(Settings.xrayConfig(applicationContext), profile.config)
             val datDir: String = applicationContext.filesDir.absolutePath
             val configPath: String = Settings.xrayConfig(applicationContext).absolutePath
-            val error: String = XrayCore.start(datDir, configPath)
+            val error = XrayCore.test(datDir, configPath)
             if (error.isNotEmpty()) {
                 showToast(error)
                 return
             }
+            scope.launch { XrayCore.start(datDir, configPath) }
         }
 
         /** Create Tun */
