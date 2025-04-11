@@ -1,0 +1,2 @@
+- Allow user certificates
+- Custom "User-Agent" header for Links
