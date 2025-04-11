@@ -13,7 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         Link::class,
         Profile::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 @TypeConverters(Link.Type.Convertor::class)
@@ -68,6 +68,12 @@ abstract class XrayDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE links ADD COLUMN user_agent TEXT")
+            }
+        }
+
         @Volatile
         private var db: XrayDatabase? = null
 
@@ -79,7 +85,9 @@ abstract class XrayDatabase : RoomDatabase() {
                             context.applicationContext,
                             XrayDatabase::class.java,
                             "xray"
-                        ).addMigrations(MIGRATION_1_2).build()
+                        ).addMigrations(MIGRATION_1_2)
+                            .addMigrations(MIGRATION_2_3)
+                            .build()
                     }
                 }
             }

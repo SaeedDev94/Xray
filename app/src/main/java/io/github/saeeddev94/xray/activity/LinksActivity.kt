@@ -89,7 +89,7 @@ class LinksActivity : AppCompatActivity() {
             val profiles = profileViewModel.activeLinks()
             links.filter { it.isActive }.forEach { link ->
                 runCatching {
-                    val content = HttpHelper.get(link.address).trim()
+                    val content = HttpHelper.get(link.address, link.userAgent).trim()
                     val newProfiles = if (link.type == Link.Type.Json) {
                         jsonProfiles(link, content)
                     } else {
@@ -214,6 +214,7 @@ class LinksActivity : AppCompatActivity() {
         val typeRadioGroup = layout.findViewById<RadioGroup>(R.id.typeRadioGroup)
         val nameEditText = layout.findViewById<EditText>(R.id.nameEditText)
         val addressEditText = layout.findViewById<EditText>(R.id.addressEditText)
+        val userAgentEditText = layout.findViewById<EditText>(R.id.userAgentEditText)
         val isActiveSwitch = layout.findViewById<MaterialSwitch>(R.id.isActiveSwitch)
         Link.Type.entries.forEach {
             val radio = MaterialRadioButton(this)
@@ -224,6 +225,7 @@ class LinksActivity : AppCompatActivity() {
         }
         nameEditText.setText(link.name)
         addressEditText.setText(link.address)
+        userAgentEditText.setText(link.userAgent)
         isActiveSwitch.isChecked = link.isActive
         MaterialAlertDialogBuilder(this).apply {
             setTitle(title)
@@ -248,6 +250,7 @@ class LinksActivity : AppCompatActivity() {
                 link.type = Link.Type::class.cast(typeRadioButton.tag)
                 link.name = nameEditText.text.toString()
                 link.address = address
+                link.userAgent = userAgentEditText.text.toString().ifBlank { null }
                 link.isActive = isActiveSwitch.isChecked
                 lifecycleScope.launch {
                     if (link.id == 0L) {

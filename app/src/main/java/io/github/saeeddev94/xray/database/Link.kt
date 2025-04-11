@@ -18,6 +18,8 @@ data class Link(
     var type: Type = Type.Json,
     @ColumnInfo(name = "is_active")
     var isActive: Boolean = false,
+    @ColumnInfo(name = "user_agent")
+    var userAgent: String? = null,
 ) {
     enum class Type(val value: Int) {
         Json(0),

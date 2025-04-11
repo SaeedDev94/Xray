@@ -16,11 +16,14 @@ import java.net.URL
 class HttpHelper(var scope: CoroutineScope) {
 
     companion object {
-        suspend fun get(link: String): String {
+        suspend fun get(link: String, userAgent: String? = null): String {
             return withContext(Dispatchers.IO) {
                 val url = URL(link)
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
+                userAgent?.let {
+                    connection.setRequestProperty("User-Agent", it)
+                }
                 connection.connect()
                 val responseCode = connection.responseCode
                 if (responseCode == HttpURLConnection.HTTP_OK) {

@@ -26,6 +26,7 @@
     <string name="editLink">Edit Link</string>
     <string name="linkName">Name</string>
     <string name="linkAddress">Address</string>
+    <string name="linkUserAgent">User-Agent</string>
     <string name="linkIsActive">Is Active?</string>
     <string name="createLink">Create</string>
     <string name="updateLink">Update</string>
