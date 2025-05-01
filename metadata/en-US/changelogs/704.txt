@@ -1,0 +1,3 @@
+- App default User-Agent header
+- Change default ping address to `https://www.google.com`
+- Xray-core @ v25.4.30
