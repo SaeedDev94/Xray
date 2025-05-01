@@ -23,7 +23,7 @@ object Settings {
     var socksPassword: String = ""
     var geoIpAddress: String = "https://github.com/v2fly/geoip/releases/latest/download/geoip.dat"
     var geoSiteAddress: String = "https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat"
-    var pingAddress: String = "https://developers.google.com"
+    var pingAddress: String = "https://www.google.com"
     var pingTimeout: Int = 5
     var bypassLan: Boolean = true
     var enableIpV6: Boolean = true
