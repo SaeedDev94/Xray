@@ -1,5 +1,6 @@
 package io.github.saeeddev94.xray.helper
 
+import io.github.saeeddev94.xray.BuildConfig
 import io.github.saeeddev94.xray.Settings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,14 +17,13 @@ import java.net.URL
 class HttpHelper(var scope: CoroutineScope) {
 
     companion object {
-        suspend fun get(link: String, userAgent: String? = null): String {
+        suspend fun get(link: String, customUserAgent: String? = null): String {
             return withContext(Dispatchers.IO) {
                 val url = URL(link)
+                val userAgent = "${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME}"
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
-                userAgent?.let {
-                    connection.setRequestProperty("User-Agent", it)
-                }
+                connection.setRequestProperty("User-Agent", customUserAgent ?: userAgent)
                 connection.connect()
                 val responseCode = connection.responseCode
                 if (responseCode == HttpURLConnection.HTTP_OK) {
