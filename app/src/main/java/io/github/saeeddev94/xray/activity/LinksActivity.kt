@@ -226,7 +226,11 @@ class LinksActivity : AppCompatActivity() {
         nameEditText.setText(link.name)
         addressEditText.setText(link.address)
         userAgentEditText.setText(link.userAgent)
-        isActiveSwitch.isChecked = link.isActive
+        isActiveSwitch.isChecked = if (link.id == 0L) {
+            true
+        } else {
+            link.isActive
+        }
         MaterialAlertDialogBuilder(this).apply {
             setTitle(title)
             setView(layout)
