@@ -34,16 +34,19 @@ import io.github.saeeddev94.xray.BuildConfig
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.adapter.ProfileAdapter
+import io.github.saeeddev94.xray.database.Link
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import io.github.saeeddev94.xray.dto.ProfileList
 import io.github.saeeddev94.xray.helper.HttpHelper
 import io.github.saeeddev94.xray.helper.LinkHelper
 import io.github.saeeddev94.xray.helper.ProfileTouchHelper
 import io.github.saeeddev94.xray.service.TProxyService
+import io.github.saeeddev94.xray.viewmodel.LinkViewModel
 import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.net.URI
@@ -369,16 +372,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         dialog.show()
         lifecycleScope.launch {
             try {
-                val config = HttpHelper.get(uri.toString())
+                val content = HttpHelper.get(uri.toString())
                 withContext(Dispatchers.Main) {
                     dialog.dismiss()
-                    try {
-                        val name = LinkHelper.remark(uri)
-                        val json = JSONObject(config).toString(2)
-                        profileLauncher.launch(profileIntent(name = name, config = json))
-                    } catch (error: JSONException) {
-                        Toast.makeText(applicationContext, error.message, Toast.LENGTH_SHORT).show()
-                    }
+                    processHttpsContent(uri, content)
                 }
             } catch (error: Exception) {
                 withContext(Dispatchers.Main) {
@@ -387,6 +384,120 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
         }
+    }
+
+    private fun processHttpsContent(uri: URI, content: String) {
+        // Try to add as subscription link (if content is base64)
+        if (tryProcessAsSubscription(uri, content)) {
+            return
+        }
+        
+        // Try to add as JSON link (if content is JSON array)
+        if (tryProcessAsJson(uri, content)) {
+            return
+        }
+        
+        // Default handling (process as direct profile)
+        try {
+            val name = LinkHelper.remark(uri)
+            val json = JSONObject(content).toString(2)
+            profileLauncher.launch(profileIntent(name = name, config = json))
+        } catch (error: JSONException) {
+            Toast.makeText(applicationContext, error.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    private fun tryProcessAsSubscription(uri: URI, content: String): Boolean {
+        return runCatching {
+            // Try to decode as base64
+            val decoded = LinkHelper.decodeBase64(content.trim())
+            
+            // Check if it's actually base64 (decoding gives a different result)
+            // and contains at least one valid entry
+            if (decoded.isNotBlank() && decoded != content.trim()) {
+                val isValid = decoded.split("\n")
+                    .any { line -> 
+                        runCatching { LinkHelper(line.trim()).isValid() }.getOrNull() == true 
+                    }
+                
+                if (isValid) {
+                    // Create and save a new subscription link
+                    val name = LinkHelper.remark(uri)
+                    val link = Link(
+                        name = name.ifEmpty { getString(R.string.newLink) },
+                        address = uri.toString(),
+                        type = Link.Type.Subscription,
+                        isActive = true,
+                        userAgent = "xray-${BuildConfig.VERSION_NAME}"
+                    )
+                    
+                    val linkViewModel: LinkViewModel by viewModels()
+                    linkViewModel.insert(link)
+                    
+                    Toast.makeText(
+                        applicationContext, 
+                        "Added as subscription link", 
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    
+                    val intent = Intent(applicationContext, LinksActivity::class.java)
+                    intent.putExtra("auto_update", true)
+                    linkLauncher.launch(intent)
+                    return@runCatching true
+                }
+            }
+            false
+        }.getOrNull() ?: false
+    }
+    
+    private fun tryProcessAsJson(uri: URI, content: String): Boolean {
+        return runCatching {
+            // Try to parse as JSON array
+            val jsonArray = JSONArray(content)
+            
+            // Check if it's a valid array with at least one entry
+            if (jsonArray.length() > 0) {
+                // Verify at least one valid config in the array
+                var hasValidConfig = false
+                for (i in 0 until jsonArray.length()) {
+                    runCatching { 
+                        val obj = jsonArray.getJSONObject(i)
+                        if (obj.has("outbounds") || obj.has("inbounds")) {
+                            hasValidConfig = true
+                        }
+                    }
+                    if (hasValidConfig) break
+                }
+                
+                if (hasValidConfig) {
+                    // Create and save a new JSON link
+                    val name = LinkHelper.remark(uri)
+                    val link = Link(
+                        name = name.ifEmpty { getString(R.string.newLink) },
+                        address = uri.toString(),
+                        type = Link.Type.Json,
+                        isActive = true,
+                        userAgent = "xray-${BuildConfig.VERSION_NAME}"
+                    )
+                    
+                    val linkViewModel: LinkViewModel by viewModels()
+                    linkViewModel.insert(link)
+                    
+                    Toast.makeText(
+                        applicationContext, 
+                        "Added as JSON link", 
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    
+                    // Launch LinksActivity and automatically trigger update
+                    val intent = Intent(applicationContext, LinksActivity::class.java)
+                    intent.putExtra("auto_update", true)
+                    linkLauncher.launch(intent)
+                    return@runCatching true
+                }
+            }
+            false
+        }.getOrNull() ?: false
     }
 
     private fun ping() {
