@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.radiobutton.MaterialRadioButton
+import io.github.saeeddev94.xray.BuildConfig
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.adapter.LinkAdapter
@@ -225,8 +226,15 @@ class LinksActivity : AppCompatActivity() {
         }
         nameEditText.setText(link.name)
         addressEditText.setText(link.address)
-        userAgentEditText.setText(link.userAgent)
-        isActiveSwitch.isChecked = link.isActive
+        
+        if (link.id == 0L) {
+            userAgentEditText.setText("xray-${BuildConfig.VERSION_NAME}")
+            isActiveSwitch.isChecked = true
+        } else {
+            userAgentEditText.setText(link.userAgent)
+            isActiveSwitch.isChecked = link.isActive
+        }
+        
         MaterialAlertDialogBuilder(this).apply {
             setTitle(title)
             setView(layout)
