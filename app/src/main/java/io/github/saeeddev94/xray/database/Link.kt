@@ -1,10 +1,13 @@
 package io.github.saeeddev94.xray.database
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(tableName = "links")
 data class Link(
     @PrimaryKey(autoGenerate = true)
@@ -20,7 +23,7 @@ data class Link(
     var isActive: Boolean = false,
     @ColumnInfo(name = "user_agent")
     var userAgent: String? = null,
-) {
+) : Parcelable {
     enum class Type(val value: Int) {
         Json(0),
         Subscription(1);

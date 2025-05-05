@@ -7,6 +7,10 @@ class LinkRepository(private val linkDao: LinkDao) {
 
     val all = linkDao.all()
 
+    suspend fun activeLinks(): List<Link> {
+        return linkDao.activeLinks()
+    }
+
     suspend fun insert(link: Link) {
         linkDao.insert(link)
     }

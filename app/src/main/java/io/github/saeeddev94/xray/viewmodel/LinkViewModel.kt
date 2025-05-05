@@ -21,6 +21,10 @@ class LinkViewModel(application: Application) : AndroidViewModel(application) {
         listOf(),
     )
 
+    suspend fun activeLinks(): List<Link> {
+        return linkRepository.activeLinks()
+    }
+
     fun insert(link: Link) = viewModelScope.launch {
         linkRepository.insert(link)
     }
