@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/refreshLinks"
+        android:title="@string/refreshLinks"
+        android:icon="@drawable/baseline_refresh"
+        app:showAsAction="ifRoom" />
+    <item
         android:title="@string/newProfile"
         android:icon="@drawable/baseline_add"
         app:showAsAction="ifRoom">
