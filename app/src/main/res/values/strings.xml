@@ -10,7 +10,7 @@
     <string name="pingNotConnected">Not Connected</string>
     <string name="pingConnected">Connected, tap to check connection</string>
     <string name="pingTesting">Testing…</string>
-    <string name="appFullName">SaeedDev94/Xray</string>
+    <string name="appFullName">megasoheilsh/Xray</string>
     <string name="xrayLabel">XTLS/Xray-core</string>
     <string name="tun2socksLabel">heiher/hev-socks5-tunnel</string>
     <string name="tun2socksVersion">2.10.0</string>
@@ -54,6 +54,12 @@
     <string name="onlyHttps">Only HTTPS is acceptable</string>
     <string name="cancel">Cancel</string>
     <string name="ignore">Ignore</string>
+
+    <!-- Update Notification -->
+    <string name="update_available">Update Available</string>
+    <string name="update_message">A new version %1$s is available.</string>
+    <string name="update_later">Later</string>
+    <string name="update_download">Download</string>
 
     <!-- Basic Settings -->
     <string name="socksAddress">Socks Address</string>
