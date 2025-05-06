@@ -1,13 +1,17 @@
 package io.github.saeeddev94.xray.activity
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
+import android.view.LayoutInflater
+import android.widget.LinearLayout
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.database.Link
 import io.github.saeeddev94.xray.database.Profile
@@ -104,8 +108,20 @@ class LinksManagerActivity : AppCompatActivity() {
         }.show(supportFragmentManager, null)
     }
 
+    private fun loadingDialog(): Dialog {
+        val dialogView = LayoutInflater.from(this).inflate(
+            R.layout.loading_dialog,
+            LinearLayout(this)
+        )
+        return MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+    }
+
     private fun refreshLinks() {
-        Toast.makeText(applicationContext, "Getting update", Toast.LENGTH_SHORT).show()
+        val loadingDialog = loadingDialog()
+        loadingDialog.show()
         lifecycleScope.launch {
             val links = linkViewModel.activeLinks()
             val profiles = profileViewModel.activeLinks()
@@ -128,8 +144,8 @@ class LinksManagerActivity : AppCompatActivity() {
                     it.putExtra(REFRESH_ACTION, true)
                     setResult(RESULT_OK, it)
                 }
+                loadingDialog.dismiss()
                 finish()
-                Toast.makeText(applicationContext, "Done", Toast.LENGTH_SHORT).show()
             }
         }
     }
