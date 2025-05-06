@@ -1,0 +1,4 @@
+- Drop support for importing json url via clipboard (convert it to json sub instead)
+- Ability to add new link (Json, Subscription) via clipboard directly from MainActivity
+- Ability to refresh links directly from MainActivity
+- Show loading dialog while refreshing links instead of toast
