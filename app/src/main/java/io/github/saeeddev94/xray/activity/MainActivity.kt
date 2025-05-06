@@ -369,6 +369,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun openLink(uri: URI) {
         val link = Link()
+        link.name = LinkHelper.remark(uri, LinkHelper.LINK_DEFAULT)
         link.address = uri.toString()
         val intent = LinksManagerActivity.openLink(applicationContext, link)
         linksManager.launch(intent)

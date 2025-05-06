@@ -6,6 +6,7 @@ import io.github.saeeddev94.xray.Settings
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.net.URI
 
 class LinkHelper(link: String) {
 
@@ -15,7 +16,7 @@ class LinkHelper(link: String) {
 
     init {
         val base64: String = XrayCore.json(link)
-        val decoded = decodeBase64(base64)
+        val decoded = tryDecodeBase64(base64)
         val response = try { JSONObject(decoded) } catch (error: JSONException) { JSONObject() }
         val data = response.optJSONObject("data") ?: JSONObject()
         val outbounds = data.optJSONArray("outbounds") ?: JSONArray()
@@ -25,15 +26,17 @@ class LinkHelper(link: String) {
 
     companion object {
         const val REMARK_DEFAULT = "New Profile"
+        const val LINK_DEFAULT = "New Link"
 
-        fun decodeBase64(value: String): String {
-            val byteArray = Base64.decode(value, Base64.DEFAULT)
-            return String(byteArray)
+        fun remark(uri: URI, default: String = ""): String {
+            val name = uri.fragment ?: ""
+            return name.ifEmpty { default }
         }
 
         fun tryDecodeBase64(value: String): String {
             return runCatching {
-                decodeBase64(value)
+                val byteArray = Base64.decode(value, Base64.DEFAULT)
+                String(byteArray)
             }.getOrNull() ?: value
         }
     }
