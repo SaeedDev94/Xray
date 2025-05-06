@@ -91,18 +91,16 @@ class LinksManagerActivity : AppCompatActivity() {
             return
         }
 
-        LinkFormFragment(link) { confirm ->
-            if (confirm) {
-                if (link.id == 0L) {
-                    linkViewModel.insert(link)
-                } else {
-                    linkViewModel.update(link)
-                }
-                Intent().also {
-                    it.putExtra(LINK_INDEX, index)
-                    it.putExtra(LINK_REF, link)
-                    setResult(RESULT_OK, it)
-                }
+        LinkFormFragment(link) {
+            if (link.id == 0L) {
+                linkViewModel.insert(link)
+            } else {
+                linkViewModel.update(link)
+            }
+            Intent().also {
+                it.putExtra(LINK_INDEX, index)
+                it.putExtra(LINK_REF, link)
+                setResult(RESULT_OK, it)
             }
             finish()
         }.show(supportFragmentManager, null)

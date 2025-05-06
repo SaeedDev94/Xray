@@ -20,7 +20,7 @@ import kotlin.reflect.cast
 
 class LinkFormFragment(
     private val link: Link,
-    private val onAction: (confirm: Boolean) -> Unit,
+    private val onConfirm: () -> Unit,
 ) : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -89,10 +89,8 @@ class LinkFormFragment(
                 link.address = address
                 link.userAgent = userAgentEditText.text.toString().ifBlank { null }
                 link.isActive = isActiveSwitch.isChecked
-                onAction(true)
+                onConfirm()
             }
-            setNegativeButton(context.getString(R.string.closeLink)) { _, _ ->
-                onAction(false)
-            }
+            setNegativeButton(context.getString(R.string.closeLink)) { _, _ -> }
         }.create()
 }
