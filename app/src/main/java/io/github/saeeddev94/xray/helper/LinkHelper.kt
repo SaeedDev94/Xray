@@ -6,7 +6,6 @@ import io.github.saeeddev94.xray.Settings
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.net.URI
 
 class LinkHelper(link: String) {
 
@@ -27,14 +26,15 @@ class LinkHelper(link: String) {
     companion object {
         const val REMARK_DEFAULT = "New Profile"
 
-        fun remark(uri: URI): String {
-            val name = uri.fragment ?: ""
-            return name.ifEmpty { REMARK_DEFAULT }
-        }
-
         fun decodeBase64(value: String): String {
             val byteArray = Base64.decode(value, Base64.DEFAULT)
             return String(byteArray)
+        }
+
+        fun tryDecodeBase64(value: String): String {
+            return runCatching {
+                decodeBase64(value)
+            }.getOrNull() ?: value
         }
     }
 

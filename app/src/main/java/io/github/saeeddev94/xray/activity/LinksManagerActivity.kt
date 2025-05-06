@@ -174,7 +174,7 @@ class LinksManagerActivity : AppCompatActivity() {
 
     private fun subscriptionProfiles(link: Link, value: String): List<Profile> {
         return runCatching {
-            val decoded = LinkHelper.decodeBase64(value).trim()
+            val decoded = LinkHelper.tryDecodeBase64(value).trim()
             decoded.split("\n")
                 .reversed()
                 .map { LinkHelper(it) }
