@@ -12,10 +12,8 @@ import android.net.Uri
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -34,6 +32,7 @@ import io.github.saeeddev94.xray.BuildConfig
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.adapter.ProfileAdapter
+import io.github.saeeddev94.xray.database.Link
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import io.github.saeeddev94.xray.dto.ProfileList
 import io.github.saeeddev94.xray.helper.HttpHelper
@@ -44,8 +43,6 @@ import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONException
-import org.json.JSONObject
 import java.net.URI
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -68,6 +65,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val linkLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
         getProfiles(dataOnly = true)
+    }
+    private val linksManager = registerForActivityResult(StartActivityForResult()) {
+        if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
+        val link: Link? = LinksManagerActivity.getLink(it.data!!)
+        val refresh = LinksManagerActivity.getRefresh(it.data!!)
+        if (link != null) refreshLinks()
+        if (refresh) getProfiles(dataOnly = true)
     }
     private val vpnLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
@@ -344,7 +348,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             return
         }
         if (uri.scheme == "https") {
-            getConfig(uri)
+            openLink(uri)
             return
         }
         val linkHelper = LinkHelper(link)
@@ -357,36 +361,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         profileLauncher.launch(profileIntent(name = name, config = json))
     }
 
-    private fun getConfig(uri: URI) {
-        val dialogView = LayoutInflater.from(this).inflate(
-            R.layout.loading_dialog,
-            LinearLayout(this)
-        )
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
-        dialog.show()
-        lifecycleScope.launch {
-            try {
-                val config = HttpHelper.get(uri.toString())
-                withContext(Dispatchers.Main) {
-                    dialog.dismiss()
-                    try {
-                        val name = LinkHelper.remark(uri)
-                        val json = JSONObject(config).toString(2)
-                        profileLauncher.launch(profileIntent(name = name, config = json))
-                    } catch (error: JSONException) {
-                        Toast.makeText(applicationContext, error.message, Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (error: Exception) {
-                withContext(Dispatchers.Main) {
-                    dialog.dismiss()
-                    Toast.makeText(applicationContext, error.message, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
+    private fun refreshLinks() {
+        val intent = LinksManagerActivity.refreshLinks(applicationContext)
+        linksManager.launch(intent)
+    }
+
+    private fun openLink(uri: URI) {
+        val link = Link()
+        link.address = uri.toString()
+        val intent = LinksManagerActivity.openLink(applicationContext, link)
+        linksManager.launch(intent)
     }
 
     private fun ping() {
