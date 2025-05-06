@@ -27,13 +27,11 @@ class UpdateHelper {
                         val response = connection.inputStream.bufferedReader().use { it.readText() }
                         val releases = JSONArray(response)
                         
-                        // Find the latest release
                         if (releases.length() > 0) {
                             val latestRelease = releases.getJSONObject(0)
                             val tagName = latestRelease.getString("tag_name")
                             val releaseUrl = latestRelease.getString("html_url")
                             
-                            // Parse version from tag (assuming format like v10.6.0 or 10.6.0)
                             val latestVersion = tagName.replace("v", "").trim()
                             val currentVersion = BuildConfig.VERSION_NAME
                             
@@ -59,7 +57,6 @@ class UpdateHelper {
                     if (latest[i] < current[i]) return false
                 }
                 
-                // If we get here and latest has more segments, it's newer
                 return latest.size > current.size
             } catch (e: Exception) {
                 return false
