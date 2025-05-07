@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 import java.net.Authenticator
 import java.net.HttpURLConnection
 import java.net.InetSocketAddress
@@ -17,20 +16,45 @@ import java.net.URL
 class HttpHelper(var scope: CoroutineScope) {
 
     companion object {
-        suspend fun get(link: String, customUserAgent: String? = null): String {
+        private fun getConnection(
+            link: String,
+            method: String = "GET",
+            proxy: Proxy? = null,
+            timeout: Int = 5000,
+            userAgent: String? = null,
+        ): HttpURLConnection {
+            val url = URL(link)
+            val connection = if (proxy == null) {
+                url.openConnection() as HttpURLConnection
+            } else {
+                url.openConnection(proxy) as HttpURLConnection
+            }
+            connection.requestMethod = method
+            connection.connectTimeout = timeout
+            connection.readTimeout = timeout
+            userAgent?.let { connection.setRequestProperty("User-Agent", it) }
+            connection.setRequestProperty("Connection", "close")
+            return connection
+        }
+
+        suspend fun get(link: String, userAgent: String? = null): String {
             return withContext(Dispatchers.IO) {
-                val url = URL(link)
-                val userAgent = "${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME}"
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
-                connection.setRequestProperty("User-Agent", customUserAgent ?: userAgent)
-                connection.connect()
-                val responseCode = connection.responseCode
-                if (responseCode == HttpURLConnection.HTTP_OK) {
+                val defaultUserAgent = "${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME}"
+                val connection = getConnection(link, userAgent = userAgent ?: defaultUserAgent)
+                var responseCode = 0
+                val responseBody = try {
+                    connection.connect()
+                    responseCode = connection.responseCode
                     connection.inputStream.bufferedReader().use { it.readText() }
-                } else {
+                } catch (error: Exception) {
+                    null
+                } finally {
+                    connection.disconnect()
+                }
+                if (responseCode != HttpURLConnection.HTTP_OK || responseBody == null) {
                     throw Exception("HTTP Error: $responseCode")
                 }
+                responseBody
             }
         }
     }
@@ -61,17 +85,13 @@ class HttpHelper(var scope: CoroutineScope) {
 
     private suspend fun getConnection(): HttpURLConnection {
         return withContext(Dispatchers.IO) {
+            val link = Settings.pingAddress
+            val method = "HEAD"
             val address = InetSocketAddress(Settings.socksAddress, Settings.socksPort.toInt())
             val proxy = Proxy(Proxy.Type.SOCKS, address)
             val timeout = Settings.pingTimeout * 1000
-            val connection = URL(Settings.pingAddress).openConnection(proxy) as HttpURLConnection
 
-            connection.requestMethod = "HEAD"
-            connection.connectTimeout = timeout
-            connection.readTimeout = timeout
-            connection.setRequestProperty("Connection", "close")
-
-            connection
+            getConnection(link, method, proxy, timeout)
         }
     }
 
