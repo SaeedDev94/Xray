@@ -2,17 +2,23 @@ package io.github.saeeddev94.xray.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import io.github.saeeddev94.xray.Xray
 import io.github.saeeddev94.xray.database.Profile
-import io.github.saeeddev94.xray.dto.ProfileList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
 
     private val profileRepository by lazy { getApplication<Xray>().profileRepository }
 
-    suspend fun all(): List<ProfileList> {
-        return profileRepository.all()
-    }
+    val profiles = profileRepository.all.flowOn(Dispatchers.IO).stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        listOf(),
+    )
 
     suspend fun activeLinks(): List<Profile> {
         return profileRepository.activeLinks()

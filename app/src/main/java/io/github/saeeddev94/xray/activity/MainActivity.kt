@@ -47,6 +47,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URI
 import androidx.core.content.edit
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.flow.collectLatest
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -55,9 +58,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var isRunning: Boolean = false
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var profilesList: RecyclerView
     private lateinit var profileAdapter: ProfileAdapter
-    private lateinit var profiles: ArrayList<ProfileList>
+    private val profilesRecyclerView by lazy { findViewById<RecyclerView>(R.id.profilesRecyclerView) }
+    private val profiles = arrayListOf<ProfileList>()
 
     private val profileLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
@@ -65,16 +68,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val profile = IntentHelper.getParcelable(it.data!!, "profile", Profile::class.java)
         onProfileActivityResult(index, profile!!)
     }
-    private val linkLauncher = registerForActivityResult(StartActivityForResult()) {
-        if (it.resultCode != RESULT_OK) return@registerForActivityResult
-        getProfiles(dataOnly = true)
-    }
     private val linksManager = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
         val link: Link? = LinksManagerActivity.getLink(it.data!!)
-        val refresh = LinksManagerActivity.getRefresh(it.data!!)
         if (link != null) refreshLinks()
-        if (refresh) getProfiles(dataOnly = true)
     }
     private val vpnLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
@@ -118,7 +115,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             binding.drawerLayout.addDrawerListener(it)
             it.syncState()
         }
-        getProfiles()
+        profileAdapter = ProfileAdapter(
+            lifecycleScope,
+            profileViewModel,
+            profiles,
+            { index, profile -> profileSelect(index, profile) },
+            { index, profile -> profileEdit(index, profile) },
+            { index, profile -> profileDelete(index, profile) },
+        )
+        profilesRecyclerView.adapter = profileAdapter
+        profilesRecyclerView.layoutManager = LinearLayoutManager(applicationContext)
+        ItemTouchHelper(ProfileTouchHelper(profileAdapter)).also {
+            it.attachToRecyclerView(profilesRecyclerView)
+        }
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                profileViewModel.profiles.collectLatest {
+                    profiles.clear()
+                    profiles.addAll(ArrayList(it))
+                    @Suppress("NotifyDataSetChanged")
+                    profileAdapter.notifyDataSetChanged()
+                }
+            }
+        }
         val deepLink: Uri? = intent?.data
         deepLink?.let {
             val pathSegments = it.pathSegments
@@ -158,9 +177,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.refreshLinks -> refreshLinks()
-            R.id.newProfile -> {
-                profileLauncher.launch(profileIntent())
-            }
+            R.id.newProfile -> profileLauncher.launch(profileIntent())
             R.id.fromClipboard -> {
                 val clipData: ClipData? = clipboardManager.primaryClip
                 val clipText: String = if (clipData != null && clipData.itemCount > 0) {
@@ -175,16 +192,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.assets -> Intent(applicationContext, AssetsActivity::class.java)
+            R.id.links -> Intent(applicationContext, LinksActivity::class.java)
             R.id.logs -> Intent(applicationContext, LogsActivity::class.java)
             R.id.appsRouting -> Intent(applicationContext, AppsRoutingActivity::class.java)
             R.id.settings -> Intent(applicationContext, SettingsActivity::class.java)
             else -> null
-        }.also {
-            if (it != null) startActivity(it)
-        }
-        if (item.itemId == R.id.links) {
-            linkLauncher.launch(Intent(applicationContext, LinksActivity::class.java))
-        }
+        }?.let { startActivity(it) }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
@@ -251,8 +264,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .setTitle("Delete Profile#${profile.index + 1} ?")
             .setMessage("\"${profile.name}\" will delete forever !!")
             .setNegativeButton("No", null)
-            .setPositiveButton("Yes") { dialog, _ ->
-                dialog?.dismiss()
+            .setPositiveButton("Yes") { _, _ ->
                 lifecycleScope.launch {
                     val ref = profileViewModel.find(profile.id)
                     val id = ref.id
@@ -264,9 +276,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             Settings.selectedProfile = 0L
                             Settings.save(applicationContext)
                         }
-                        profiles.removeAt(index)
-                        profileAdapter.notifyItemRemoved(index)
-                        profileAdapter.notifyItemRangeChanged(index, profiles.size - index)
                     }
                 }
             }.show()
@@ -294,39 +303,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         profiles[index] = ProfileList.fromProfile(profile)
         profileAdapter.notifyItemChanged(index)
-    }
-
-    private fun getProfiles(dataOnly: Boolean = false) {
-        lifecycleScope.launch {
-            val list = profileViewModel.all()
-            withContext(Dispatchers.Main) {
-                if (dataOnly) {
-                    profiles.clear()
-                    profiles.addAll(ArrayList(list))
-                    @Suppress("NotifyDataSetChanged")
-                    profileAdapter.notifyDataSetChanged()
-                    return@withContext
-                }
-                profiles = ArrayList(list)
-                profilesList = binding.profilesList
-                profileAdapter = ProfileAdapter(
-                    lifecycleScope,
-                    profileViewModel,
-                    profiles, object : ProfileAdapter.ProfileClickListener {
-                        override fun profileSelect(index: Int, profile: ProfileList) =
-                            this@MainActivity.profileSelect(index, profile)
-                        override fun profileEdit(index: Int, profile: ProfileList) =
-                            this@MainActivity.profileEdit(index, profile)
-                        override fun profileDelete(index: Int, profile: ProfileList) =
-                            this@MainActivity.profileDelete(index, profile)
-                    })
-                profilesList.adapter = profileAdapter
-                profilesList.layoutManager = LinearLayoutManager(applicationContext)
-                ItemTouchHelper(ProfileTouchHelper(profileAdapter)).also {
-                    it.attachToRecyclerView(profilesList)
-                }
-            }
-        }
     }
 
     private fun processLink(link: String) {

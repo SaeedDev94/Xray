@@ -20,8 +20,10 @@ import kotlinx.coroutines.launch
 class ProfileAdapter(
     private val scope: CoroutineScope,
     private val profileViewModel: ProfileViewModel,
-    private var profiles: ArrayList<ProfileList>,
-    private var callback: ProfileClickListener,
+    private val profiles: ArrayList<ProfileList>,
+    private val profileSelect: (index: Int, profile: ProfileList) -> Unit,
+    private val profileEdit: (index: Int, profile: ProfileList) -> Unit,
+    private val profileDelete: (index: Int, profile: ProfileList) -> Unit,
 ) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(), ProfileTouchHelper.ProfileTouchCallback {
 
     override fun onCreateViewHolder(container: ViewGroup, type: Int): ViewHolder {
@@ -41,13 +43,13 @@ class ProfileAdapter(
         holder.activeIndicator.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.profileCard.context, color))
         holder.profileName.text = profile.name
         holder.profileCard.setOnClickListener {
-            callback.profileSelect(index, profile)
+            profileSelect(index, profile)
         }
         holder.profileEdit.setOnClickListener {
-            callback.profileEdit(index, profile)
+            profileEdit(index, profile)
         }
         holder.profileDelete.setOnClickListener {
-            callback.profileDelete(index, profile)
+            profileDelete(index, profile)
         }
     }
 
@@ -80,11 +82,5 @@ class ProfileAdapter(
         var profileName: TextView = item.findViewById(R.id.profileName)
         var profileEdit: LinearLayout = item.findViewById(R.id.profileEdit)
         var profileDelete: LinearLayout = item.findViewById(R.id.profileDelete)
-    }
-
-    interface ProfileClickListener {
-        fun profileSelect(index: Int, profile: ProfileList)
-        fun profileEdit(index: Int, profile: ProfileList)
-        fun profileDelete(index: Int, profile: ProfileList)
     }
 }

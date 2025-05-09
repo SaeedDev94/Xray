@@ -2,13 +2,10 @@ package io.github.saeeddev94.xray.repository
 
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.database.ProfileDao
-import io.github.saeeddev94.xray.dto.ProfileList
 
 class ProfileRepository(private val profileDao: ProfileDao) {
 
-    suspend fun all(): List<ProfileList> {
-        return profileDao.all()
-    }
+    val all = profileDao.all()
 
     suspend fun activeLinks(): List<Profile> {
         return profileDao.activeLinks()

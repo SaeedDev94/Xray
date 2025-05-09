@@ -32,7 +32,6 @@ class LinksManagerActivity : AppCompatActivity() {
     companion object {
         private const val LINK_REF = "ref"
         private const val LINK_INDEX = "index"
-        private const val REFRESH_ACTION = "refresh"
         private const val DELETE_ACTION = "delete"
 
         fun refreshLinks(context: Context): Intent {
@@ -59,10 +58,6 @@ class LinksManagerActivity : AppCompatActivity() {
 
         fun getIndex(intent: Intent): Int {
             return intent.getIntExtra(LINK_INDEX, -1)
-        }
-
-        fun getRefresh(intent: Intent): Boolean {
-            return intent.getBooleanExtra(REFRESH_ACTION, false)
         }
     }
 
@@ -133,10 +128,7 @@ class LinksManagerActivity : AppCompatActivity() {
                 }
             }
             withContext(Dispatchers.Main) {
-                Intent().also {
-                    it.putExtra(REFRESH_ACTION, true)
-                    setResult(RESULT_OK, it)
-                }
+                setResult(RESULT_OK)
                 loadingDialog.dismiss()
                 finish()
             }
@@ -240,10 +232,7 @@ class LinksManagerActivity : AppCompatActivity() {
                 }
             linkViewModel.delete(link)
             withContext(Dispatchers.Main) {
-                Intent().also {
-                    it.putExtra(REFRESH_ACTION, true)
-                    setResult(RESULT_OK, it)
-                }
+                setResult(RESULT_OK)
                 finish()
             }
         }

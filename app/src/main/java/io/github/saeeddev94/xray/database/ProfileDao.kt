@@ -6,11 +6,12 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import io.github.saeeddev94.xray.dto.ProfileList
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProfileDao {
     @Query("SELECT `id`, `index`, `name` FROM profiles ORDER BY `index` ASC")
-    suspend fun all(): List<ProfileList>
+    fun all(): Flow<List<ProfileList>>
 
     @Query(
         "SELECT profiles.* FROM profiles" +

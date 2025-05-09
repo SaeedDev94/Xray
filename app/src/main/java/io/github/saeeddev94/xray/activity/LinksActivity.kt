@@ -31,8 +31,6 @@ class LinksActivity : AppCompatActivity() {
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
         val link: Link? = LinksManagerActivity.getLink(it.data!!)
         val index: Int = LinksManagerActivity.getIndex(it.data!!)
-        val refresh = LinksManagerActivity.getRefresh(it.data!!)
-        if (refresh) setResult(RESULT_OK)
         if (index == -1 || link == null) return@registerForActivityResult
         links[index] = link
         adapter.notifyItemChanged(index)
