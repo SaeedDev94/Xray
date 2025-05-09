@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.ColorStateList
-import android.net.Uri
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
@@ -51,6 +50,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    private val notificationPermission = registerForActivityResult(RequestPermission()) { onToggleButtonClick() }
     private val clipboardManager by lazy { getSystemService(ClipboardManager::class.java) }
     private val profileViewModel: ProfileViewModel by viewModels()
     private var isRunning: Boolean = false
@@ -77,9 +77,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
         toggleVpnService()
     }
-    private val notificationPermission = registerForActivityResult(RequestPermission()) {
-        onToggleButtonClick()
-    }
+
     private val vpnServiceEventReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (context == null || intent == null) return
@@ -137,9 +135,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
         }
-        val deepLink: Uri? = intent?.data
-        deepLink?.let {
-            val pathSegments = it.pathSegments
+        intent?.data?.let { deepLink ->
+            val pathSegments = deepLink.pathSegments
             if (pathSegments.size > 0) processLink(pathSegments[0])
         }
     }
@@ -314,9 +311,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun ping() {
         if (!isRunning) return
         binding.pingResult.text = getString(R.string.pingTesting)
-        HttpHelper(lifecycleScope).measureDelay { delay ->
-            binding.pingResult.text = delay
-        }
+        HttpHelper(lifecycleScope).measureDelay { binding.pingResult.text = it }
     }
 
     private fun hasPostNotification(): Boolean {
