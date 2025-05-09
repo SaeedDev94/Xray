@@ -303,15 +303,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun processLink(link: String) {
-        val uri = runCatching { URI(link) }.getOrNull()
-        val invalidLink = getString(R.string.invalidLink)
-        val forbiddenHttp = getString(R.string.forbiddenHttp)
-        if (uri == null) {
-            Toast.makeText(applicationContext, invalidLink, Toast.LENGTH_SHORT).show()
-            return
-        }
+        val uri = runCatching { URI(link) }.getOrNull() ?: return
         if (uri.scheme == "http") {
-            Toast.makeText(applicationContext, forbiddenHttp, Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, getString(R.string.forbiddenHttp), Toast.LENGTH_SHORT).show()
             return
         }
         if (uri.scheme == "https") {
@@ -320,7 +314,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         val linkHelper = LinkHelper(link)
         if (!linkHelper.isValid()) {
-            Toast.makeText(applicationContext, invalidLink, Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, getString(R.string.invalidLink), Toast.LENGTH_SHORT).show()
             return
         }
         val json = linkHelper.json()
