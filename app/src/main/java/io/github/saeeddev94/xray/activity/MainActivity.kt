@@ -2,7 +2,6 @@ package io.github.saeeddev94.xray.activity
 
 import XrayCore.XrayCore
 import android.content.BroadcastReceiver
-import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
@@ -179,11 +178,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.refreshLinks -> refreshLinks()
             R.id.newProfile -> profileLauncher.launch(profileIntent())
             R.id.fromClipboard -> {
-                val clipData: ClipData? = clipboardManager.primaryClip
-                val clipText: String = if (clipData != null && clipData.itemCount > 0) {
-                    clipData.getItemAt(0).text.toString().trim()
-                } else ""
-                processLink(clipText)
+                runCatching {
+                    clipboardManager.primaryClip!!.getItemAt(0).text.toString().trim()
+                }.getOrNull()?.let { processLink(it) }
             }
         }
         return true
