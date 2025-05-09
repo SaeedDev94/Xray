@@ -33,9 +33,11 @@ import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.adapter.ProfileAdapter
 import io.github.saeeddev94.xray.database.Link
+import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import io.github.saeeddev94.xray.dto.ProfileList
 import io.github.saeeddev94.xray.helper.HttpHelper
+import io.github.saeeddev94.xray.helper.IntentHelper
 import io.github.saeeddev94.xray.helper.LinkHelper
 import io.github.saeeddev94.xray.helper.ProfileTouchHelper
 import io.github.saeeddev94.xray.service.TProxyService
@@ -59,8 +61,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val profileLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
         val index = it.data!!.getIntExtra("index", -1)
-        val id = it.data!!.getLongExtra("id", 0L)
-        onProfileActivityResult(id, index)
+        val profile = IntentHelper.getParcelable(it.data!!, "profile", Profile::class.java)
+        onProfileActivityResult(index, profile!!)
     }
     private val linkLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
@@ -283,24 +285,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun onProfileActivityResult(id: Long, index: Int) {
+    private fun onProfileActivityResult(index: Int, profile: Profile) {
         if (index == -1) {
-            lifecycleScope.launch {
-                val newProfile = profileViewModel.find(id)
-                withContext(Dispatchers.Main) {
-                    profiles.add(0, ProfileList.fromProfile(newProfile))
-                    profileAdapter.notifyItemRangeChanged(0, profiles.size)
-                }
-            }
+            profiles.add(0, ProfileList.fromProfile(profile))
+            profileAdapter.notifyItemRangeChanged(0, profiles.size)
             return
         }
-        lifecycleScope.launch {
-            val profile = profileViewModel.find(id)
-            withContext(Dispatchers.Main) {
-                profiles[index] = ProfileList.fromProfile(profile)
-                profileAdapter.notifyItemChanged(index)
-            }
-        }
+        profiles[index] = ProfileList.fromProfile(profile)
+        profileAdapter.notifyItemChanged(index)
     }
 
     private fun getProfiles(dataOnly: Boolean = false) {

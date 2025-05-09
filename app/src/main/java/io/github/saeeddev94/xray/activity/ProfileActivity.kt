@@ -130,8 +130,8 @@ class ProfileActivity : AppCompatActivity() {
             }
             withContext(Dispatchers.Main) {
                 Intent().also {
-                    it.putExtra("id", profile.id)
                     it.putExtra("index", index)
+                    it.putExtra("profile", profile)
                     setResult(RESULT_OK, it)
                     finish()
                 }

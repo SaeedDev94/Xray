@@ -1,11 +1,14 @@
 package io.github.saeeddev94.xray.database
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(
     tableName = "profiles",
     foreignKeys = [
@@ -24,20 +27,16 @@ import androidx.room.PrimaryKey
         ),
     ],
 )
-class Profile {
+data class Profile(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    var id: Long = 0L
-
+    var id: Long = 0L,
     @ColumnInfo(name = "link_id")
-    var linkId: Long? = null
-
+    var linkId: Long? = null,
     @ColumnInfo(name = "index")
-    var index: Int = -1
-
+    var index: Int = -1,
     @ColumnInfo(name = "name")
-    var name: String = ""
-
+    var name: String = "",
     @ColumnInfo(name = "config")
-    var config: String = ""
-}
+    var config: String = "",
+) : Parcelable
