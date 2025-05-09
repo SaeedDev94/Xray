@@ -1,5 +1,6 @@
 package io.github.saeeddev94.xray.activity
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,7 @@ import com.blacksquircle.ui.editorkit.plugin.linenumbers.lineNumbers
 import com.blacksquircle.ui.language.json.JsonLanguage
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.saeeddev94.xray.helper.ConfigHelper
+import io.github.saeeddev94.xray.helper.IntentHelper
 import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,6 +29,34 @@ import java.io.InputStreamReader
 
 class ProfileActivity : AppCompatActivity() {
 
+    companion object {
+        private const val PROFILE_REF = "ref"
+        private const val PROFILE_INDEX = "index"
+        private const val PROFILE_ID = "id"
+        private const val PROFILE_NAME = "name"
+        private const val PROFILE_CONFIG = "config"
+
+        fun getIntent(
+            context: Context, index: Int = -1, id: Long = 0L, name: String = "", config: String = ""
+        ) = Intent(context, ProfileActivity::class.java).also {
+            it.putExtra(PROFILE_INDEX, index)
+            it.putExtra(PROFILE_ID, id)
+            if (name.isNotEmpty()) it.putExtra(PROFILE_NAME, name)
+            if (config.isNotEmpty()) it.putExtra(
+                PROFILE_CONFIG,
+                config.replace("\\/", "/")
+            )
+        }
+
+        fun getProfile(intent: Intent): Profile? {
+            return IntentHelper.getParcelable(intent, PROFILE_REF, Profile::class.java)
+        }
+
+        fun getIndex(intent: Intent): Int {
+            return intent.getIntExtra(PROFILE_INDEX, -1)
+        }
+    }
+
     private val profileViewModel: ProfileViewModel by viewModels()
     private lateinit var binding: ActivityProfileBinding
     private lateinit var profile: Profile
@@ -35,8 +65,8 @@ class ProfileActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        id = intent.getLongExtra("id", 0L)
-        index = intent.getIntExtra("index", -1)
+        id = intent.getLongExtra(PROFILE_ID, 0L)
+        index = intent.getIntExtra(PROFILE_INDEX, -1)
         title = if (isNew()) getString(R.string.newProfile) else getString(R.string.editProfile)
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -49,8 +79,8 @@ class ProfileActivity : AppCompatActivity() {
             resolved(profile)
         } else if (isNew()) {
             val profile = Profile()
-            profile.name = intent.getStringExtra("name") ?: ""
-            profile.config = intent.getStringExtra("config") ?: ""
+            profile.name = intent.getStringExtra(PROFILE_NAME) ?: ""
+            profile.config = intent.getStringExtra(PROFILE_CONFIG) ?: ""
             resolved(profile)
         } else {
             lifecycleScope.launch {
@@ -130,8 +160,8 @@ class ProfileActivity : AppCompatActivity() {
             }
             withContext(Dispatchers.Main) {
                 Intent().also {
-                    it.putExtra("index", index)
-                    it.putExtra("profile", profile)
+                    it.putExtra(PROFILE_INDEX, index)
+                    it.putExtra(PROFILE_REF, profile)
                     setResult(RESULT_OK, it)
                     finish()
                 }

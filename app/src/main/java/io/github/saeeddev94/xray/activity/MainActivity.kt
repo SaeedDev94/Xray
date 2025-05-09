@@ -36,7 +36,6 @@ import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import io.github.saeeddev94.xray.dto.ProfileList
 import io.github.saeeddev94.xray.helper.HttpHelper
-import io.github.saeeddev94.xray.helper.IntentHelper
 import io.github.saeeddev94.xray.helper.LinkHelper
 import io.github.saeeddev94.xray.helper.ProfileTouchHelper
 import io.github.saeeddev94.xray.service.TProxyService
@@ -63,8 +62,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private val profileLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
-        val index = it.data!!.getIntExtra("index", -1)
-        val profile = IntentHelper.getParcelable(it.data!!, "profile", Profile::class.java)
+        val index: Int = ProfileActivity.getIndex(it.data!!)
+        val profile: Profile? = ProfileActivity.getProfile(it.data!!)
         onProfileActivityResult(index, profile!!)
     }
     private val linksManager = registerForActivityResult(StartActivityForResult()) {
@@ -176,7 +175,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.refreshLinks -> refreshLinks()
-            R.id.newProfile -> profileLauncher.launch(profileIntent())
+            R.id.newProfile -> profileLauncher.launch(ProfileActivity.getIntent(applicationContext))
             R.id.fromClipboard -> {
                 runCatching {
                     clipboardManager.primaryClip!!.getItemAt(0).text.toString().trim()
@@ -252,7 +251,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun profileEdit(index: Int, profile: ProfileList) {
         if (isRunning && Settings.selectedProfile == profile.id) return
-        profileLauncher.launch(profileIntent(index, profile.id))
+        profileLauncher.launch(ProfileActivity.getIntent(applicationContext, index, profile.id))
     }
 
     private fun profileDelete(index: Int, profile: ProfileList) {
@@ -276,20 +275,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 }
             }.show()
-    }
-
-    private fun profileIntent(
-        index: Int = -1, id: Long = 0L, name: String = "", config: String = ""
-    ): Intent {
-        return Intent(applicationContext, ProfileActivity::class.java).also {
-            it.putExtra("index", index)
-            it.putExtra("id", id)
-            if (name.isNotEmpty()) it.putExtra("name", name)
-            if (config.isNotEmpty()) it.putExtra(
-                "config",
-                config.replace("\\/", "/")
-            )
-        }
     }
 
     private fun onProfileActivityResult(index: Int, profile: Profile) {
@@ -319,7 +304,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         val json = linkHelper.json()
         val name = linkHelper.remark()
-        profileLauncher.launch(profileIntent(name = name, config = json))
+        profileLauncher.launch(ProfileActivity.getIntent(applicationContext, name = name, config = json))
     }
 
     private fun refreshLinks() {
