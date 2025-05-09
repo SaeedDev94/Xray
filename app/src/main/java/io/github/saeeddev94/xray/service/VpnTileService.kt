@@ -8,6 +8,7 @@ import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import io.github.saeeddev94.xray.R
+import androidx.core.content.edit
 
 class VpnTileService : TileService() {
 
@@ -16,10 +17,10 @@ class VpnTileService : TileService() {
         val action = intent?.getStringExtra("action") ?: ""
         val label = intent?.getStringExtra("label") ?: ""
         val sharedPref = sharedPref()
-        sharedPref.edit()
-            .putString("action", action)
-            .putString("label", label)
-            .apply()
+        sharedPref.edit {
+            putString("action", action)
+            putString("label", label)
+        }
         handleUpdate(action, label)
         return START_STICKY
     }

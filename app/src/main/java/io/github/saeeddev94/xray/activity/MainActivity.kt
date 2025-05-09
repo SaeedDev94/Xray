@@ -46,6 +46,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URI
+import androidx.core.content.edit
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -381,7 +382,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val askedBefore = sharedPref.getBoolean(key, false)
         if (askedBefore) return true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            sharedPref.edit().putBoolean(key, true).apply()
+            sharedPref.edit { putBoolean(key, true) }
             vpnServiceNotificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
             return false
         }

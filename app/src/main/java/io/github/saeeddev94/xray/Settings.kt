@@ -3,6 +3,7 @@ package io.github.saeeddev94.xray
 import android.content.Context
 import android.content.SharedPreferences
 import java.io.File
+import androidx.core.content.edit
 
 object Settings {
     /** Active Profile ID */
@@ -86,36 +87,36 @@ object Settings {
 
     fun save(context: Context) {
         val sharedPref = sharedPref(context)
-        sharedPref.edit()
+        sharedPref.edit {
             /** Active Profile ID */
-            .putLong("selectedProfile", selectedProfile)
+            putLong("selectedProfile", selectedProfile)
             /** Apps Routing */
-            .putBoolean("appsRoutingMode", appsRoutingMode)
-            .putString("excludedApps", appsRouting)
+            putBoolean("appsRoutingMode", appsRoutingMode)
+            putString("excludedApps", appsRouting)
             /** Basic */
-            .putString("socksAddress", socksAddress)
-            .putString("socksPort", socksPort)
-            .putString("socksUsername", socksUsername)
-            .putString("socksPassword", socksPassword)
-            .putString("geoIpAddress", geoIpAddress)
-            .putString("geoSiteAddress", geoSiteAddress)
-            .putString("pingAddress", pingAddress)
-            .putInt("pingTimeout", pingTimeout)
-            .putBoolean("bypassLan", bypassLan)
-            .putBoolean("enableIpV6", enableIpV6)
-            .putBoolean("socksUdp", socksUdp)
-            .putBoolean("bootAutoStart", bootAutoStart)
+            putString("socksAddress", socksAddress)
+            putString("socksPort", socksPort)
+            putString("socksUsername", socksUsername)
+            putString("socksPassword", socksPassword)
+            putString("geoIpAddress", geoIpAddress)
+            putString("geoSiteAddress", geoSiteAddress)
+            putString("pingAddress", pingAddress)
+            putInt("pingTimeout", pingTimeout)
+            putBoolean("bypassLan", bypassLan)
+            putBoolean("enableIpV6", enableIpV6)
+            putBoolean("socksUdp", socksUdp)
+            putBoolean("bootAutoStart", bootAutoStart)
             /** Advanced */
-            .putString("primaryDns", primaryDns)
-            .putString("secondaryDns", secondaryDns)
-            .putString("primaryDnsV6", primaryDnsV6)
-            .putString("secondaryDnsV6", secondaryDnsV6)
-            .putString("tunName", tunName)
-            .putInt("tunMtu", tunMtu)
-            .putString("tunAddress", tunAddress)
-            .putInt("tunPrefix", tunPrefix)
-            .putString("tunAddressV6", tunAddressV6)
-            .putInt("tunPrefixV6", tunPrefixV6)
-            .apply()
+            putString("primaryDns", primaryDns)
+            putString("secondaryDns", secondaryDns)
+            putString("primaryDnsV6", primaryDnsV6)
+            putString("secondaryDnsV6", secondaryDnsV6)
+            putString("tunName", tunName)
+            putInt("tunMtu", tunMtu)
+            putString("tunAddress", tunAddress)
+            putInt("tunPrefix", tunPrefix)
+            putString("tunAddressV6", tunAddressV6)
+            putInt("tunPrefixV6", tunPrefixV6)
+        }
     }
 }
