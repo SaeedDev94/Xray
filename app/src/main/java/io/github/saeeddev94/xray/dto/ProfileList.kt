@@ -2,7 +2,7 @@ package io.github.saeeddev94.xray.dto
 
 import io.github.saeeddev94.xray.database.Profile
 
-class ProfileList(
+data class ProfileList(
     var id: Long,
     var index: Int,
     var name: String,
