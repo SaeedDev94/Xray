@@ -14,7 +14,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -75,10 +75,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
         toggleVpnService()
     }
-    private val vpnServiceNotificationPermission =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-            onToggleButtonClick()
-        }
+    private val notificationPermission = registerForActivityResult(RequestPermission()) {
+        onToggleButtonClick()
+    }
     private val vpnServiceEventReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (context == null || intent == null) return
@@ -335,7 +334,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (askedBefore) return true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             sharedPref.edit { putBoolean(key, true) }
-            vpnServiceNotificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            notificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
             return false
         }
         return true
