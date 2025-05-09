@@ -3,7 +3,6 @@ package io.github.saeeddev94.xray.activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.LinearLayout
@@ -17,6 +16,7 @@ import io.github.saeeddev94.xray.database.Link
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.fragment.LinkFormFragment
 import io.github.saeeddev94.xray.helper.HttpHelper
+import io.github.saeeddev94.xray.helper.IntentHelper
 import io.github.saeeddev94.xray.helper.LinkHelper
 import io.github.saeeddev94.xray.viewmodel.LinkViewModel
 import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
@@ -54,12 +54,7 @@ class LinksManagerActivity : AppCompatActivity() {
         }
 
         fun getLink(intent: Intent): Link? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                intent.getParcelableExtra(LINK_REF, Link::class.java)
-            } else {
-                @Suppress("deprecation")
-                intent.getParcelableExtra(LINK_REF)
-            }
+            return IntentHelper.getParcelable(intent, LINK_REF, Link::class.java)
         }
 
         fun getIndex(intent: Intent): Int {
