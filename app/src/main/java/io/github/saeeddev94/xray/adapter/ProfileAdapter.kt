@@ -65,13 +65,15 @@ class ProfileAdapter(
     }
 
     override fun onItemMoveCompleted(startPosition: Int, endPosition: Int) {
-        val id = profiles[endPosition].id
+        val start = profiles[startPosition]
+        val end = profiles[endPosition]
+        val id = end.id
         scope.launch {
             profileViewModel.updateIndex(endPosition, id)
             if (startPosition > endPosition) {
-                profileViewModel.fixMoveUpIndex(endPosition, startPosition, id)
+                profileViewModel.fixMoveUpIndex(end.index, start.index, id)
             } else {
-                profileViewModel.fixMoveDownIndex(startPosition, endPosition, id)
+                profileViewModel.fixMoveDownIndex(start.index, end.index, id)
             }
         }
     }

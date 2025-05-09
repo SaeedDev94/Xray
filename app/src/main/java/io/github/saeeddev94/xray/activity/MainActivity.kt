@@ -64,7 +64,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
         val index: Int = ProfileActivity.getIndex(it.data!!)
         val profile: Profile? = ProfileActivity.getProfile(it.data!!)
-        onProfileActivityResult(index, profile!!)
+        if (index == -1 || profile == null) return@registerForActivityResult
+        profiles[index] = ProfileList.fromProfile(profile)
+        profileAdapter.notifyItemChanged(index)
     }
     private val linksManager = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
@@ -274,16 +276,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 }
             }.show()
-    }
-
-    private fun onProfileActivityResult(index: Int, profile: Profile) {
-        if (index == -1) {
-            profiles.add(0, ProfileList.fromProfile(profile))
-            profileAdapter.notifyItemRangeChanged(0, profiles.size)
-            return
-        }
-        profiles[index] = ProfileList.fromProfile(profile)
-        profileAdapter.notifyItemChanged(index)
     }
 
     private fun processLink(link: String) {
