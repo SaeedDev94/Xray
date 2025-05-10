@@ -15,16 +15,17 @@ class LinkViewModel(application: Application) : AndroidViewModel(application) {
 
     private val linkRepository by lazy { getApplication<Xray>().linkRepository }
 
+    var activeTab: Long = 0L
+    val tabs = linkRepository.tabs.flowOn(Dispatchers.IO).stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        listOf(),
+    )
     val links = linkRepository.all.flowOn(Dispatchers.IO).stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         listOf(),
     )
-    var activeTab: Long = 0L
-
-    fun allTab(): Link {
-        return Link(name = "All")
-    }
 
     suspend fun activeLinks(): List<Link> {
         return linkRepository.activeLinks()

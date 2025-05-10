@@ -6,6 +6,7 @@ import io.github.saeeddev94.xray.database.LinkDao
 class LinkRepository(private val linkDao: LinkDao) {
 
     val all = linkDao.all()
+    val tabs = linkDao.tabs()
 
     suspend fun activeLinks(): List<Link> {
         return linkDao.activeLinks()

@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                linkViewModel.links.collectLatest { onNewLinks(it) }
+                linkViewModel.tabs.collectLatest { onNewTabs(it) }
             }
         }
         lifecycleScope.launch {
@@ -213,14 +213,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun onNewLinks(value: List<Link>) {
+    private fun onNewTabs(value: List<Link>) {
         val isEmpty = value.isEmpty()
         binding.linksTab.removeOnTabSelectedListener(linksTabListener)
         binding.linksTab.removeAllTabs()
         binding.linksTab.isVisible = !isEmpty
         if (isEmpty) return
         val list = value.toMutableList()
-        list.add(0, linkViewModel.allTab())
+        list.add(0, Link(name = "All"))
         list.forEach {
             val tab = binding.linksTab.newTab()
             tab.tag = it.id

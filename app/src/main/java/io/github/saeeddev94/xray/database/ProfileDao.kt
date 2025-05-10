@@ -11,7 +11,13 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProfileDao {
-    @Query("SELECT `id`, `index`, `name`, `link_id` AS `link` FROM profiles ORDER BY `index` ASC")
+    @Query(
+        "SELECT `profiles`.`id`, `profiles`.`index`, `profiles`.`name`, `profiles`.`link_id` AS `link`" +
+        "  FROM `profiles`" +
+        "  LEFT JOIN `links` ON `profiles`.`link_id` = `links`.`id`" +
+        "  WHERE `links`.`is_active` IS NULL OR `links`.`is_active` = 1" +
+        "  ORDER BY `profiles`.`index` ASC"
+    )
     fun all(): Flow<List<ProfileList>>
 
     @Query(
