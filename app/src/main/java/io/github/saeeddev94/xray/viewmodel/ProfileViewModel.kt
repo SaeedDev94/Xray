@@ -5,10 +5,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.saeeddev94.xray.Xray
 import io.github.saeeddev94.xray.database.Profile
+import io.github.saeeddev94.xray.dto.ProfileList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -19,6 +22,12 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         SharingStarted.Eagerly,
         listOf(),
     )
+    val filtered = MutableSharedFlow<List<ProfileList>>()
+
+    fun next(link: Long) = viewModelScope.launch {
+        val list = profiles.value.filter { link == 0L || link == it.link }
+        filtered.emit(list)
+    }
 
     suspend fun activeLinks(): List<Profile> {
         return profileRepository.activeLinks()

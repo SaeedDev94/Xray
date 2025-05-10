@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProfileDao {
-    @Query("SELECT `id`, `index`, `name` FROM profiles ORDER BY `index` ASC")
+    @Query("SELECT `id`, `index`, `name`, `link_id` AS `link` FROM profiles ORDER BY `index` ASC")
     fun all(): Flow<List<ProfileList>>
 
     @Query(

@@ -24,6 +24,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/linksTab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:background="@android:color/transparent"
+                app:tabMode="scrollable" />
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/profilesRecyclerView"
                 android:layout_width="match_parent"

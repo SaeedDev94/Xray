@@ -43,19 +43,25 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URI
 import androidx.core.content.edit
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.tabs.TabLayout
+import io.github.saeeddev94.xray.viewmodel.LinkViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private val clipboardManager by lazy { getSystemService(ClipboardManager::class.java) }
+    private val linkViewModel: LinkViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
     private var isRunning: Boolean = false
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var profileAdapter: ProfileAdapter
     private val profilesRecyclerView by lazy { findViewById<RecyclerView>(R.id.profilesRecyclerView) }
+
+    private lateinit var list: List<ProfileList>
     private val profiles = arrayListOf<ProfileList>()
 
     private val notificationPermission = registerForActivityResult(RequestPermission()) {
@@ -83,6 +89,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 }
             }
+        }
+    }
+
+    private val linksTabListener = object : TabLayout.OnTabSelectedListener {
+        override fun onTabSelected(tab: TabLayout.Tab?) {
+            if (tab == null) return
+            linkViewModel.activeTab = tab.tag.toString().toLong()
+            profileViewModel.next(linkViewModel.activeTab)
+        }
+
+        override fun onTabUnselected(tab: TabLayout.Tab?) {
+        }
+
+        override fun onTabReselected(tab: TabLayout.Tab?) {
         }
     }
 
@@ -119,12 +139,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                profileViewModel.profiles.collectLatest {
-                    profiles.clear()
-                    profiles.addAll(ArrayList(it))
-                    @Suppress("NotifyDataSetChanged")
-                    profileAdapter.notifyDataSetChanged()
-                }
+                linkViewModel.links.collectLatest { onNewLinks(it) }
+            }
+        }
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                profileViewModel.filtered.collectLatest { onNewProfiles(it) }
+            }
+        }
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                profileViewModel.profiles.collectLatest { onNewList(it) }
             }
         }
         intent?.data?.let { deepLink ->
@@ -186,6 +211,39 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }?.let { startActivity(it) }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun onNewLinks(value: List<Link>) {
+        val isEmpty = value.isEmpty()
+        binding.linksTab.removeOnTabSelectedListener(linksTabListener)
+        binding.linksTab.removeAllTabs()
+        binding.linksTab.isVisible = !isEmpty
+        if (isEmpty) return
+        val list = value.toMutableList()
+        list.add(0, linkViewModel.allTab())
+        list.forEach {
+            val tab = binding.linksTab.newTab()
+            tab.tag = it.id
+            tab.text = it.name
+            binding.linksTab.addTab(tab)
+        }
+        val selected = list.indexOfFirst {
+            it.id == linkViewModel.activeTab
+        }.takeIf { it >= 0 } ?: 0
+        binding.linksTab.selectTab(binding.linksTab.getTabAt(selected))
+        binding.linksTab.addOnTabSelectedListener(linksTabListener)
+    }
+
+    private fun onNewProfiles(value: List<ProfileList>) {
+        profiles.clear()
+        profiles.addAll(ArrayList(value))
+        @Suppress("NotifyDataSetChanged")
+        profileAdapter.notifyDataSetChanged()
+    }
+
+    private fun onNewList(value: List<ProfileList>) {
+        list = value
+        profileViewModel.next(linkViewModel.activeTab)
     }
 
     private fun vpnStartStatus() {

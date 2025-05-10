@@ -20,6 +20,11 @@ class LinkViewModel(application: Application) : AndroidViewModel(application) {
         SharingStarted.Eagerly,
         listOf(),
     )
+    var activeTab: Long = 0L
+
+    fun allTab(): Link {
+        return Link(name = "All")
+    }
 
     suspend fun activeLinks(): List<Link> {
         return linkRepository.activeLinks()
