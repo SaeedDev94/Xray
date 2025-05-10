@@ -31,17 +31,15 @@ class LinksManagerActivity : AppCompatActivity() {
 
     companion object {
         private const val LINK_REF = "ref"
-        private const val LINK_INDEX = "index"
         private const val DELETE_ACTION = "delete"
 
         fun refreshLinks(context: Context): Intent {
             return Intent(context, LinksManagerActivity::class.java)
         }
 
-        fun openLink(context: Context, link: Link = Link(), index: Int = -1): Intent {
+        fun openLink(context: Context, link: Link = Link()): Intent {
             return Intent(context, LinksManagerActivity::class.java).apply {
                 putExtra(LINK_REF, link)
-                putExtra(LINK_INDEX, index)
             }
         }
 
@@ -51,14 +49,6 @@ class LinksManagerActivity : AppCompatActivity() {
                 putExtra(DELETE_ACTION, true)
             }
         }
-
-        fun getLink(intent: Intent): Link? {
-            return IntentHelper.getParcelable(intent, LINK_REF, Link::class.java)
-        }
-
-        fun getIndex(intent: Intent): Int {
-            return intent.getIntExtra(LINK_INDEX, -1)
-        }
     }
 
     private val linkViewModel: LinkViewModel by viewModels()
@@ -67,8 +57,7 @@ class LinksManagerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val link: Link? = getLink(intent)
-        val index: Int = getIndex(intent)
+        val link: Link? = IntentHelper.getParcelable(intent, LINK_REF, Link::class.java)
         val deleteAction = intent.getBooleanExtra(DELETE_ACTION, false)
 
         if (link == null) {
@@ -87,11 +76,7 @@ class LinksManagerActivity : AppCompatActivity() {
             } else {
                 linkViewModel.update(link)
             }
-            Intent().also {
-                it.putExtra(LINK_INDEX, index)
-                it.putExtra(LINK_REF, link)
-                setResult(RESULT_OK, it)
-            }
+            setResult(RESULT_OK)
             finish()
         }.show(supportFragmentManager, null)
     }
@@ -128,7 +113,6 @@ class LinksManagerActivity : AppCompatActivity() {
                 }
             }
             withContext(Dispatchers.Main) {
-                setResult(RESULT_OK)
                 loadingDialog.dismiss()
                 finish()
             }
@@ -232,7 +216,6 @@ class LinksManagerActivity : AppCompatActivity() {
                 }
             linkViewModel.delete(link)
             withContext(Dispatchers.Main) {
-                setResult(RESULT_OK)
                 finish()
             }
         }

@@ -16,7 +16,7 @@ import io.github.saeeddev94.xray.database.Link
 
 class LinkAdapter : ListAdapter<Link, LinkAdapter.LinkHolder>(diffCallback) {
 
-    var onEditClick: (link: Link, index: Int) -> Unit = { _, _ ->}
+    var onEditClick: (link: Link) -> Unit = {}
     var onDeleteClick: (link: Link) -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, type: Int) = LinkHolder(
@@ -41,7 +41,7 @@ class LinkAdapter : ListAdapter<Link, LinkAdapter.LinkHolder>(diffCallback) {
             card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(card.context, color))
             name.text = link.name
             type.text = link.type.name
-            edit.setOnClickListener { onEditClick(link, index) }
+            edit.setOnClickListener { onEditClick(link) }
             delete.setOnClickListener { onDeleteClick(link) }
         }
     }

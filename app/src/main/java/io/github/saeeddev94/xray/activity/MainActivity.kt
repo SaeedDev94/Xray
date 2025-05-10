@@ -62,9 +62,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         onToggleButtonClick()
     }
     private val linksManager = registerForActivityResult(StartActivityForResult()) {
-        if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
-        val link: Link? = LinksManagerActivity.getLink(it.data!!)
-        if (link != null) refreshLinks()
+        if (it.resultCode != RESULT_OK) return@registerForActivityResult
+        refreshLinks()
     }
     private val vpnLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
@@ -292,8 +291,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun refreshLinks() {
-        val intent = LinksManagerActivity.refreshLinks(applicationContext)
-        linksManager.launch(intent)
+        startActivity(LinksManagerActivity.refreshLinks(applicationContext))
     }
 
     private fun openLink(uri: URI) {

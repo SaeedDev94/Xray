@@ -3,7 +3,6 @@ package io.github.saeeddev94.xray.activity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -27,15 +26,6 @@ class LinksActivity : AppCompatActivity() {
     private val linksRecyclerView by lazy { findViewById<RecyclerView>(R.id.linksRecyclerView) }
     private var links: MutableList<Link> = mutableListOf()
 
-    private val linksManager = registerForActivityResult(StartActivityForResult()) {
-        if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
-        val link: Link? = LinksManagerActivity.getLink(it.data!!)
-        val index: Int = LinksManagerActivity.getIndex(it.data!!)
-        if (index == -1 || link == null) return@registerForActivityResult
-        links[index] = link
-        adapter.notifyItemChanged(index)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.links)
@@ -43,7 +33,7 @@ class LinksActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        adapter.onEditClick = { link, index -> openLink(link, index) }
+        adapter.onEditClick = { link -> openLink(link) }
         adapter.onDeleteClick = { link -> deleteLink(link) }
         linksRecyclerView.layoutManager = LinearLayoutManager(this)
         linksRecyclerView.itemAnimator = DefaultItemAnimator()
@@ -74,16 +64,16 @@ class LinksActivity : AppCompatActivity() {
 
     private fun refreshLinks() {
         val intent = LinksManagerActivity.refreshLinks(applicationContext)
-        linksManager.launch(intent)
+        startActivity(intent)
     }
 
-    private fun openLink(link: Link = Link(), index: Int = -1) {
-        val intent = LinksManagerActivity.openLink(applicationContext, link, index)
-        linksManager.launch(intent)
+    private fun openLink(link: Link = Link()) {
+        val intent = LinksManagerActivity.openLink(applicationContext, link)
+        startActivity(intent)
     }
 
     private fun deleteLink(link: Link) {
         val intent = LinksManagerActivity.deleteLink(applicationContext, link)
-        linksManager.launch(intent)
+        startActivity(intent)
     }
 }
