@@ -19,7 +19,6 @@ import com.blacksquircle.ui.editorkit.plugin.linenumbers.lineNumbers
 import com.blacksquircle.ui.language.json.JsonLanguage
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.saeeddev94.xray.helper.ConfigHelper
-import io.github.saeeddev94.xray.helper.IntentHelper
 import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,7 +29,6 @@ import java.io.InputStreamReader
 class ProfileActivity : AppCompatActivity() {
 
     companion object {
-        private const val PROFILE_REF = "ref"
         private const val PROFILE_INDEX = "index"
         private const val PROFILE_ID = "id"
         private const val PROFILE_NAME = "name"
@@ -46,14 +44,6 @@ class ProfileActivity : AppCompatActivity() {
                 PROFILE_CONFIG,
                 config.replace("\\/", "/")
             )
-        }
-
-        fun getProfile(intent: Intent): Profile? {
-            return IntentHelper.getParcelable(intent, PROFILE_REF, Profile::class.java)
-        }
-
-        fun getIndex(intent: Intent): Int {
-            return intent.getIntExtra(PROFILE_INDEX, -1)
         }
     }
 
@@ -159,12 +149,7 @@ class ProfileActivity : AppCompatActivity() {
                 profileViewModel.update(profile)
             }
             withContext(Dispatchers.Main) {
-                Intent().also {
-                    it.putExtra(PROFILE_INDEX, index)
-                    it.putExtra(PROFILE_REF, profile)
-                    setResult(RESULT_OK, it)
-                    finish()
-                }
+                finish()
             }
         }
     }

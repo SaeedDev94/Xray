@@ -31,7 +31,6 @@ import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.adapter.ProfileAdapter
 import io.github.saeeddev94.xray.database.Link
-import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.databinding.ActivityMainBinding
 import io.github.saeeddev94.xray.dto.ProfileList
 import io.github.saeeddev94.xray.helper.HttpHelper
@@ -50,7 +49,6 @@ import kotlinx.coroutines.flow.collectLatest
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private val notificationPermission = registerForActivityResult(RequestPermission()) { onToggleButtonClick() }
     private val clipboardManager by lazy { getSystemService(ClipboardManager::class.java) }
     private val profileViewModel: ProfileViewModel by viewModels()
     private var isRunning: Boolean = false
@@ -60,13 +58,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val profilesRecyclerView by lazy { findViewById<RecyclerView>(R.id.profilesRecyclerView) }
     private val profiles = arrayListOf<ProfileList>()
 
-    private val profileLauncher = registerForActivityResult(StartActivityForResult()) {
-        if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
-        val index: Int = ProfileActivity.getIndex(it.data!!)
-        val profile: Profile? = ProfileActivity.getProfile(it.data!!)
-        if (index == -1 || profile == null) return@registerForActivityResult
-        profiles[index] = ProfileList.fromProfile(profile)
-        profileAdapter.notifyItemChanged(index)
+    private val notificationPermission = registerForActivityResult(RequestPermission()) {
+        onToggleButtonClick()
     }
     private val linksManager = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK || it.data == null) return@registerForActivityResult
@@ -173,7 +166,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.refreshLinks -> refreshLinks()
-            R.id.newProfile -> profileLauncher.launch(ProfileActivity.getIntent(applicationContext))
+            R.id.newProfile -> startActivity(ProfileActivity.getIntent(applicationContext))
             R.id.fromClipboard -> {
                 runCatching {
                     clipboardManager.primaryClip!!.getItemAt(0).text.toString().trim()
@@ -252,7 +245,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun profileEdit(index: Int, profile: ProfileList) {
         if (isRunning && Settings.selectedProfile == profile.id) return
-        profileLauncher.launch(ProfileActivity.getIntent(applicationContext, index, profile.id))
+        startActivity(ProfileActivity.getIntent(applicationContext, index, profile.id))
     }
 
     private fun profileDelete(index: Int, profile: ProfileList) {
@@ -295,7 +288,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         val json = linkHelper.json()
         val name = linkHelper.remark()
-        profileLauncher.launch(ProfileActivity.getIntent(applicationContext, name = name, config = json))
+        startActivity(ProfileActivity.getIntent(applicationContext, name = name, config = json))
     }
 
     private fun refreshLinks() {
