@@ -227,9 +227,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             tab.text = it.name
             binding.linksTab.addTab(tab)
         }
-        val selected = list.indexOfFirst {
-            it.id == linkViewModel.activeTab
-        }.takeIf { it >= 0 } ?: 0
+        var selected = list.indexOfFirst { it.id == linkViewModel.activeTab }
+        if (selected == -1) {
+            selected = 0
+            linkViewModel.activeTab = 0L
+        }
         binding.linksTab.selectTab(binding.linksTab.getTabAt(selected))
         binding.linksTab.addOnTabSelectedListener(linksTabListener)
     }
