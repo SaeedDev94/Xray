@@ -242,7 +242,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 Settings.selectedProfile = if (selectedProfile == profile.id) 0L else profile.id
                 Settings.save(applicationContext)
                 profileAdapter.notifyItemChanged(index)
-                if (ref != null && ref.index != index) profileAdapter.notifyItemChanged(ref.index)
+                if (ref == null || ref.id == profile.id) return@withContext
+                profiles.indexOfFirst { it.id == ref.id }.let {
+                    if (it != -1) profileAdapter.notifyItemChanged(it)
+                }
             }
         }
     }
