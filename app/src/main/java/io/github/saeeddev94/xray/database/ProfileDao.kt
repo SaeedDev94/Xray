@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import io.github.saeeddev94.xray.dto.ProfileList
 import kotlinx.coroutines.flow.Flow
@@ -62,4 +63,16 @@ interface ProfileDao {
         "  AND `id` NOT IN (:exclude)"
     )
     suspend fun fixMoveDownIndex(start: Int, end: Int, exclude: Long)
+
+    @Transaction
+    suspend fun moveUp(start: Int, end: Int, exclude: Long) {
+        updateIndex(start, exclude)
+        fixMoveUpIndex(start, end, exclude)
+    }
+
+    @Transaction
+    suspend fun moveDown(start: Int, end: Int, exclude: Long) {
+        updateIndex(start, exclude)
+        fixMoveDownIndex(end, start, exclude)
+    }
 }

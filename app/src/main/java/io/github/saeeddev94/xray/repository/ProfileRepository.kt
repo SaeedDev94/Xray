@@ -31,10 +31,6 @@ class ProfileRepository(private val profileDao: ProfileDao) {
         profileDao.delete(profile)
     }
 
-    suspend fun updateIndex(index: Int, id: Long) {
-        profileDao.updateIndex(index, id)
-    }
-
     suspend fun fixInsertIndex() {
         profileDao.fixInsertIndex()
     }
@@ -43,11 +39,11 @@ class ProfileRepository(private val profileDao: ProfileDao) {
         profileDao.fixDeleteIndex(index)
     }
 
-    suspend fun fixMoveUpIndex(start: Int, end: Int, exclude: Long) {
-        profileDao.fixMoveUpIndex(start, end, exclude)
+    suspend fun moveUp(start: Int, end: Int, exclude: Long) {
+        profileDao.moveUp(start, end, exclude)
     }
 
-    suspend fun fixMoveDownIndex(start: Int, end: Int, exclude: Long) {
-        profileDao.fixMoveDownIndex(start, end, exclude)
+    suspend fun moveDown(start: Int, end: Int, exclude: Long) {
+        profileDao.moveDown(start, end, exclude)
     }
 }

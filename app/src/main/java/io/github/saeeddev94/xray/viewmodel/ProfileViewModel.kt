@@ -44,10 +44,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         profileRepository.delete(profile)
     }
 
-    suspend fun updateIndex(index: Int, id: Long) {
-        profileRepository.updateIndex(index, id)
-    }
-
     suspend fun fixInsertIndex() {
         profileRepository.fixInsertIndex()
     }
@@ -56,11 +52,11 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         profileRepository.fixDeleteIndex(index)
     }
 
-    suspend fun fixMoveUpIndex(start: Int, end: Int, exclude: Long) {
-        profileRepository.fixMoveUpIndex(start, end, exclude)
+    suspend fun moveUp(start: Int, end: Int, exclude: Long) {
+        profileRepository.moveUp(start, end, exclude)
     }
 
-    suspend fun fixMoveDownIndex(start: Int, end: Int, exclude: Long) {
-        profileRepository.fixMoveDownIndex(start, end, exclude)
+    suspend fun moveDown(start: Int, end: Int, exclude: Long) {
+        profileRepository.moveDown(start, end, exclude)
     }
 }
