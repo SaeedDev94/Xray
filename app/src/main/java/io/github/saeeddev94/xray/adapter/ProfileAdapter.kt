@@ -38,7 +38,6 @@ class ProfileAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, index: Int) {
         val profile = profiles[index]
-        profile.index = index
         val color = if (Settings.selectedProfile == profile.id) R.color.primaryColor else R.color.btnColor
         holder.activeIndicator.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.profileCard.context, color))
         holder.profileName.text = profile.name
@@ -65,15 +64,16 @@ class ProfileAdapter(
     }
 
     override fun onItemMoveCompleted(startPosition: Int, endPosition: Int) {
-        val start = profiles[startPosition]
+        val isMoveUp = startPosition > endPosition
+        val index = if (isMoveUp) profiles[endPosition+1].index else profiles[endPosition-1].index
         val end = profiles[endPosition]
         val id = end.id
         scope.launch {
-            profileViewModel.updateIndex(endPosition, id)
-            if (startPosition > endPosition) {
-                profileViewModel.fixMoveUpIndex(end.index, start.index, id)
+            profileViewModel.updateIndex(index, id)
+            if (isMoveUp) {
+                profileViewModel.fixMoveUpIndex(index, end.index, id)
             } else {
-                profileViewModel.fixMoveDownIndex(start.index, end.index, id)
+                profileViewModel.fixMoveDownIndex(end.index, index, id)
             }
         }
     }
