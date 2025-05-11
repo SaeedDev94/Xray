@@ -29,15 +29,13 @@ import java.io.InputStreamReader
 class ProfileActivity : AppCompatActivity() {
 
     companion object {
-        private const val PROFILE_INDEX = "index"
         private const val PROFILE_ID = "id"
         private const val PROFILE_NAME = "name"
         private const val PROFILE_CONFIG = "config"
 
         fun getIntent(
-            context: Context, index: Int = -1, id: Long = 0L, name: String = "", config: String = ""
+            context: Context, id: Long = 0L, name: String = "", config: String = ""
         ) = Intent(context, ProfileActivity::class.java).also {
-            it.putExtra(PROFILE_INDEX, index)
             it.putExtra(PROFILE_ID, id)
             if (name.isNotEmpty()) it.putExtra(PROFILE_NAME, name)
             if (config.isNotEmpty()) it.putExtra(
@@ -51,12 +49,10 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileBinding
     private lateinit var profile: Profile
     private var id: Long = 0L
-    private var index: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         id = intent.getLongExtra(PROFILE_ID, 0L)
-        index = intent.getIntExtra(PROFILE_INDEX, -1)
         title = if (isNew()) getString(R.string.newProfile) else getString(R.string.editProfile)
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)

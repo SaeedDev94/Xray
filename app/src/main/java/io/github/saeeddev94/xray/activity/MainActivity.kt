@@ -129,8 +129,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             profileViewModel,
             profiles,
             { index, profile -> profileSelect(index, profile) },
-            { index, profile -> profileEdit(index, profile) },
-            { index, profile -> profileDelete(index, profile) },
+            { profile -> profileEdit(profile) },
+            { profile -> profileDelete(profile) },
         )
         profilesRecyclerView.adapter = profileAdapter
         profilesRecyclerView.layoutManager = LinearLayoutManager(applicationContext)
@@ -302,12 +302,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun profileEdit(index: Int, profile: ProfileList) {
+    private fun profileEdit(profile: ProfileList) {
         if (isRunning && Settings.selectedProfile == profile.id) return
-        startActivity(ProfileActivity.getIntent(applicationContext, index, profile.id))
+        startActivity(ProfileActivity.getIntent(applicationContext, profile.id))
     }
 
-    private fun profileDelete(index: Int, profile: ProfileList) {
+    private fun profileDelete(profile: ProfileList) {
         if (isRunning && Settings.selectedProfile == profile.id) return
         MaterialAlertDialogBuilder(this)
             .setTitle("Delete Profile#${profile.index + 1} ?")

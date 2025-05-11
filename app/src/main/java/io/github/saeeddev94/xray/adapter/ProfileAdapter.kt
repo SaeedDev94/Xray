@@ -22,8 +22,8 @@ class ProfileAdapter(
     private val profileViewModel: ProfileViewModel,
     private val profiles: ArrayList<ProfileList>,
     private val profileSelect: (index: Int, profile: ProfileList) -> Unit,
-    private val profileEdit: (index: Int, profile: ProfileList) -> Unit,
-    private val profileDelete: (index: Int, profile: ProfileList) -> Unit,
+    private val profileEdit: (profile: ProfileList) -> Unit,
+    private val profileDelete: (profile: ProfileList) -> Unit,
 ) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(), ProfileTouchHelper.ProfileTouchCallback {
 
     override fun onCreateViewHolder(container: ViewGroup, type: Int): ViewHolder {
@@ -45,10 +45,10 @@ class ProfileAdapter(
             profileSelect(index, profile)
         }
         holder.profileEdit.setOnClickListener {
-            profileEdit(index, profile)
+            profileEdit(profile)
         }
         holder.profileDelete.setOnClickListener {
-            profileDelete(index, profile)
+            profileDelete(profile)
         }
     }
 
