@@ -1,16 +1,16 @@
 package io.github.saeeddev94.xray.activity
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.materialswitch.MaterialSwitch
 import io.github.saeeddev94.xray.R
-import io.github.saeeddev94.xray.adapter.SettingAdapter
 import io.github.saeeddev94.xray.Settings
+import io.github.saeeddev94.xray.adapter.SettingAdapter
 import io.github.saeeddev94.xray.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {

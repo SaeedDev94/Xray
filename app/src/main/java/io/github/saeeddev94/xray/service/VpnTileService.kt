@@ -7,8 +7,8 @@ import android.content.SharedPreferences
 import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import io.github.saeeddev94.xray.R
 import androidx.core.content.edit
+import io.github.saeeddev94.xray.R
 
 class VpnTileService : TileService() {
 

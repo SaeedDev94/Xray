@@ -2,8 +2,8 @@ package io.github.saeeddev94.xray
 
 import android.content.Context
 import android.content.SharedPreferences
-import java.io.File
 import androidx.core.content.edit
+import java.io.File
 
 object Settings {
     /** Active Profile ID */

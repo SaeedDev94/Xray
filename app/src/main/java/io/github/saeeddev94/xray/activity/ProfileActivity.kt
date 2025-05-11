@@ -2,15 +2,12 @@ package io.github.saeeddev94.xray.activity
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import io.github.saeeddev94.xray.R
-import io.github.saeeddev94.xray.database.Profile
-import io.github.saeeddev94.xray.databinding.ActivityProfileBinding
 import android.net.Uri
+import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.blacksquircle.ui.editorkit.plugin.autoindent.autoIndentation
 import com.blacksquircle.ui.editorkit.plugin.base.PluginSupplier
@@ -18,6 +15,9 @@ import com.blacksquircle.ui.editorkit.plugin.delimiters.highlightDelimiters
 import com.blacksquircle.ui.editorkit.plugin.linenumbers.lineNumbers
 import com.blacksquircle.ui.language.json.JsonLanguage
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import io.github.saeeddev94.xray.R
+import io.github.saeeddev94.xray.database.Profile
+import io.github.saeeddev94.xray.databinding.ActivityProfileBinding
 import io.github.saeeddev94.xray.helper.ConfigHelper
 import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
