@@ -29,10 +29,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         filtered.emit(list)
     }
 
-    suspend fun activeLinks(): List<Profile> {
-        return profileRepository.activeLinks()
-    }
-
     suspend fun linkProfiles(linkId: Long): List<Profile> {
         return profileRepository.linkProfiles(linkId)
     }

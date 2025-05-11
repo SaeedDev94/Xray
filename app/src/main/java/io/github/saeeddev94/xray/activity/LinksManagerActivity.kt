@@ -97,8 +97,8 @@ class LinksManagerActivity : AppCompatActivity() {
         loadingDialog.show()
         lifecycleScope.launch {
             val links = linkViewModel.activeLinks()
-            val profiles = profileViewModel.activeLinks()
             links.forEach { link ->
+                val profiles = profileViewModel.linkProfiles(link.id)
                 runCatching {
                     val content = HttpHelper.get(link.address, link.userAgent).trim()
                     val newProfiles = if (link.type == Link.Type.Json) {

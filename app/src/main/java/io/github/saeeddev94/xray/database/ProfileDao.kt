@@ -20,15 +20,7 @@ interface ProfileDao {
     )
     fun all(): Flow<List<ProfileList>>
 
-    @Query(
-        "SELECT profiles.* FROM profiles" +
-        "  INNER JOIN links ON profiles.link_id = links.id" +
-        "  WHERE links.is_active = 1" +
-        "  ORDER BY links.id DESC, `index` DESC"
-    )
-    suspend fun activeLinks(): List<Profile>
-
-    @Query("SELECT * FROM profiles WHERE link_id = :linkId")
+    @Query("SELECT * FROM profiles WHERE link_id = :linkId ORDER BY `index` DESC")
     suspend fun linkProfiles(linkId: Long): List<Profile>
 
     @Query("SELECT * FROM profiles WHERE `id` = :id")

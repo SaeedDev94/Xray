@@ -7,10 +7,6 @@ class ProfileRepository(private val profileDao: ProfileDao) {
 
     val all = profileDao.all()
 
-    suspend fun activeLinks(): List<Profile> {
-        return profileDao.activeLinks()
-    }
-
     suspend fun linkProfiles(linkId: Long): List<Profile> {
         return profileDao.linkProfiles(linkId)
     }
