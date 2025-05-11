@@ -1,0 +1,3 @@
+- Shows active links as tabs
+- Shows only profiles with active links
+- New links sort: oldest first
