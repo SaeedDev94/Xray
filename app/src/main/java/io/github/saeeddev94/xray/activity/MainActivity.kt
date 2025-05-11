@@ -60,8 +60,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var binding: ActivityMainBinding
     private lateinit var profileAdapter: ProfileAdapter
     private val profilesRecyclerView by lazy { findViewById<RecyclerView>(R.id.profilesRecyclerView) }
-
-    private lateinit var list: List<ProfileList>
     private val profiles = arrayListOf<ProfileList>()
 
     private val notificationPermission = registerForActivityResult(RequestPermission()) {
@@ -149,7 +147,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                profileViewModel.profiles.collectLatest { onNewList(it) }
+                profileViewModel.profiles.collectLatest {
+                    profileViewModel.next(linkViewModel.activeTab)
+                }
             }
         }
         intent?.data?.let { deepLink ->
@@ -241,11 +241,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         profiles.addAll(ArrayList(value))
         @Suppress("NotifyDataSetChanged")
         profileAdapter.notifyDataSetChanged()
-    }
-
-    private fun onNewList(value: List<ProfileList>) {
-        list = value
-        profileViewModel.next(linkViewModel.activeTab)
     }
 
     private fun vpnStartStatus() {
