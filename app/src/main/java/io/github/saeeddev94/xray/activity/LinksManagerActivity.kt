@@ -186,8 +186,7 @@ class LinksManagerActivity : AppCompatActivity() {
     }
 
     private suspend fun insertProfile(newProfile: Profile) {
-        profileViewModel.insert(newProfile)
-        profileViewModel.fixInsertIndex()
+        profileViewModel.create(newProfile)
     }
 
     private suspend fun updateProfile(linkProfile: Profile, newProfile: Profile) {
@@ -197,8 +196,7 @@ class LinksManagerActivity : AppCompatActivity() {
     }
 
     private suspend fun deleteProfile(linkProfile: Profile) {
-        profileViewModel.delete(linkProfile)
-        profileViewModel.fixDeleteIndex(linkProfile.index)
+        profileViewModel.remove(linkProfile)
         withContext(Dispatchers.Main) {
             val selectedProfile = Settings.selectedProfile
             if (selectedProfile == linkProfile.id) {

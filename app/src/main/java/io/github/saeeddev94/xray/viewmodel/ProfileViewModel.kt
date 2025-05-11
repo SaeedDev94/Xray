@@ -41,24 +41,16 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         return profileRepository.find(id)
     }
 
-    suspend fun insert(profile: Profile): Long {
-        return profileRepository.insert(profile)
+    suspend fun create(profile: Profile) {
+        return profileRepository.create(profile)
     }
 
     suspend fun update(profile: Profile) {
         profileRepository.update(profile)
     }
 
-    suspend fun delete(profile: Profile) {
-        profileRepository.delete(profile)
-    }
-
-    suspend fun fixInsertIndex() {
-        profileRepository.fixInsertIndex()
-    }
-
-    suspend fun fixDeleteIndex(index: Int) {
-        profileRepository.fixDeleteIndex(index)
+    suspend fun remove(profile: Profile) {
+        profileRepository.remove(profile)
     }
 
     suspend fun moveUp(start: Int, end: Int, exclude: Long) {

@@ -317,8 +317,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 lifecycleScope.launch {
                     val ref = profileViewModel.find(profile.id)
                     val id = ref.id
-                    profileViewModel.delete(ref)
-                    profileViewModel.fixDeleteIndex(index)
+                    profileViewModel.remove(ref)
                     withContext(Dispatchers.Main) {
                         val selectedProfile = Settings.selectedProfile
                         if (selectedProfile == id) {

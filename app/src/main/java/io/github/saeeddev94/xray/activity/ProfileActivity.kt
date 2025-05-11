@@ -143,8 +143,7 @@ class ProfileActivity : AppCompatActivity() {
                 return@launch
             }
             if (profile.id == 0L) {
-                profile.id = profileViewModel.insert(profile)
-                profileViewModel.fixInsertIndex()
+                profileViewModel.create(profile)
             } else {
                 profileViewModel.update(profile)
             }

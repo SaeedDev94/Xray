@@ -71,6 +71,18 @@ interface ProfileDao {
     suspend fun fixMoveDownIndex(start: Int, end: Int, exclude: Long)
 
     @Transaction
+    suspend fun create(profile: Profile) {
+        insert(profile)
+        fixInsertIndex()
+    }
+
+    @Transaction
+    suspend fun remove(profile: Profile) {
+        delete(profile)
+        fixDeleteIndex(profile.index)
+    }
+
+    @Transaction
     suspend fun moveUp(start: Int, end: Int, exclude: Long) {
         updateIndex(start, exclude)
         fixMoveUpIndex(start, end, exclude)
