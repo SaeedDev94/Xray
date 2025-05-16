@@ -24,7 +24,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = calcVersionCode()
-        versionName = "10.7.1"
+        versionName = "10.8.0"
 
         vectorDrawables.useSupportLibrary = true
         vectorDrawables.generatedDensities = []
