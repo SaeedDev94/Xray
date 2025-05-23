@@ -219,21 +219,17 @@ class TProxyService : VpnService() {
     }
 
     private fun stopVPN() {
+        TProxyStopService()
+        XrayCore.stop()
+        runCatching { tunDevice?.close() }
+        stopForeground(STOP_FOREGROUND_REMOVE)
         showToast("Stop VPN")
+        tunDevice = null
         isRunning = false
         Intent(STOP_VPN_SERVICE_ACTION_NAME).also {
             it.`package` = BuildConfig.APPLICATION_ID
             sendBroadcast(it)
         }
-        TProxyStopService()
-        XrayCore.stop()
-        try {
-            tunDevice?.close()
-        } catch (_: Exception) {
-        } finally {
-            tunDevice = null
-        }
-        stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 
