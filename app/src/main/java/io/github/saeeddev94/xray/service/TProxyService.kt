@@ -90,7 +90,7 @@ class TProxyService : VpnService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         scope.launch {
             when (intent?.action) {
-                START_VPN_SERVICE_ACTION_NAME -> start()
+                START_VPN_SERVICE_ACTION_NAME -> start(getProfile())
                 STOP_VPN_SERVICE_ACTION_NAME -> stopVPN()
                 STATUS_VPN_SERVICE_ACTION_NAME -> statusVPN()
             }
@@ -124,24 +124,29 @@ class TProxyService : VpnService() {
             showToast(error)
             return null
         }
-        return XrayConfig(profile.name, dir.absolutePath, config.absolutePath)
+        return XrayConfig(dir.absolutePath, config.absolutePath)
     }
 
-    private suspend fun start() {
-        val profile = getProfile()
+    private fun start(profile: Profile?) {
         if (profile == null) {
             startVPN(null)
         } else {
-            getConfig(profile)?.let { startVPN(it) }
+            getConfig(profile)?.let {
+                startXray(it)
+                startVPN(profile.name)
+            }
         }
     }
 
-    private fun startVPN(config: XrayConfig?) {
-        /** Start xray */
-        if (config != null) {
-            scope.launch { XrayCore.start(config.dir, config.file) }
-        }
+    private fun startXray(config: XrayConfig) {
+        XrayCore.start(config.dir, config.file)
+    }
 
+    private fun stopXray() {
+        XrayCore.stop()
+    }
+
+    private fun startVPN(configName: String?) {
         /** Create Tun */
         val tun = Builder()
         val tunName = getString(R.string.appName)
@@ -219,7 +224,7 @@ class TProxyService : VpnService() {
         TProxyStartService(Settings.tun2socksConfig(applicationContext).absolutePath, tunDevice!!.fd)
 
         /** Service Notification */
-        val name = config?.name ?: Settings.tunName
+        val name = configName ?: Settings.tunName
         startForeground(VPN_SERVICE_NOTIFICATION_ID, createNotification(name))
 
         /** Broadcast start event */
@@ -234,7 +239,7 @@ class TProxyService : VpnService() {
 
     private fun stopVPN() {
         TProxyStopService()
-        XrayCore.stop()
+        stopXray()
         runCatching { tunDevice?.close() }
         stopForeground(STOP_FOREGROUND_REMOVE)
         showToast("Stop VPN")
