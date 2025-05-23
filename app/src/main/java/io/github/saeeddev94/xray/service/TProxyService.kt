@@ -21,12 +21,14 @@ import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.Xray
 import io.github.saeeddev94.xray.activity.MainActivity
 import io.github.saeeddev94.xray.database.Profile
+import io.github.saeeddev94.xray.dto.XrayConfig
 import io.github.saeeddev94.xray.helper.FileHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.io.File
 import kotlin.reflect.cast
 
 class TProxyService : VpnService() {
@@ -88,7 +90,7 @@ class TProxyService : VpnService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         scope.launch {
             when (intent?.action) {
-                START_VPN_SERVICE_ACTION_NAME -> findProfileAndStart()
+                START_VPN_SERVICE_ACTION_NAME -> start()
                 STOP_VPN_SERVICE_ACTION_NAME -> stopVPN()
                 STATUS_VPN_SERVICE_ACTION_NAME -> statusVPN()
             }
@@ -105,27 +107,39 @@ class TProxyService : VpnService() {
         super.onDestroy()
     }
 
-    private suspend fun findProfileAndStart() {
-        val profile = if (Settings.selectedProfile == 0L) {
+    private suspend fun getProfile(): Profile? {
+        return if (Settings.selectedProfile == 0L) {
             null
         } else {
             profileRepository.find(Settings.selectedProfile)
         }
-        startVPN(profile)
     }
 
-    private fun startVPN(profile: Profile?) {
+    private fun getConfig(profile: Profile): XrayConfig? {
+        val dir: File = applicationContext.filesDir
+        val config: File = Settings.xrayConfig(applicationContext)
+        FileHelper.createOrUpdate(config, profile.config)
+        val error: String = XrayCore.test(dir.absolutePath, config.absolutePath)
+        if (error.isNotEmpty()) {
+            showToast(error)
+            return null
+        }
+        return XrayConfig(profile.name, dir.absolutePath, config.absolutePath)
+    }
+
+    private suspend fun start() {
+        val profile = getProfile()
+        if (profile == null) {
+            startVPN(null)
+        } else {
+            getConfig(profile)?.let { startVPN(it) }
+        }
+    }
+
+    private fun startVPN(config: XrayConfig?) {
         /** Start xray */
-        if (profile != null) {
-            FileHelper.createOrUpdate(Settings.xrayConfig(applicationContext), profile.config)
-            val datDir: String = applicationContext.filesDir.absolutePath
-            val configPath: String = Settings.xrayConfig(applicationContext).absolutePath
-            val error = XrayCore.test(datDir, configPath)
-            if (error.isNotEmpty()) {
-                showToast(error)
-                return
-            }
-            scope.launch { XrayCore.start(datDir, configPath) }
+        if (config != null) {
+            scope.launch { XrayCore.start(config.dir, config.file) }
         }
 
         /** Create Tun */
@@ -205,7 +219,7 @@ class TProxyService : VpnService() {
         TProxyStartService(Settings.tun2socksConfig(applicationContext).absolutePath, tunDevice!!.fd)
 
         /** Service Notification */
-        val name = profile?.name ?: Settings.tunName
+        val name = config?.name ?: Settings.tunName
         startForeground(VPN_SERVICE_NOTIFICATION_ID, createNotification(name))
 
         /** Broadcast start event */

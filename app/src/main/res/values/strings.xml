@@ -54,6 +54,7 @@
     <string name="onlyHttps">Only HTTPS is acceptable</string>
     <string name="cancel">Cancel</string>
     <string name="ignore">Ignore</string>
+    <string name="ok">OK</string>
 
     <!-- Basic Settings -->
     <string name="socksAddress">Socks Address</string>
