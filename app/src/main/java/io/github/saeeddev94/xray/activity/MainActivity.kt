@@ -94,8 +94,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val linksTabListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab?) {
             if (tab == null) return
-            linkViewModel.activeTab = tab.tag.toString().toLong()
-            profileViewModel.next(linkViewModel.activeTab)
+            settings.selectedLink = tab.tag.toString().toLong()
+            profileViewModel.next(settings.selectedLink)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 profileViewModel.profiles.collectLatest {
-                    profileViewModel.next(linkViewModel.activeTab)
+                    profileViewModel.next(settings.selectedLink)
                 }
             }
         }
@@ -228,10 +228,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             tab.text = it.name
             binding.linksTab.addTab(tab)
         }
-        var selected = list.indexOfFirst { it.id == linkViewModel.activeTab }
+        var selected = list.indexOfFirst { it.id == settings.selectedLink }
         if (selected == -1) {
             selected = 0
-            linkViewModel.activeTab = 0L
+            settings.selectedLink = 0L
         }
         binding.linksTab.selectTab(binding.linksTab.getTabAt(selected))
         binding.linksTab.addOnTabSelectedListener(linksTabListener)

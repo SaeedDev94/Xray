@@ -15,7 +15,6 @@ class LinkViewModel(application: Application) : AndroidViewModel(application) {
 
     private val linkRepository by lazy { getApplication<Xray>().linkRepository }
 
-    var activeTab: Long = 0L
     val tabs = linkRepository.tabs.flowOn(Dispatchers.IO).stateIn(
         viewModelScope,
         SharingStarted.Eagerly,

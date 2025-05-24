@@ -8,6 +8,11 @@ class Settings(val context: Context) {
 
     private val sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
+    /** Active Link ID */
+    var selectedLink: Long
+        get() = sharedPreferences.getLong("selectedLink", 0L)
+        set(value) = sharedPreferences.edit { putLong("selectedLink", value) }
+
     /** Active Profile ID */
     var selectedProfile: Long
         get() = sharedPreferences.getLong("selectedProfile", 0L)
