@@ -41,10 +41,12 @@ class TProxyService : VpnService() {
         const val STATUS_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStatus"
         const val STOP_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStop"
         const val START_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStart"
-        private const val NEW_CONFIG_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.NewConfig"
+        const val NEW_CONFIG_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.NewConfig"
         private const val VPN_SERVICE_NOTIFICATION_ID = 1
         private const val OPEN_MAIN_ACTIVITY_ACTION_ID = 2
         private const val STOP_VPN_SERVICE_ACTION_ID = 3
+
+        fun configName(profile: Profile?): String = profile?.name ?: Settings.tunName
 
         fun status(context: Context) = startCommand(context, STATUS_VPN_SERVICE_ACTION_NAME)
         fun stop(context: Context) = startCommand(context, STOP_VPN_SERVICE_ACTION_NAME)
@@ -136,15 +138,20 @@ class TProxyService : VpnService() {
         } else {
             getConfig(profile)?.let {
                 startXray(it)
-                startVPN(profile.name)
+                startVPN(profile)
             }
         }
     }
 
     private fun newConfig(profile: Profile?) {
         stopXray()
-        if (profile == null) return
-        getConfig(profile).let { if (it == null) stopVPN() else startXray(it) }
+        val name = configName(profile)
+        val config = if (profile == null) null
+        else getConfig(profile).also { if (it == null) stopVPN() else startXray(it) }
+        if (profile == null || config != null) {
+            broadcastStart(NEW_CONFIG_ACTION_NAME, name)
+            notificationManager.notify(VPN_SERVICE_NOTIFICATION_ID, createNotification(name))
+        }
     }
 
     private fun startXray(config: XrayConfig) {
@@ -155,7 +162,7 @@ class TProxyService : VpnService() {
         XrayCore.stop()
     }
 
-    private fun startVPN(configName: String?) {
+    private fun startVPN(profile: Profile?) {
         /** Create Tun */
         val tun = Builder()
         val tunName = getString(R.string.appName)
@@ -233,17 +240,13 @@ class TProxyService : VpnService() {
         TProxyStartService(Settings.tun2socksConfig(applicationContext).absolutePath, tunDevice!!.fd)
 
         /** Service Notification */
-        val name = configName ?: Settings.tunName
+        val name = configName(profile)
         startForeground(VPN_SERVICE_NOTIFICATION_ID, createNotification(name))
 
         /** Broadcast start event */
         showToast("Start VPN")
         isRunning = true
-        Intent(START_VPN_SERVICE_ACTION_NAME).also {
-            it.`package` = BuildConfig.APPLICATION_ID
-            it.putExtra("profile", name)
-            sendBroadcast(it)
-        }
+        broadcastStart(START_VPN_SERVICE_ACTION_NAME, name)
     }
 
     private fun stopVPN() {
@@ -254,10 +257,7 @@ class TProxyService : VpnService() {
         showToast("Stop VPN")
         tunDevice = null
         isRunning = false
-        Intent(STOP_VPN_SERVICE_ACTION_NAME).also {
-            it.`package` = BuildConfig.APPLICATION_ID
-            sendBroadcast(it)
-        }
+        broadcastStop()
         stopSelf()
     }
 
@@ -265,6 +265,21 @@ class TProxyService : VpnService() {
         Intent(STATUS_VPN_SERVICE_ACTION_NAME).also {
             it.`package` = BuildConfig.APPLICATION_ID
             it.putExtra("isRunning", isRunning)
+            sendBroadcast(it)
+        }
+    }
+
+    private fun broadcastStart(action: String, configName: String) {
+        Intent(action).also {
+            it.`package` = BuildConfig.APPLICATION_ID
+            it.putExtra("profile", configName)
+            sendBroadcast(it)
+        }
+    }
+
+    private fun broadcastStop() {
+        Intent(STOP_VPN_SERVICE_ACTION_NAME).also {
+            it.`package` = BuildConfig.APPLICATION_ID
             sendBroadcast(it)
         }
     }

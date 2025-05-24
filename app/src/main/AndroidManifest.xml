@@ -106,6 +106,7 @@
             <intent-filter>
                 <action android:name="io.github.saeeddev94.xray.VpnStart" />
                 <action android:name="io.github.saeeddev94.xray.VpnStop" />
+                <action android:name="io.github.saeeddev94.xray.NewConfig" />
             </intent-filter>
         </receiver>
         <receiver
