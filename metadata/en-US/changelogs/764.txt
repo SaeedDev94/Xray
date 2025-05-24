@@ -1,0 +1,2 @@
+- Update qs tile and notification on profile select
+- Save last selected link tab
