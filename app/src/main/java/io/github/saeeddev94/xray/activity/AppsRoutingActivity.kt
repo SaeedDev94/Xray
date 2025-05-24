@@ -25,6 +25,7 @@ import kotlinx.coroutines.withContext
 
 class AppsRoutingActivity : AppCompatActivity() {
 
+    private val settings by lazy { Settings(applicationContext) }
     private lateinit var binding: ActivityAppsRoutingBinding
     private lateinit var appsList: RecyclerView
     private lateinit var appsRoutingAdapter: AppsRoutingAdapter
@@ -32,12 +33,13 @@ class AppsRoutingActivity : AppCompatActivity() {
     private lateinit var filtered: MutableList<AppList>
     private lateinit var appsRouting: MutableSet<String>
     private lateinit var menu: Menu
-    private var appsRoutingMode: Boolean = Settings.appsRoutingMode
+    private var appsRoutingMode: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = ""
         binding = ActivityAppsRoutingBinding.inflate(layoutInflater)
+        appsRoutingMode = settings.appsRoutingMode
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -140,13 +142,13 @@ class AppsRoutingActivity : AppCompatActivity() {
                 val appName = it.applicationInfo!!.loadLabel(packageManager).toString()
                 val packageName = it.packageName
                 val app = AppList(appIcon, appName, packageName)
-                val isSelected = Settings.appsRouting.contains(packageName)
+                val isSelected = settings.appsRouting.contains(packageName)
                 if (isSelected) selected.add(app) else unselected.add(app)
             }
             withContext(Dispatchers.Main) {
                 apps = ArrayList(selected + unselected)
                 filtered = apps.toMutableList()
-                appsRouting = Settings.appsRouting.split("\n").toMutableSet()
+                appsRouting = settings.appsRouting.split("\n").toMutableSet()
                 appsList = binding.appsList
                 appsRoutingAdapter = AppsRoutingAdapter(
                     this@AppsRoutingActivity, filtered, appsRouting
@@ -159,9 +161,8 @@ class AppsRoutingActivity : AppCompatActivity() {
 
     private fun saveAppsRouting() {
         binding.search.clearFocus()
-        Settings.appsRoutingMode = appsRoutingMode
-        Settings.appsRouting = appsRouting.joinToString("\n")
-        Settings.save(applicationContext)
+        settings.appsRoutingMode = appsRoutingMode
+        settings.appsRouting = appsRouting.joinToString("\n")
         finish()
     }
 

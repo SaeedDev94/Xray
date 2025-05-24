@@ -53,6 +53,7 @@ import java.net.URI
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private val clipboardManager by lazy { getSystemService(ClipboardManager::class.java) }
+    private val settings by lazy { Settings(applicationContext) }
     private val linkViewModel: LinkViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
     private var isRunning: Boolean = false
@@ -109,7 +110,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        Settings.sync(applicationContext)
         binding.toggleButton.setOnClickListener { onToggleButtonClick() }
         binding.pingBox.setOnClickListener { ping() }
         binding.navView.menu.findItem(R.id.appVersion).title = BuildConfig.VERSION_NAME
@@ -124,6 +124,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         profileAdapter = ProfileAdapter(
             lifecycleScope,
+            settings,
             profileViewModel,
             profiles,
             { index, profile -> profileSelect(index, profile) },
@@ -281,12 +282,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun profileSelect(index: Int, profile: ProfileList) {
-        val selectedProfile = Settings.selectedProfile
+        val selectedProfile = settings.selectedProfile
         lifecycleScope.launch {
             val ref = if (selectedProfile > 0L) profileViewModel.find(selectedProfile) else null
             withContext(Dispatchers.Main) {
-                Settings.selectedProfile = if (selectedProfile == profile.id) 0L else profile.id
-                Settings.save(applicationContext)
+                settings.selectedProfile = if (selectedProfile == profile.id) 0L else profile.id
                 profileAdapter.notifyItemChanged(index)
                 if (ref == null || ref.id == profile.id) return@withContext
                 profiles.indexOfFirst { it.id == ref.id }.let {
@@ -298,12 +298,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun profileEdit(profile: ProfileList) {
-        if (isRunning && Settings.selectedProfile == profile.id) return
+        if (isRunning && settings.selectedProfile == profile.id) return
         startActivity(ProfileActivity.getIntent(applicationContext, profile.id))
     }
 
     private fun profileDelete(profile: ProfileList) {
-        if (isRunning && Settings.selectedProfile == profile.id) return
+        if (isRunning && settings.selectedProfile == profile.id) return
         MaterialAlertDialogBuilder(this)
             .setTitle("Delete Profile#${profile.index + 1} ?")
             .setMessage("\"${profile.name}\" will delete forever !!")
@@ -314,10 +314,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val id = ref.id
                     profileViewModel.remove(ref)
                     withContext(Dispatchers.Main) {
-                        val selectedProfile = Settings.selectedProfile
+                        val selectedProfile = settings.selectedProfile
                         if (selectedProfile == id) {
-                            Settings.selectedProfile = 0L
-                            Settings.save(applicationContext)
+                            settings.selectedProfile = 0L
                         }
                     }
                 }
@@ -334,7 +333,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             openLink(uri)
             return
         }
-        val linkHelper = LinkHelper(link)
+        val linkHelper = LinkHelper(settings, link)
         if (!linkHelper.isValid()) {
             Toast.makeText(applicationContext, getString(R.string.invalidLink), Toast.LENGTH_SHORT).show()
             return
@@ -359,7 +358,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun ping() {
         if (!isRunning) return
         binding.pingResult.text = getString(R.string.pingTesting)
-        HttpHelper(lifecycleScope).measureDelay { binding.pingResult.text = it }
+        HttpHelper(lifecycleScope, settings).measureDelay { binding.pingResult.text = it }
     }
 
     private fun hasPostNotification(): Boolean {

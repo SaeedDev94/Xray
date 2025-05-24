@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 
 class ProfileAdapter(
     private val scope: CoroutineScope,
+    private val settings: Settings,
     private val profileViewModel: ProfileViewModel,
     private val profiles: ArrayList<ProfileList>,
     private val profileSelect: (index: Int, profile: ProfileList) -> Unit,
@@ -38,7 +39,7 @@ class ProfileAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, index: Int) {
         val profile = profiles[index]
-        val color = if (Settings.selectedProfile == profile.id) R.color.primaryColor else R.color.btnColor
+        val color = if (settings.selectedProfile == profile.id) R.color.primaryColor else R.color.btnColor
         holder.activeIndicator.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.profileCard.context, color))
         holder.profileName.text = profile.name
         holder.profileCard.setOnClickListener {

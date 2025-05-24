@@ -13,7 +13,10 @@ import java.net.PasswordAuthentication
 import java.net.Proxy
 import java.net.URL
 
-class HttpHelper(var scope: CoroutineScope) {
+class HttpHelper(
+    val scope: CoroutineScope,
+    val settings: Settings,
+) {
 
     companion object {
         private fun getConnection(
@@ -85,21 +88,21 @@ class HttpHelper(var scope: CoroutineScope) {
 
     private suspend fun getConnection(): HttpURLConnection {
         return withContext(Dispatchers.IO) {
-            val link = Settings.pingAddress
+            val link = settings.pingAddress
             val method = "HEAD"
-            val address = InetSocketAddress(Settings.socksAddress, Settings.socksPort.toInt())
+            val address = InetSocketAddress(settings.socksAddress, settings.socksPort.toInt())
             val proxy = Proxy(Proxy.Type.SOCKS, address)
-            val timeout = Settings.pingTimeout * 1000
+            val timeout = settings.pingTimeout * 1000
 
             getConnection(link, method, proxy, timeout)
         }
     }
 
     private fun getSocksAuth(): Authenticator? {
-        if (Settings.socksUsername.trim().isEmpty() || Settings.socksPassword.trim().isEmpty()) return null
+        if (settings.socksUsername.trim().isEmpty() || settings.socksPassword.trim().isEmpty()) return null
         return object : Authenticator() {
             override fun getPasswordAuthentication(): PasswordAuthentication {
-                return PasswordAuthentication(Settings.socksUsername, Settings.socksPassword.toCharArray())
+                return PasswordAuthentication(settings.socksUsername, settings.socksPassword.toCharArray())
             }
         }
     }

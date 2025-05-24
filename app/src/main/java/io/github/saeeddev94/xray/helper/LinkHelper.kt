@@ -8,7 +8,10 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.net.URI
 
-class LinkHelper(link: String) {
+class LinkHelper(
+    private val settings: Settings,
+    link: String
+) {
 
     private val success: Boolean
     private val outbound: JSONObject?
@@ -62,8 +65,8 @@ class LinkHelper(link: String) {
     private fun dns(): JSONObject {
         val dns = JSONObject()
         val servers = JSONArray()
-        servers.put(Settings.primaryDns)
-        servers.put(Settings.secondaryDns)
+        servers.put(settings.primaryDns)
+        servers.put(settings.secondaryDns)
         dns.put("servers", servers)
         return dns
     }
@@ -72,21 +75,21 @@ class LinkHelper(link: String) {
         val inbounds = JSONArray()
 
         val socks = JSONObject()
-        socks.put("listen", Settings.socksAddress)
-        socks.put("port", Settings.socksPort.toInt())
+        socks.put("listen", settings.socksAddress)
+        socks.put("port", settings.socksPort.toInt())
         socks.put("protocol", "socks")
 
-        val settings = JSONObject()
-        settings.put("udp", true)
-        if (Settings.socksUsername.trim().isNotEmpty() && Settings.socksPassword.trim().isNotEmpty()) {
+        val socksSettings = JSONObject()
+        socksSettings.put("udp", true)
+        if (settings.socksUsername.trim().isNotEmpty() && settings.socksPassword.trim().isNotEmpty()) {
             val account = JSONObject()
-            account.put("user", Settings.socksUsername)
-            account.put("pass", Settings.socksPassword)
+            account.put("user", settings.socksUsername)
+            account.put("pass", settings.socksPassword)
             val accounts = JSONArray()
             accounts.put(account)
 
-            settings.put("auth", "password")
-            settings.put("accounts", accounts)
+            socksSettings.put("auth", "password")
+            socksSettings.put("accounts", accounts)
         }
 
         val sniffing = JSONObject()
@@ -97,7 +100,7 @@ class LinkHelper(link: String) {
         sniffingDestOverride.put("quic")
         sniffing.put("destOverride", sniffingDestOverride)
 
-        socks.put("settings", settings)
+        socks.put("settings", socksSettings)
         socks.put("sniffing", sniffing)
         socks.put("tag", "socks")
 
@@ -139,8 +142,8 @@ class LinkHelper(link: String) {
 
         val proxyDns = JSONObject()
         val proxyDnsIp = JSONArray()
-        proxyDnsIp.put(Settings.primaryDns)
-        proxyDnsIp.put(Settings.secondaryDns)
+        proxyDnsIp.put(settings.primaryDns)
+        proxyDnsIp.put(settings.secondaryDns)
         proxyDns.put("ip", proxyDnsIp)
         proxyDns.put("port", 53)
         proxyDns.put("outboundTag", "proxy")

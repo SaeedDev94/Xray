@@ -27,6 +27,7 @@ class AssetsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAssetsBinding
     private var downloading: Boolean = false
 
+    private val settings by lazy { Settings(applicationContext) }
     private val geoIpLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { writeToFile(it, geoIpFile()) }
     private val geoSiteLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { writeToFile(it, geoSiteFile()) }
 
@@ -45,14 +46,14 @@ class AssetsActivity : AppCompatActivity() {
 
         // GeoIP
         binding.geoIpDownload.setOnClickListener {
-            download(Settings.geoIpAddress, geoIpFile(), binding.geoIpSetup, binding.geoIpProgress)
+            download(settings.geoIpAddress, geoIpFile(), binding.geoIpSetup, binding.geoIpProgress)
         }
         binding.geoIpFile.setOnClickListener { geoIpLauncher.launch(mimeType) }
         binding.geoIpDelete.setOnClickListener { delete(geoIpFile()) }
 
         // GeoSite
         binding.geoSiteDownload.setOnClickListener {
-            download(Settings.geoSiteAddress, geoSiteFile(), binding.geoSiteSetup, binding.geoSiteProgress)
+            download(settings.geoSiteAddress, geoSiteFile(), binding.geoSiteSetup, binding.geoSiteProgress)
         }
         binding.geoSiteFile.setOnClickListener { geoSiteLauncher.launch(mimeType) }
         binding.geoSiteDelete.setOnClickListener { delete(geoSiteFile()) }

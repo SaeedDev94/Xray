@@ -51,6 +51,7 @@ class LinksManagerActivity : AppCompatActivity() {
         }
     }
 
+    private val settings by lazy { Settings(applicationContext) }
     private val linkViewModel: LinkViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
 
@@ -148,7 +149,7 @@ class LinksManagerActivity : AppCompatActivity() {
             val decoded = LinkHelper.tryDecodeBase64(value).trim()
             decoded.split("\n")
                 .reversed()
-                .map { LinkHelper(it) }
+                .map { LinkHelper(settings, it) }
                 .filter { it.isValid() }
                 .map { linkHelper ->
                     val profile = Profile()
@@ -198,10 +199,9 @@ class LinksManagerActivity : AppCompatActivity() {
     private suspend fun deleteProfile(linkProfile: Profile) {
         profileViewModel.remove(linkProfile)
         withContext(Dispatchers.Main) {
-            val selectedProfile = Settings.selectedProfile
+            val selectedProfile = settings.selectedProfile
             if (selectedProfile == linkProfile.id) {
-                Settings.selectedProfile = 0L
-                Settings.save(applicationContext)
+                settings.selectedProfile = 0L
             }
         }
     }

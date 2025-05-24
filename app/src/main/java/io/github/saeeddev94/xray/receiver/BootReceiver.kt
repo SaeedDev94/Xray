@@ -10,8 +10,8 @@ class BootReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null || intent.action != Intent.ACTION_BOOT_COMPLETED) return
-        Settings.sync(context)
-        if (!Settings.bootAutoStart) return
+        val settings = Settings(context)
+        if (!settings.bootAutoStart) return
         TProxyService.start(context)
     }
 }

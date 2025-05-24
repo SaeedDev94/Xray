@@ -46,8 +46,6 @@ class TProxyService : VpnService() {
         private const val OPEN_MAIN_ACTIVITY_ACTION_ID = 2
         private const val STOP_VPN_SERVICE_ACTION_ID = 3
 
-        fun configName(profile: Profile?): String = profile?.name ?: Settings.tunName
-
         fun status(context: Context) = startCommand(context, STATUS_VPN_SERVICE_ACTION_NAME)
         fun stop(context: Context) = startCommand(context, STOP_VPN_SERVICE_ACTION_NAME)
         fun newConfig(context: Context) = startCommand(context, NEW_CONFIG_ACTION_NAME)
@@ -76,6 +74,7 @@ class TProxyService : VpnService() {
     }
 
     private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
+    private val settings by lazy { Settings(applicationContext) }
     private val profileRepository by lazy { Xray::class.cast(application).profileRepository }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -85,11 +84,6 @@ class TProxyService : VpnService() {
     private external fun TProxyStartService(configPath: String, fd: Int)
     private external fun TProxyStopService()
     private external fun TProxyGetStats(): LongArray
-
-    override fun onCreate() {
-        super.onCreate()
-        Settings.sync(applicationContext)
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         scope.launch {
@@ -112,17 +106,19 @@ class TProxyService : VpnService() {
         super.onDestroy()
     }
 
+    private fun configName(profile: Profile?): String = profile?.name ?: settings.tunName
+
     private suspend fun getProfile(): Profile? {
-        return if (Settings.selectedProfile == 0L) {
+        return if (settings.selectedProfile == 0L) {
             null
         } else {
-            profileRepository.find(Settings.selectedProfile)
+            profileRepository.find(settings.selectedProfile)
         }
     }
 
     private fun getConfig(profile: Profile): XrayConfig? {
         val dir: File = applicationContext.filesDir
-        val config: File = Settings.xrayConfig(applicationContext)
+        val config: File = settings.xrayConfig()
         FileHelper.createOrUpdate(config, profile.config)
         val error: String = XrayCore.test(dir.absolutePath, config.absolutePath)
         if (error.isNotEmpty()) {
@@ -169,24 +165,24 @@ class TProxyService : VpnService() {
 
         /** Basic tun config */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) tun.setMetered(false)
-        tun.setMtu(Settings.tunMtu)
+        tun.setMtu(settings.tunMtu)
         tun.setSession(tunName)
 
         /** IPv4 */
-        tun.addAddress(Settings.tunAddress, Settings.tunPrefix)
-        tun.addDnsServer(Settings.primaryDns)
-        tun.addDnsServer(Settings.secondaryDns)
+        tun.addAddress(settings.tunAddress, settings.tunPrefix)
+        tun.addDnsServer(settings.primaryDns)
+        tun.addDnsServer(settings.secondaryDns)
 
         /** IPv6 */
-        if (Settings.enableIpV6) {
-            tun.addAddress(Settings.tunAddressV6, Settings.tunPrefixV6)
-            tun.addDnsServer(Settings.primaryDnsV6)
-            tun.addDnsServer(Settings.secondaryDnsV6)
+        if (settings.enableIpV6) {
+            tun.addAddress(settings.tunAddressV6, settings.tunPrefixV6)
+            tun.addDnsServer(settings.primaryDnsV6)
+            tun.addDnsServer(settings.secondaryDnsV6)
             tun.addRoute("::", 0)
         }
 
         /** Bypass LAN (IPv4) */
-        if (Settings.bypassLan) {
+        if (settings.bypassLan) {
             resources.getStringArray(R.array.publicIpAddresses).forEach {
                 val address = it.split('/')
                 tun.addRoute(address[0], address[1].toInt())
@@ -196,11 +192,11 @@ class TProxyService : VpnService() {
         }
 
         /** Apps Routing */
-        if (Settings.appsRoutingMode) tun.addDisallowedApplication(applicationContext.packageName)
-        Settings.appsRouting.split("\n").forEach {
+        if (settings.appsRoutingMode) tun.addDisallowedApplication(applicationContext.packageName)
+        settings.appsRouting.split("\n").forEach {
             val packageName = it.trim()
             if (packageName.isBlank()) return@forEach
-            if (Settings.appsRoutingMode) tun.addDisallowedApplication(packageName)
+            if (settings.appsRoutingMode) tun.addDisallowedApplication(packageName)
             else tun.addAllowedApplication(packageName)
         }
 
@@ -217,27 +213,26 @@ class TProxyService : VpnService() {
         val tun2socksConfig = arrayListOf(
             "tunnel:",
             "  name: $tunName",
-            "  mtu: ${Settings.tunMtu}",
+            "  mtu: ${settings.tunMtu}",
             "socks5:",
-            "  address: ${Settings.socksAddress}",
-            "  port: ${Settings.socksPort}",
+            "  address: ${settings.socksAddress}",
+            "  port: ${settings.socksPort}",
         )
         if (
-            Settings.socksUsername.trim().isNotEmpty() &&
-            Settings.socksPassword.trim().isNotEmpty()
-        ) {
-            tun2socksConfig.add("  username: ${Settings.socksUsername}")
-            tun2socksConfig.add("  password: ${Settings.socksPassword}")
+            settings.socksUsername.trim().isNotEmpty() &&
+            settings.socksPassword.trim().isNotEmpty()        ) {
+            tun2socksConfig.add("  username: ${settings.socksUsername}")
+            tun2socksConfig.add("  password: ${settings.socksPassword}")
         }
-        tun2socksConfig.add(if (Settings.socksUdp) "  udp: udp" else "  udp: tcp")
+        tun2socksConfig.add(if (settings.socksUdp) "  udp: udp" else "  udp: tcp")
         tun2socksConfig.add("")
         FileHelper.createOrUpdate(
-            Settings.tun2socksConfig(applicationContext),
+            settings.tun2socksConfig(),
             tun2socksConfig.joinToString("\n")
         )
 
         /** Start tun2socks */
-        TProxyStartService(Settings.tun2socksConfig(applicationContext).absolutePath, tunDevice!!.fd)
+        TProxyStartService(settings.tun2socksConfig().absolutePath, tunDevice!!.fd)
 
         /** Service Notification */
         val name = configName(profile)

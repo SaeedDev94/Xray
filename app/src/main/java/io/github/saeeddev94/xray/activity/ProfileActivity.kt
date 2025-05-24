@@ -1,5 +1,6 @@
 package io.github.saeeddev94.xray.activity
 
+import XrayCore.XrayCore
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -16,9 +17,10 @@ import com.blacksquircle.ui.editorkit.plugin.linenumbers.lineNumbers
 import com.blacksquircle.ui.language.json.JsonLanguage
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.saeeddev94.xray.R
+import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.databinding.ActivityProfileBinding
-import io.github.saeeddev94.xray.helper.ConfigHelper
+import io.github.saeeddev94.xray.helper.FileHelper
 import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,6 +47,7 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+    private val settings by lazy { Settings(applicationContext) }
     private val profileViewModel: ProfileViewModel by viewModels()
     private lateinit var binding: ActivityProfileBinding
     private lateinit var profile: Profile
@@ -131,7 +134,7 @@ class ProfileActivity : AppCompatActivity() {
         profile.name = binding.profileName.text.toString()
         profile.config = binding.profileConfig.text.toString()
         lifecycleScope.launch {
-            val error = ConfigHelper.isValid(applicationContext, profile.config)
+            val error = isValid(profile.config)
             if (check && error.isNotEmpty()) {
                 withContext(Dispatchers.Main) {
                     showError(error)
@@ -146,6 +149,15 @@ class ProfileActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 finish()
             }
+        }
+    }
+
+    private suspend fun isValid(json: String): String {
+        return withContext(Dispatchers.IO) {
+            val pwd = filesDir.absolutePath
+            val testConfig = settings.testConfig()
+            FileHelper.createOrUpdate(testConfig, json)
+            XrayCore.test(pwd, testConfig.absolutePath)
         }
     }
 
