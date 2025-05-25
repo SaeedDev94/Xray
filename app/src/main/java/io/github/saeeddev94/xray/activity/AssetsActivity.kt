@@ -28,8 +28,12 @@ class AssetsActivity : AppCompatActivity() {
     private var downloading: Boolean = false
 
     private val settings by lazy { Settings(applicationContext) }
-    private val geoIpLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { writeToFile(it, geoIpFile()) }
-    private val geoSiteLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { writeToFile(it, geoSiteFile()) }
+    private val geoIpLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        writeToFile(it, geoIpFile())
+    }
+    private val geoSiteLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        writeToFile(it, geoSiteFile())
+    }
 
     private fun geoIpFile(): File = File(applicationContext.filesDir, "geoip.dat")
     private fun geoSiteFile(): File = File(applicationContext.filesDir, "geosite.dat")
@@ -53,7 +57,12 @@ class AssetsActivity : AppCompatActivity() {
 
         // GeoSite
         binding.geoSiteDownload.setOnClickListener {
-            download(settings.geoSiteAddress, geoSiteFile(), binding.geoSiteSetup, binding.geoSiteProgress)
+            download(
+                settings.geoSiteAddress,
+                geoSiteFile(),
+                binding.geoSiteSetup,
+                binding.geoSiteProgress
+            )
         }
         binding.geoSiteFile.setOnClickListener { geoSiteLauncher.launch(mimeType) }
         binding.geoSiteDelete.setOnClickListener { delete(geoSiteFile()) }
@@ -87,7 +96,9 @@ class AssetsActivity : AppCompatActivity() {
 
     private fun download(url: String, file: File, setup: LinearLayout, progressBar: ProgressBar) {
         if (downloading) {
-            Toast.makeText(applicationContext, "Another download is running, please wait", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                applicationContext, "Another download is running, please wait", Toast.LENGTH_SHORT
+            ).show()
             return
         }
 

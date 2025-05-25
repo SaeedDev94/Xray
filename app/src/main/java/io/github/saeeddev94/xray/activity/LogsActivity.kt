@@ -49,9 +49,7 @@ class LogsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.deleteLogs -> {
-                flush()
-            }
+            R.id.deleteLogs -> flush()
             R.id.copyLogs -> copyToClipboard(binding.logsTextView.text.toString())
             else -> finish()
         }
@@ -83,7 +81,8 @@ class LogsActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private suspend fun streamingLog() = withContext(Dispatchers.IO) {
-        val builder = ProcessBuilder("logcat", "-v", "time", "-s", "GoLog,${BuildConfig.APPLICATION_ID}")
+        val cmd = listOf("logcat", "-v", "time", "-s", "GoLog,${BuildConfig.APPLICATION_ID}")
+        val builder = ProcessBuilder(cmd)
         builder.environment()["LC_ALL"] = "C"
         var process: Process? = null
         try {
@@ -93,26 +92,40 @@ class LogsActivity : AppCompatActivity() {
                 Log.e(packageName, Log.getStackTraceString(e))
                 return@withContext
             }
-            val stdout = BufferedReader(InputStreamReader(process!!.inputStream, StandardCharsets.UTF_8))
+
+            val stdout = BufferedReader(
+                InputStreamReader(process!!.inputStream, StandardCharsets.UTF_8)
+            )
+            val bufferedLogLines = arrayListOf<String>()
 
             var timeLastNotify = System.nanoTime()
-            val bufferedLogLines = arrayListOf<String>()
-            var timeout = 1000000000L / 2 // The timeout is initially small so that the view gets populated immediately.
+            // The timeout is initially small so that the view gets populated immediately.
+            var timeout = 1000000000L / 2
 
             while (true) {
                 val line = stdout.readLine() ?: break
                 bufferedLogLines.add(line)
                 val timeNow = System.nanoTime()
-                if (bufferedLogLines.size < MAX_BUFFERED_LINES && (timeNow - timeLastNotify) < timeout && stdout.ready())
-                    continue
-                timeout = 1000000000L * 5 / 2 // Increase the timeout after the initial view has something in it.
+
+                if (
+                    bufferedLogLines.size < MAX_BUFFERED_LINES &&
+                    (timeNow - timeLastNotify) < timeout && stdout.ready()
+                ) continue
+
+                // Increase the timeout after the initial view has something in it.
+                timeout = 1000000000L * 5 / 2
                 timeLastNotify = timeNow
 
                 withContext(Dispatchers.Main) {
                     val contentHeight = binding.logsTextView.height
                     val scrollViewHeight = binding.logsScrollView.height
-                    val isScrolledToBottomAlready = (binding.logsScrollView.scrollY + scrollViewHeight) >= contentHeight * 0.95
-                    binding.logsTextView.text = binding.logsTextView.text.toString() + bufferedLogLines.joinToString(separator = "\n", postfix = "\n")
+                    val isScrolledToBottomAlready =
+                        (binding.logsScrollView.scrollY + scrollViewHeight) >= contentHeight * 0.95
+                    binding.logsTextView.text =
+                        binding.logsTextView.text.toString() + bufferedLogLines.joinToString(
+                            separator = "\n",
+                            postfix = "\n"
+                        )
                     bufferedLogLines.clear()
                     if (isScrolledToBottomAlready) {
                         binding.logsScrollView.post {

@@ -20,7 +20,11 @@ class LinkHelper(
     init {
         val base64: String = XrayCore.json(link)
         val decoded = tryDecodeBase64(base64)
-        val response = try { JSONObject(decoded) } catch (error: JSONException) { JSONObject() }
+        val response = try {
+            JSONObject(decoded)
+        } catch (error: JSONException) {
+            JSONObject()
+        }
         val data = response.optJSONObject("data") ?: JSONObject()
         val outbounds = data.optJSONArray("outbounds") ?: JSONArray()
         success = response.optBoolean("success", false)
@@ -81,7 +85,10 @@ class LinkHelper(
 
         val socksSettings = JSONObject()
         socksSettings.put("udp", true)
-        if (settings.socksUsername.trim().isNotEmpty() && settings.socksPassword.trim().isNotEmpty()) {
+        if (
+            settings.socksUsername.trim().isNotEmpty() &&
+            settings.socksPassword.trim().isNotEmpty()
+        ) {
             val account = JSONObject()
             account.put("user", settings.socksUsername)
             account.put("pass", settings.socksPassword)

@@ -29,7 +29,9 @@ class ProfileAdapter(
 
     override fun onCreateViewHolder(container: ViewGroup, type: Int): ViewHolder {
         val linearLayout = LinearLayout(container.context)
-        val item: View = LayoutInflater.from(container.context).inflate(R.layout.item_recycler_main, linearLayout, false)
+        val item: View = LayoutInflater.from(container.context).inflate(
+            R.layout.item_recycler_main, linearLayout, false
+        )
         return ViewHolder(item)
     }
 
@@ -39,8 +41,11 @@ class ProfileAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, index: Int) {
         val profile = profiles[index]
-        val color = if (settings.selectedProfile == profile.id) R.color.primaryColor else R.color.btnColor
-        holder.activeIndicator.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(holder.profileCard.context, color))
+        val color =
+            if (settings.selectedProfile == profile.id) R.color.primaryColor else R.color.btnColor
+        holder.activeIndicator.backgroundTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(holder.profileCard.context, color)
+        )
         holder.profileName.text = profile.name
         holder.profileCard.setOnClickListener {
             profileSelect(index, profile)
@@ -66,7 +71,7 @@ class ProfileAdapter(
 
     override fun onItemMoveCompleted(startPosition: Int, endPosition: Int) {
         val isMoveUp = startPosition > endPosition
-        val start = if (isMoveUp) profiles[endPosition+1] else profiles[endPosition-1]
+        val start = if (isMoveUp) profiles[endPosition + 1] else profiles[endPosition - 1]
         val end = profiles[endPosition]
         scope.launch {
             if (isMoveUp) profileViewModel.moveUp(start.index, end.index, end.id)

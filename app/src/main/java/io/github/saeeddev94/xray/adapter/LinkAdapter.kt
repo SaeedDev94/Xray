@@ -20,8 +20,9 @@ class LinkAdapter : ListAdapter<Link, LinkAdapter.LinkHolder>(diffCallback) {
     var onDeleteClick: (link: Link) -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, type: Int) = LinkHolder(
-        LayoutInflater.from(parent.context)
-            .inflate(R.layout.layout_link_item, parent, false)
+        LayoutInflater.from(parent.context).inflate(
+            R.layout.layout_link_item, parent, false
+        )
     )
 
     override fun onBindViewHolder(holder: LinkHolder, position: Int) {
@@ -38,7 +39,9 @@ class LinkAdapter : ListAdapter<Link, LinkAdapter.LinkHolder>(diffCallback) {
         fun bind(index: Int) {
             val link = getItem(index)
             val color = if (link.isActive) R.color.btnColor else R.color.btnColorDisabled
-            card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(card.context, color))
+            card.backgroundTintList = ColorStateList.valueOf(
+                ContextCompat.getColor(card.context, color)
+            )
             name.text = link.name
             type.text = link.type.name
             edit.setOnClickListener { onEditClick(link) }

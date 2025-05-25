@@ -20,7 +20,9 @@ class AppsRoutingAdapter(
 
     override fun onCreateViewHolder(container: ViewGroup, type: Int): ViewHolder {
         val linearLayout = LinearLayout(context)
-        val item: View = LayoutInflater.from(context).inflate(R.layout.item_recycler_exclude, linearLayout, false)
+        val item: View = LayoutInflater.from(context).inflate(
+            R.layout.item_recycler_exclude, linearLayout, false
+        )
         return ViewHolder(item)
     }
 

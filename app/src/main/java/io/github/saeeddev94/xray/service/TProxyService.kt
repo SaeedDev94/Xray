@@ -220,7 +220,8 @@ class TProxyService : VpnService() {
         )
         if (
             settings.socksUsername.trim().isNotEmpty() &&
-            settings.socksPassword.trim().isNotEmpty()        ) {
+            settings.socksPassword.trim().isNotEmpty()
+        ) {
             tun2socksConfig.add("  username: ${settings.socksUsername}")
             tun2socksConfig.add("  password: ${settings.socksPassword}")
         }

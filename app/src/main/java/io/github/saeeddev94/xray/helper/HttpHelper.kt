@@ -99,10 +99,15 @@ class HttpHelper(
     }
 
     private fun getSocksAuth(): Authenticator? {
-        if (settings.socksUsername.trim().isEmpty() || settings.socksPassword.trim().isEmpty()) return null
+        if (
+            settings.socksUsername.trim().isEmpty() || settings.socksPassword.trim().isEmpty()
+        ) return null
         return object : Authenticator() {
             override fun getPasswordAuthentication(): PasswordAuthentication {
-                return PasswordAuthentication(settings.socksUsername, settings.socksPassword.toCharArray())
+                return PasswordAuthentication(
+                    settings.socksUsername,
+                    settings.socksPassword.toCharArray()
+                )
             }
         }
     }

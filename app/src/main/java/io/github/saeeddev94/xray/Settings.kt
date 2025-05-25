@@ -44,10 +44,16 @@ class Settings(private val context: Context) {
         get() = sharedPreferences.getString("socksPassword", "")!!
         set(value) = sharedPreferences.edit { putString("socksPassword", value) }
     var geoIpAddress: String
-        get() = sharedPreferences.getString("geoIpAddress", "https://github.com/v2fly/geoip/releases/latest/download/geoip.dat")!!
+        get() = sharedPreferences.getString(
+            "geoIpAddress",
+            "https://github.com/v2fly/geoip/releases/latest/download/geoip.dat"
+        )!!
         set(value) = sharedPreferences.edit { putString("geoIpAddress", value) }
     var geoSiteAddress: String
-        get() = sharedPreferences.getString("geoSiteAddress", "https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat")!!
+        get() = sharedPreferences.getString(
+            "geoSiteAddress",
+            "https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat"
+        )!!
         set(value) = sharedPreferences.edit { putString("geoSiteAddress", value) }
     var pingAddress: String
         get() = sharedPreferences.getString("pingAddress", "https://www.google.com")!!

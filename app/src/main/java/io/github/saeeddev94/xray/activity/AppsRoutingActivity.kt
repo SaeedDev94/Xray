@@ -99,6 +99,7 @@ class AppsRoutingActivity : AppCompatActivity() {
                 includeItem.isVisible = false
                 getString(R.string.appsRoutingExcludeMode)
             }
+
             false -> {
                 excludeItem.isVisible = false
                 includeItem.isVisible = true

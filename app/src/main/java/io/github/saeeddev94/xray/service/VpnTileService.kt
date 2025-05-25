@@ -46,6 +46,7 @@ class VpnTileService : TileService() {
             when (action) {
                 TProxyService.START_VPN_SERVICE_ACTION_NAME,
                 TProxyService.NEW_CONFIG_ACTION_NAME -> updateTile(Tile.STATE_ACTIVE, label)
+
                 TProxyService.STOP_VPN_SERVICE_ACTION_NAME -> updateTile(Tile.STATE_INACTIVE, label)
             }
         }

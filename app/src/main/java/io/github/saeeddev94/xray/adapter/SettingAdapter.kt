@@ -16,7 +16,8 @@ class SettingAdapter(
     private val views: MutableList<View> = mutableListOf()
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val layoutInflater =
+            context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = layoutInflater.inflate(layouts[position], container, false)
         container.addView(view)
         views.add(view)
