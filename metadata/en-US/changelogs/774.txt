@@ -1,0 +1,2 @@
+- Target SDK 36 (Android 16)
+- Migrate to Gradle kts and version catalogs
