@@ -1,0 +1,28 @@
+[versions]
+agp = "8.10.0"
+kotlin = "2.1.20"
+ksp = "2.1.20-2.0.1"
+androidxActivityKtx = "1.10.1"
+androidxCoreKtx = "1.16.0"
+androidxAppCompat = "1.7.0"
+androidxLifecycleViewmodelKtx = "2.9.0"
+androidxRoom = "2.7.1"
+blacksquircleUi = "2.9.0"
+googleMaterial = "1.12.0"
+
+[libraries]
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidxActivityKtx" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCoreKtx" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppCompat" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidxLifecycleViewmodelKtx" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidxRoom" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidxRoom" }
+blacksquircle-ui-editorkit = { group = "com.blacksquircle.ui", name = "editorkit", version.ref = "blacksquircleUi" }
+blacksquircle-ui-language-json = { group = "com.blacksquircle.ui", name = "language-json", version.ref = "blacksquircleUi" }
+google-material = { group = "com.google.android.material", name = "material", version.ref = "googleMaterial" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

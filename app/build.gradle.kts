@@ -1,7 +1,7 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.devtools.ksp)
     id("kotlin-parcelize")
 }
 
@@ -80,15 +80,14 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar", "*.jar"))))
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.1.20"))
-    implementation("androidx.activity:activity-ktx:1.10.1")
-    implementation("androidx.core:core-ktx:1.16.0")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0")
-    implementation("androidx.room:room-ktx:2.7.1")
-    implementation("androidx.room:room-runtime:2.7.1")
-    ksp("androidx.room:room-compiler:2.7.1")
-    implementation("com.blacksquircle.ui:editorkit:2.9.0")
-    implementation("com.blacksquircle.ui:language-json:2.9.0")
-    implementation("com.google.android.material:material:1.12.0")
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.blacksquircle.ui.editorkit)
+    implementation(libs.blacksquircle.ui.language.json)
+    implementation(libs.google.material)
 }
