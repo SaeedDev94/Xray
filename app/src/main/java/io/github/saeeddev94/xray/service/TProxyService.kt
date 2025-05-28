@@ -91,7 +91,7 @@ class TProxyService : VpnService() {
                 START_VPN_SERVICE_ACTION_NAME -> start(getProfile())
                 NEW_CONFIG_SERVICE_ACTION_NAME -> newConfig(getProfile())
                 STOP_VPN_SERVICE_ACTION_NAME -> stopVPN()
-                STATUS_VPN_SERVICE_ACTION_NAME -> statusVPN()
+                STATUS_VPN_SERVICE_ACTION_NAME -> broadcastStatus()
             }
         }
         return START_STICKY
@@ -258,14 +258,6 @@ class TProxyService : VpnService() {
         stopSelf()
     }
 
-    private fun statusVPN() {
-        Intent(STATUS_VPN_SERVICE_ACTION_NAME).also {
-            it.`package` = BuildConfig.APPLICATION_ID
-            it.putExtra("isRunning", isRunning)
-            sendBroadcast(it)
-        }
-    }
-
     private fun broadcastStart(action: String, configName: String) {
         Intent(action).also {
             it.`package` = BuildConfig.APPLICATION_ID
@@ -277,6 +269,14 @@ class TProxyService : VpnService() {
     private fun broadcastStop() {
         Intent(STOP_VPN_SERVICE_ACTION_NAME).also {
             it.`package` = BuildConfig.APPLICATION_ID
+            sendBroadcast(it)
+        }
+    }
+
+    private fun broadcastStatus() {
+        Intent(STATUS_VPN_SERVICE_ACTION_NAME).also {
+            it.`package` = BuildConfig.APPLICATION_ID
+            it.putExtra("isRunning", isRunning)
             sendBroadcast(it)
         }
     }
