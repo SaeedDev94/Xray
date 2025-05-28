@@ -45,7 +45,7 @@ class VpnTileService : TileService() {
         if (action.isNotEmpty() && label.isNotEmpty()) {
             when (action) {
                 TProxyService.START_VPN_SERVICE_ACTION_NAME,
-                TProxyService.NEW_CONFIG_ACTION_NAME -> updateTile(Tile.STATE_ACTIVE, label)
+                TProxyService.NEW_CONFIG_SERVICE_ACTION_NAME -> updateTile(Tile.STATE_ACTIVE, label)
 
                 TProxyService.STOP_VPN_SERVICE_ACTION_NAME -> updateTile(Tile.STATE_INACTIVE, label)
             }

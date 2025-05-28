@@ -41,14 +41,14 @@ class TProxyService : VpnService() {
         const val STATUS_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStatus"
         const val STOP_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStop"
         const val START_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStart"
-        const val NEW_CONFIG_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.NewConfig"
+        const val NEW_CONFIG_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.NewConfig"
         private const val VPN_SERVICE_NOTIFICATION_ID = 1
         private const val OPEN_MAIN_ACTIVITY_ACTION_ID = 2
         private const val STOP_VPN_SERVICE_ACTION_ID = 3
 
         fun status(context: Context) = startCommand(context, STATUS_VPN_SERVICE_ACTION_NAME)
         fun stop(context: Context) = startCommand(context, STOP_VPN_SERVICE_ACTION_NAME)
-        fun newConfig(context: Context) = startCommand(context, NEW_CONFIG_ACTION_NAME)
+        fun newConfig(context: Context) = startCommand(context, NEW_CONFIG_SERVICE_ACTION_NAME)
 
         fun start(context: Context, check: Boolean = true) {
             if (check && prepare(context) != null) {
@@ -89,7 +89,7 @@ class TProxyService : VpnService() {
         scope.launch {
             when (intent?.action) {
                 START_VPN_SERVICE_ACTION_NAME -> start(getProfile())
-                NEW_CONFIG_ACTION_NAME -> newConfig(getProfile())
+                NEW_CONFIG_SERVICE_ACTION_NAME -> newConfig(getProfile())
                 STOP_VPN_SERVICE_ACTION_NAME -> stopVPN()
                 STATUS_VPN_SERVICE_ACTION_NAME -> statusVPN()
             }
@@ -145,7 +145,7 @@ class TProxyService : VpnService() {
         val config = if (profile == null) null
         else getConfig(profile).also { if (it == null) stopVPN() else startXray(it) }
         if (profile == null || config != null) {
-            broadcastStart(NEW_CONFIG_ACTION_NAME, name)
+            broadcastStart(NEW_CONFIG_SERVICE_ACTION_NAME, name)
             notificationManager.notify(VPN_SERVICE_NOTIFICATION_ID, createNotification(name))
         }
     }

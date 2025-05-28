@@ -14,7 +14,7 @@ class VpnActionReceiver : BroadcastReceiver() {
         val allowed = listOf(
             TProxyService.START_VPN_SERVICE_ACTION_NAME,
             TProxyService.STOP_VPN_SERVICE_ACTION_NAME,
-            TProxyService.NEW_CONFIG_ACTION_NAME,
+            TProxyService.NEW_CONFIG_SERVICE_ACTION_NAME,
         )
         val action = intent.action ?: ""
         val label = intent.getStringExtra("profile") ?: context.getString(R.string.appName)
