@@ -288,11 +288,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             withContext(Dispatchers.Main) {
                 settings.selectedProfile = if (selectedProfile == profile.id) 0L else profile.id
                 profileAdapter.notifyItemChanged(index)
+                if (isRunning) TProxyService.newConfig(applicationContext)
                 if (ref == null || ref.id == profile.id) return@withContext
                 profiles.indexOfFirst { it.id == ref.id }.let {
                     if (it != -1) profileAdapter.notifyItemChanged(it)
                 }
-                if (isRunning) TProxyService.newConfig(applicationContext)
             }
         }
     }
