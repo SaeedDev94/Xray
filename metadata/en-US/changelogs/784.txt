@@ -1,0 +1,2 @@
+- Reload xray after links refresh
+- Show active profile name on new config
