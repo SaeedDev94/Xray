@@ -146,6 +146,7 @@ class TProxyService : VpnService() {
         val config = if (profile == null) null
         else getConfig(profile).also { if (it == null) stopVPN() else startXray(it) }
         if (profile == null || config != null) {
+            showToast(name)
             broadcastStart(NEW_CONFIG_SERVICE_ACTION_NAME, name)
             notificationManager.notify(VPN_SERVICE_NOTIFICATION_ID, createNotification(name))
         }
