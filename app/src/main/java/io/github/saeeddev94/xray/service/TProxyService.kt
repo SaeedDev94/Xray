@@ -140,6 +140,7 @@ class TProxyService : VpnService() {
     }
 
     private fun newConfig(profile: Profile?) {
+        if (!isRunning) return
         stopXray()
         val name = configName(profile)
         val config = if (profile == null) null
