@@ -80,6 +80,7 @@ class TProxyService : VpnService() {
 
     private var isRunning: Boolean = false
     private var tunDevice: ParcelFileDescriptor? = null
+    private var toast: Toast? = null
 
     private external fun TProxyStartService(configPath: String, fd: Int)
     private external fun TProxyStopService()
@@ -103,6 +104,7 @@ class TProxyService : VpnService() {
 
     override fun onDestroy() {
         scope.cancel()
+        toast = null
         super.onDestroy()
     }
 
@@ -320,7 +322,10 @@ class TProxyService : VpnService() {
 
     private fun showToast(message: String) {
         Handler(Looper.getMainLooper()).post {
-            Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+            toast?.cancel()
+            toast = Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).also {
+                it.show()
+            }
         }
     }
 
