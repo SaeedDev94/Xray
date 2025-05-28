@@ -18,6 +18,7 @@ import io.github.saeeddev94.xray.fragment.LinkFormFragment
 import io.github.saeeddev94.xray.helper.HttpHelper
 import io.github.saeeddev94.xray.helper.IntentHelper
 import io.github.saeeddev94.xray.helper.LinkHelper
+import io.github.saeeddev94.xray.service.TProxyService
 import io.github.saeeddev94.xray.viewmodel.LinkViewModel
 import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
@@ -114,6 +115,7 @@ class LinksManagerActivity : AppCompatActivity() {
                 }
             }
             withContext(Dispatchers.Main) {
+                TProxyService.newConfig(applicationContext)
                 loadingDialog.dismiss()
                 finish()
             }
