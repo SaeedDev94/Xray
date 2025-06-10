@@ -1,0 +1,2 @@
+- Xray-core: v25.6.8
+- New setting: Refresh Links On Open
