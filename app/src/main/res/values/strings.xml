@@ -69,6 +69,7 @@
     <string name="enableIpV6">Enable IPv6</string>
     <string name="socksUdp">Socks UDP</string>
     <string name="bootAutoStart">Boot Auto Start</string>
+    <string name="refreshLinksOnOpen">Refresh Links On Open</string>
 
     <!-- Advanced Settings -->
     <string name="primaryDns">Primary DNS (v4)</string>

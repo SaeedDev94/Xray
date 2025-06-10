@@ -73,6 +73,9 @@ class Settings(private val context: Context) {
     var bootAutoStart: Boolean
         get() = sharedPreferences.getBoolean("bootAutoStart", false)
         set(value) = sharedPreferences.edit { putBoolean("bootAutoStart", value) }
+    var refreshLinksOnOpen: Boolean
+        get() = sharedPreferences.getBoolean("refreshLinksOnOpen", false)
+        set(value) = sharedPreferences.edit { putBoolean("refreshLinksOnOpen", value) }
 
     /** Advanced */
     var primaryDns: String

@@ -69,6 +69,8 @@ class SettingsActivity : AppCompatActivity() {
         basic.findViewById<MaterialSwitch>(R.id.enableIpV6).isChecked = settings.enableIpV6
         basic.findViewById<MaterialSwitch>(R.id.socksUdp).isChecked = settings.socksUdp
         basic.findViewById<MaterialSwitch>(R.id.bootAutoStart).isChecked = settings.bootAutoStart
+        basic.findViewById<MaterialSwitch>(R.id.refreshLinksOnOpen).isChecked =
+            settings.refreshLinksOnOpen
     }
 
     @SuppressLint("SetTextI18n")
@@ -99,6 +101,8 @@ class SettingsActivity : AppCompatActivity() {
         settings.enableIpV6 = basic.findViewById<MaterialSwitch>(R.id.enableIpV6).isChecked
         settings.socksUdp = basic.findViewById<MaterialSwitch>(R.id.socksUdp).isChecked
         settings.bootAutoStart = basic.findViewById<MaterialSwitch>(R.id.bootAutoStart).isChecked
+        settings.refreshLinksOnOpen =
+            basic.findViewById<MaterialSwitch>(R.id.refreshLinksOnOpen).isChecked
 
         /** Advanced */
         settings.primaryDns = advanced.findViewById<EditText>(R.id.primaryDns).text.toString()
