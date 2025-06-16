@@ -115,6 +115,7 @@ class LinksManagerActivity : AppCompatActivity() {
                 }
             }
             withContext(Dispatchers.Main) {
+                settings.lastRefreshLinks = System.currentTimeMillis()
                 TProxyService.newConfig(applicationContext)
                 loadingDialog.dismiss()
                 finish()

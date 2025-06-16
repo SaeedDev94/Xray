@@ -176,7 +176,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             it.action = TProxyService.STATUS_VPN_SERVICE_ACTION_NAME
             startService(it)
         }
-        if (settings.refreshLinksOnOpen) refreshLinks()
+        if (settings.refreshLinksOnOpen) {
+            val interval = (settings.refreshLinksInterval * 60 * 1000).toLong()
+            val diff = System.currentTimeMillis() - settings.lastRefreshLinks
+            if (diff >= interval) refreshLinks()
+        }
     }
 
     override fun onStop() {
