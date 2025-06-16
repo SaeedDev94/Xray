@@ -65,6 +65,8 @@ class SettingsActivity : AppCompatActivity() {
         basic.findViewById<EditText>(R.id.geoSiteAddress).setText(settings.geoSiteAddress)
         basic.findViewById<EditText>(R.id.pingAddress).setText(settings.pingAddress)
         basic.findViewById<EditText>(R.id.pingTimeout).setText(settings.pingTimeout.toString())
+        basic.findViewById<EditText>(R.id.refreshLinksInterval)
+            .setText(settings.refreshLinksInterval.toString())
         basic.findViewById<MaterialSwitch>(R.id.bypassLan).isChecked = settings.bypassLan
         basic.findViewById<MaterialSwitch>(R.id.enableIpV6).isChecked = settings.enableIpV6
         basic.findViewById<MaterialSwitch>(R.id.socksUdp).isChecked = settings.socksUdp
@@ -97,6 +99,8 @@ class SettingsActivity : AppCompatActivity() {
         settings.geoSiteAddress = basic.findViewById<EditText>(R.id.geoSiteAddress).text.toString()
         settings.pingAddress = basic.findViewById<EditText>(R.id.pingAddress).text.toString()
         settings.pingTimeout = basic.findViewById<EditText>(R.id.pingTimeout).text.toString().toInt()
+        settings.refreshLinksInterval =
+            basic.findViewById<EditText>(R.id.refreshLinksInterval).text.toString().toInt()
         settings.bypassLan = basic.findViewById<MaterialSwitch>(R.id.bypassLan).isChecked
         settings.enableIpV6 = basic.findViewById<MaterialSwitch>(R.id.enableIpV6).isChecked
         settings.socksUdp = basic.findViewById<MaterialSwitch>(R.id.socksUdp).isChecked

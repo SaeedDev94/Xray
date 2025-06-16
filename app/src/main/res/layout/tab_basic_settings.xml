@@ -168,6 +168,23 @@
                     android:autofillHints="" />
             </LinearLayout>
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:baselineAligned="false">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/refreshLinksInterval"
+                android:labelFor="@id/refreshLinksInterval" />
+            <EditText
+                android:id="@+id/refreshLinksInterval"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:autofillHints="" />
+        </LinearLayout>
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/bypassLan"
             android:layout_width="match_parent"

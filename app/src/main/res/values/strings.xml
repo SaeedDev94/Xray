@@ -65,6 +65,7 @@
     <string name="geoSiteAddress">GeoSite Address</string>
     <string name="pingAddress">Ping Address</string>
     <string name="pingTimeout">Ping Timeout</string>
+    <string name="refreshLinksInterval">Refresh Links Interval</string>
     <string name="bypassLan">Bypass LAN (IPv4)</string>
     <string name="enableIpV6">Enable IPv6</string>
     <string name="socksUdp">Socks UDP</string>

@@ -18,6 +18,11 @@ class Settings(private val context: Context) {
         get() = sharedPreferences.getLong("selectedProfile", 0L)
         set(value) = sharedPreferences.edit { putLong("selectedProfile", value) }
 
+    /** The time of last refresh */
+    var lastRefreshLinks: Long
+        get() = sharedPreferences.getLong("lastRefreshLinks", 0L)
+        set(value) = sharedPreferences.edit { putLong("lastRefreshLinks", value) }
+
     /**
      * Apps Routing
      * Mode: true -> exclude, false -> include
@@ -61,6 +66,9 @@ class Settings(private val context: Context) {
     var pingTimeout: Int
         get() = sharedPreferences.getInt("pingTimeout", 5)
         set(value) = sharedPreferences.edit { putInt("pingTimeout", value) }
+    var refreshLinksInterval: Int
+        get() = sharedPreferences.getInt("refreshLinksInterval", 60)
+        set(value) = sharedPreferences.edit { putInt("refreshLinksInterval", value) }
     var bypassLan: Boolean
         get() = sharedPreferences.getBoolean("bypassLan", true)
         set(value) = sharedPreferences.edit { putBoolean("bypassLan", value) }
