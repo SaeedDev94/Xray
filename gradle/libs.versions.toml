@@ -1,7 +1,7 @@
 [versions]
 agp = "8.11.1"
-kotlin = "2.1.21"
-ksp = "2.1.21-2.0.2"
+kotlin = "2.2.0"
+ksp = "2.2.0-2.0.2"
 androidxActivityKtx = "1.10.1"
 androidxCoreKtx = "1.16.0"
 androidxAppCompat = "1.7.1"
