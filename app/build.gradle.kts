@@ -94,4 +94,5 @@ dependencies {
     implementation(libs.blacksquircle.ui.editorkit)
     implementation(libs.blacksquircle.ui.language.json)
     implementation(libs.google.material)
+    implementation(libs.topjohnwu.libsu.core)
 }

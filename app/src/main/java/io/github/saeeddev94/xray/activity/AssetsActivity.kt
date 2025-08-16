@@ -9,7 +9,9 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import com.topjohnwu.superuser.Shell
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.databinding.ActivityAssetsBinding
@@ -34,9 +36,17 @@ class AssetsActivity : AppCompatActivity() {
     private val geoSiteLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
         writeToFile(it, geoSiteFile())
     }
+    private val xrayCoreLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        val file = xrayCoreFile()
+        writeToFile(it, file) {
+            Shell.cmd("chown root:root ${file.absolutePath}").exec()
+            Shell.cmd("chmod +x ${file.absolutePath}").exec()
+        }
+    }
 
     private fun geoIpFile(): File = File(applicationContext.filesDir, "geoip.dat")
     private fun geoSiteFile(): File = File(applicationContext.filesDir, "geosite.dat")
+    private fun xrayCoreFile(): File = File(applicationContext.filesDir, "xray")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +76,10 @@ class AssetsActivity : AppCompatActivity() {
         }
         binding.geoSiteFile.setOnClickListener { geoSiteLauncher.launch(mimeType) }
         binding.geoSiteDelete.setOnClickListener { delete(geoSiteFile()) }
+
+        // Xray-core
+        binding.xrayCoreFile.setOnClickListener { runAsRoot { xrayCoreLauncher.launch(mimeType) } }
+        binding.xrayCoreDelete.setOnClickListener { delete(xrayCoreFile()) }
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -76,6 +90,22 @@ class AssetsActivity : AppCompatActivity() {
         } else {
             getString(R.string.noValue)
         }
+    }
+
+    private fun getXrayCoreVersion(file: File): String {
+        val exists = file.exists()
+        val invalid = {
+            delete(file)
+            "Invalid"
+        }
+        return if (exists) {
+            val result = Shell.cmd("${file.absolutePath} version").exec()
+            if (result.isSuccess) {
+                val txt = result.out.first()
+                val match = "Xray (.*?) ".toRegex().find(txt)
+                match?.groups?.get(1)?.value ?: invalid()
+            } else invalid()
+        } else getString(R.string.noValue)
     }
 
     private fun setAssetStatus() {
@@ -92,6 +122,12 @@ class AssetsActivity : AppCompatActivity() {
         binding.geoSiteSetup.visibility = if (geoSiteExists) View.GONE else View.VISIBLE
         binding.geoSiteInstalled.visibility = if (geoSiteExists) View.VISIBLE else View.GONE
         binding.geoSiteProgress.visibility = View.GONE
+
+        val xrayCore = xrayCoreFile()
+        val xrayCoreExists = xrayCore.exists()
+        binding.xrayCoreVersion.text = getXrayCoreVersion(xrayCore)
+        binding.xrayCoreSetup.isVisible = !xrayCoreExists
+        binding.xrayCoreInstalled.isVisible = xrayCoreExists
     }
 
     private fun download(url: String, file: File, setup: LinearLayout, progressBar: ProgressBar) {
@@ -125,7 +161,7 @@ class AssetsActivity : AppCompatActivity() {
         }).start()
     }
 
-    private fun writeToFile(uri: Uri?, file: File) {
+    private fun writeToFile(uri: Uri?, file: File, cb: (() -> Unit)? = null) {
         if (uri == null) return
         lifecycleScope.launch {
             contentResolver.openInputStream(uri).use { input ->
@@ -133,6 +169,7 @@ class AssetsActivity : AppCompatActivity() {
                     input?.copyTo(output)
                 }
             }
+            if (cb != null) cb()
             withContext(Dispatchers.Main) {
                 setAssetStatus()
             }
@@ -146,6 +183,15 @@ class AssetsActivity : AppCompatActivity() {
                 setAssetStatus()
             }
         }
+    }
+
+    private fun runAsRoot(cb: () -> Unit) {
+        val result = Shell.cmd("whoami").exec()
+        if (result.isSuccess && result.out.first() == "root") {
+            cb()
+            return
+        }
+        Toast.makeText(this, "Root Required", Toast.LENGTH_SHORT).show()
     }
 
 }
