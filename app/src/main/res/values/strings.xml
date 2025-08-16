@@ -14,6 +14,7 @@
     <string name="xrayLabel">XTLS/Xray-core</string>
     <string name="tun2socksLabel">heiher/hev-socks5-tunnel</string>
     <string name="tun2socksVersion">2.13.0</string>
+    <string name="xrayHelper">Asterisk4Magisk/XrayHelper</string>
     <string name="assets">Assets</string>
     <string name="links">Links</string>
     <string name="logs">Logs</string>

@@ -23,6 +23,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
+import kotlin.text.toRegex
 
 class AssetsActivity : AppCompatActivity() {
 
@@ -43,10 +44,18 @@ class AssetsActivity : AppCompatActivity() {
             Shell.cmd("chmod +x ${file.absolutePath}").exec()
         }
     }
+    private val xrayHelperLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        val file = xrayHelperFile()
+        writeToFile(it, file) {
+            Shell.cmd("chown root:root ${file.absolutePath}").exec()
+            Shell.cmd("chmod +x ${file.absolutePath}").exec()
+        }
+    }
 
     private fun geoIpFile(): File = File(applicationContext.filesDir, "geoip.dat")
     private fun geoSiteFile(): File = File(applicationContext.filesDir, "geosite.dat")
     private fun xrayCoreFile(): File = File(applicationContext.filesDir, "xray")
+    private fun xrayHelperFile(): File = File(applicationContext.filesDir, "xrayhelper")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,9 +86,13 @@ class AssetsActivity : AppCompatActivity() {
         binding.geoSiteFile.setOnClickListener { geoSiteLauncher.launch(mimeType) }
         binding.geoSiteDelete.setOnClickListener { delete(geoSiteFile()) }
 
-        // Xray-core
+        // XTLS/Xray-core
         binding.xrayCoreFile.setOnClickListener { runAsRoot { xrayCoreLauncher.launch(mimeType) } }
         binding.xrayCoreDelete.setOnClickListener { delete(xrayCoreFile()) }
+
+        // Asterisk4Magisk/XrayHelper
+        binding.xrayHelperFile.setOnClickListener { runAsRoot { xrayHelperLauncher.launch(mimeType) } }
+        binding.xrayHelperDelete.setOnClickListener { delete(xrayHelperFile()) }
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -93,16 +106,24 @@ class AssetsActivity : AppCompatActivity() {
     }
 
     private fun getXrayCoreVersion(file: File): String {
+        return getExeVersion(file, "${file.absolutePath} version", "Xray")
+    }
+
+    private fun getXrayHelperVersion(file: File): String {
+        return getExeVersion(file, "${file.absolutePath} --help", "XrayHelper")
+    }
+
+    private fun getExeVersion(file: File, cmd: String, name: String): String {
         val exists = file.exists()
         val invalid = {
             delete(file)
             "Invalid"
         }
         return if (exists) {
-            val result = Shell.cmd("${file.absolutePath} version").exec()
+            val result = Shell.cmd(cmd).exec()
             if (result.isSuccess) {
                 val txt = result.out.first()
-                val match = "Xray (.*?) ".toRegex().find(txt)
+                val match = "$name (.*?) ".toRegex().find(txt)
                 match?.groups?.get(1)?.value ?: invalid()
             } else invalid()
         } else getString(R.string.noValue)
@@ -128,6 +149,12 @@ class AssetsActivity : AppCompatActivity() {
         binding.xrayCoreVersion.text = getXrayCoreVersion(xrayCore)
         binding.xrayCoreSetup.isVisible = !xrayCoreExists
         binding.xrayCoreInstalled.isVisible = xrayCoreExists
+
+        val xrayHelper = xrayHelperFile()
+        val xrayHelperExists = xrayHelper.exists()
+        binding.xrayHelperVersion.text = getXrayHelperVersion(xrayHelper)
+        binding.xrayHelperSetup.isVisible = !xrayHelperExists
+        binding.xrayHelperInstalled.isVisible = xrayHelperExists
     }
 
     private fun download(url: String, file: File, setup: LinearLayout, progressBar: ProgressBar) {
