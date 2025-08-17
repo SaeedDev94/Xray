@@ -84,9 +84,6 @@ class Settings(private val context: Context) {
     var refreshLinksOnOpen: Boolean
         get() = sharedPreferences.getBoolean("refreshLinksOnOpen", false)
         set(value) = sharedPreferences.edit { putBoolean("refreshLinksOnOpen", value) }
-    var transparentProxy: Boolean
-        get() = sharedPreferences.getBoolean("transparentProxy", false)
-        set(value) = sharedPreferences.edit { putBoolean("transparentProxy", value) }
 
     /** Advanced */
     var primaryDns: String
@@ -119,6 +116,9 @@ class Settings(private val context: Context) {
     var tunPrefixV6: Int
         get() = sharedPreferences.getInt("tunPrefixV6", 128)
         set(value) = sharedPreferences.edit { putInt("tunPrefixV6", value) }
+    var transparentProxy: Boolean
+        get() = sharedPreferences.getBoolean("transparentProxy", false)
+        set(value) = sharedPreferences.edit { putBoolean("transparentProxy", value) }
 
     fun xrayCoreFile(): File = File(context.filesDir, "xray")
     fun xrayHelperFile(): File = File(context.filesDir, "xrayhelper")

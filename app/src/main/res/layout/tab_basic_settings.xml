@@ -210,10 +210,5 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/refreshLinksOnOpen" />
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/transparentProxy"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/transparentProxy" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
