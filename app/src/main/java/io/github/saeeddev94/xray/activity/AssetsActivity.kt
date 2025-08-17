@@ -38,14 +38,14 @@ class AssetsActivity : AppCompatActivity() {
         writeToFile(it, geoSiteFile())
     }
     private val xrayCoreLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
-        val file = xrayCoreFile()
+        val file = settings.xrayCoreFile()
         writeToFile(it, file) {
             Shell.cmd("chown root:root ${file.absolutePath}").exec()
             Shell.cmd("chmod +x ${file.absolutePath}").exec()
         }
     }
     private val xrayHelperLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
-        val file = xrayHelperFile()
+        val file = settings.xrayHelperFile()
         writeToFile(it, file) {
             Shell.cmd("chown root:root ${file.absolutePath}").exec()
             Shell.cmd("chmod +x ${file.absolutePath}").exec()
@@ -54,8 +54,6 @@ class AssetsActivity : AppCompatActivity() {
 
     private fun geoIpFile(): File = File(applicationContext.filesDir, "geoip.dat")
     private fun geoSiteFile(): File = File(applicationContext.filesDir, "geosite.dat")
-    private fun xrayCoreFile(): File = File(applicationContext.filesDir, "xray")
-    private fun xrayHelperFile(): File = File(applicationContext.filesDir, "xrayhelper")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,11 +86,11 @@ class AssetsActivity : AppCompatActivity() {
 
         // XTLS/Xray-core
         binding.xrayCoreFile.setOnClickListener { runAsRoot { xrayCoreLauncher.launch(mimeType) } }
-        binding.xrayCoreDelete.setOnClickListener { delete(xrayCoreFile()) }
+        binding.xrayCoreDelete.setOnClickListener { delete(settings.xrayCoreFile()) }
 
         // Asterisk4Magisk/XrayHelper
         binding.xrayHelperFile.setOnClickListener { runAsRoot { xrayHelperLauncher.launch(mimeType) } }
-        binding.xrayHelperDelete.setOnClickListener { delete(xrayHelperFile()) }
+        binding.xrayHelperDelete.setOnClickListener { delete(settings.xrayHelperFile()) }
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -144,13 +142,13 @@ class AssetsActivity : AppCompatActivity() {
         binding.geoSiteInstalled.visibility = if (geoSiteExists) View.VISIBLE else View.GONE
         binding.geoSiteProgress.visibility = View.GONE
 
-        val xrayCore = xrayCoreFile()
+        val xrayCore = settings.xrayCoreFile()
         val xrayCoreExists = xrayCore.exists()
         binding.xrayCoreVersion.text = getXrayCoreVersion(xrayCore)
         binding.xrayCoreSetup.isVisible = !xrayCoreExists
         binding.xrayCoreInstalled.isVisible = xrayCoreExists
 
-        val xrayHelper = xrayHelperFile()
+        val xrayHelper = settings.xrayHelperFile()
         val xrayHelperExists = xrayHelper.exists()
         binding.xrayHelperVersion.text = getXrayHelperVersion(xrayHelper)
         binding.xrayHelperSetup.isVisible = !xrayHelperExists

@@ -117,6 +117,8 @@ class Settings(private val context: Context) {
         get() = sharedPreferences.getInt("tunPrefixV6", 128)
         set(value) = sharedPreferences.edit { putInt("tunPrefixV6", value) }
 
+    fun xrayCoreFile(): File = File(context.filesDir, "xray")
+    fun xrayHelperFile(): File = File(context.filesDir, "xrayhelper")
     fun testConfig(): File = File(context.filesDir, "test.json")
     fun xrayConfig(): File = File(context.filesDir, "config.json")
     fun tun2socksConfig(): File = File(context.filesDir, "tun2socks.yml")
