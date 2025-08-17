@@ -72,7 +72,6 @@
     <string name="socksUdp">Socks UDP</string>
     <string name="bootAutoStart">Boot Auto Start</string>
     <string name="refreshLinksOnOpen">Refresh Links On Open</string>
-    <string name="transparentProxy">Transparent Proxy</string>
 
     <!-- Advanced Settings -->
     <string name="primaryDns">Primary DNS (v4)</string>
@@ -85,4 +84,7 @@
     <string name="tunPrefix">Prefix</string>
     <string name="tunAddressV6">Tun Address (IPv6)</string>
     <string name="tunPrefixV6">Prefix</string>
+    <string name="tproxyAddress">TPROXY Address</string>
+    <string name="tproxyPort">TPROXY Port</string>
+    <string name="transparentProxy">Transparent Proxy</string>
 </resources>

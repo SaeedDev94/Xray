@@ -116,6 +116,12 @@ class Settings(private val context: Context) {
     var tunPrefixV6: Int
         get() = sharedPreferences.getInt("tunPrefixV6", 128)
         set(value) = sharedPreferences.edit { putInt("tunPrefixV6", value) }
+    var tproxyAddress: String
+        get() = sharedPreferences.getString("tproxyAddress", "127.0.0.1")!!
+        set(value) = sharedPreferences.edit { putString("tproxyAddress", value) }
+    var tproxyPort: Int
+        get() = sharedPreferences.getInt("tproxyPort", 10888)
+        set(value) = sharedPreferences.edit { putInt("tproxyPort", value) }
     var transparentProxy: Boolean
         get() = sharedPreferences.getBoolean("transparentProxy", false)
         set(value) = sharedPreferences.edit { putBoolean("transparentProxy", value) }

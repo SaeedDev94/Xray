@@ -207,17 +207,57 @@
                     android:inputType="number"
                     android:autofillHints="" />
             </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:baselineAligned="false">
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/transparentProxy"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/transparentProxy" />
+                    android:text="@string/tproxyAddress"
+                    android:labelFor="@id/tproxyAddress" />
+                <EditText
+                    android:id="@+id/tproxyAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:autofillHints="" />
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tproxyPort"
+                    android:labelFor="@id/tproxyPort" />
+                <EditText
+                    android:id="@+id/tproxyPort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:autofillHints="" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:baselineAligned="false">
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/transparentProxy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/transparentProxy" />
         </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
