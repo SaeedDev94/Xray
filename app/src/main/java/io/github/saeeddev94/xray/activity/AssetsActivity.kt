@@ -39,17 +39,11 @@ class AssetsActivity : AppCompatActivity() {
     }
     private val xrayCoreLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
         val file = settings.xrayCoreFile()
-        writeToFile(it, file) {
-            Shell.cmd("chown root:root ${file.absolutePath}").exec()
-            Shell.cmd("chmod +x ${file.absolutePath}").exec()
-        }
+        writeToFile(it, file) { makeExeFile(file) }
     }
     private val xrayHelperLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
         val file = settings.xrayHelperFile()
-        writeToFile(it, file) {
-            Shell.cmd("chown root:root ${file.absolutePath}").exec()
-            Shell.cmd("chmod +x ${file.absolutePath}").exec()
-        }
+        writeToFile(it, file) { makeExeFile(file) }
     }
 
     private fun geoIpFile(): File = File(applicationContext.filesDir, "geoip.dat")
@@ -199,6 +193,11 @@ class AssetsActivity : AppCompatActivity() {
                 setAssetStatus()
             }
         }
+    }
+
+    private fun makeExeFile(file: File) {
+        Shell.cmd("chown root:root ${file.absolutePath}").exec()
+        Shell.cmd("chmod +x ${file.absolutePath}").exec()
     }
 
     private fun delete(file: File) {
