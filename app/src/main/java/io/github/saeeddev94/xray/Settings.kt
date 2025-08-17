@@ -84,6 +84,9 @@ class Settings(private val context: Context) {
     var refreshLinksOnOpen: Boolean
         get() = sharedPreferences.getBoolean("refreshLinksOnOpen", false)
         set(value) = sharedPreferences.edit { putBoolean("refreshLinksOnOpen", value) }
+    var transparentProxy: Boolean
+        get() = sharedPreferences.getBoolean("transparentProxy", false)
+        set(value) = sharedPreferences.edit { putBoolean("transparentProxy", value) }
 
     /** Advanced */
     var primaryDns: String

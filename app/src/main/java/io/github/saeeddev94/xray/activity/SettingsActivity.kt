@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.materialswitch.MaterialSwitch
 import io.github.saeeddev94.xray.R
@@ -49,7 +50,7 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.saveSettings -> saveSettings()
+            R.id.saveSettings -> applySettings()
             else -> finish()
         }
         return true
@@ -73,6 +74,8 @@ class SettingsActivity : AppCompatActivity() {
         basic.findViewById<MaterialSwitch>(R.id.bootAutoStart).isChecked = settings.bootAutoStart
         basic.findViewById<MaterialSwitch>(R.id.refreshLinksOnOpen).isChecked =
             settings.refreshLinksOnOpen
+        basic.findViewById<MaterialSwitch>(R.id.transparentProxy).isChecked =
+            settings.transparentProxy
     }
 
     @SuppressLint("SetTextI18n")
@@ -87,6 +90,20 @@ class SettingsActivity : AppCompatActivity() {
         advanced.findViewById<EditText>(R.id.tunPrefix).setText(settings.tunPrefix.toString())
         advanced.findViewById<EditText>(R.id.tunAddressV6).setText(settings.tunAddressV6)
         advanced.findViewById<EditText>(R.id.tunPrefixV6).setText(settings.tunPrefixV6.toString())
+    }
+
+    private fun applySettings() {
+        val transparentProxy = basic.findViewById<MaterialSwitch>(R.id.transparentProxy).isChecked
+        if (
+            transparentProxy &&
+            (!settings.xrayCoreFile().exists() || !settings.xrayHelperFile().exists())
+        ) {
+            Toast.makeText(
+                applicationContext, "Install the assets", Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+        saveSettings()
     }
 
     private fun saveSettings() {
@@ -107,6 +124,8 @@ class SettingsActivity : AppCompatActivity() {
         settings.bootAutoStart = basic.findViewById<MaterialSwitch>(R.id.bootAutoStart).isChecked
         settings.refreshLinksOnOpen =
             basic.findViewById<MaterialSwitch>(R.id.refreshLinksOnOpen).isChecked
+        settings.transparentProxy =
+            basic.findViewById<MaterialSwitch>(R.id.transparentProxy).isChecked
 
         /** Advanced */
         settings.primaryDns = advanced.findViewById<EditText>(R.id.primaryDns).text.toString()
