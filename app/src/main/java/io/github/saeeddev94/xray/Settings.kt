@@ -125,4 +125,5 @@ class Settings(private val context: Context) {
     fun testConfig(): File = File(context.filesDir, "test.json")
     fun xrayConfig(): File = File(context.filesDir, "config.json")
     fun tun2socksConfig(): File = File(context.filesDir, "tun2socks.yml")
+    fun xrayHelperConfig(): File = File(context.filesDir, "config.yml")
 }
