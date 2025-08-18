@@ -268,6 +268,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun onToggleButtonClick() {
+        if (settings.transparentProxy) {
+            toggleVpnService()
+            return
+        }
+
         if (!hasPostNotification()) return
         VpnService.prepare(this).also {
             if (it == null) {
@@ -283,7 +288,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             TProxyService.stop(applicationContext)
             return
         }
-        TProxyService.start(applicationContext, false)
+        TProxyService.start(
+            applicationContext, false, !settings.transparentProxy
+        )
     }
 
     private fun profileSelect(index: Int, profile: ProfileList) {
@@ -367,7 +374,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun ping() {
         if (!isRunning) return
         binding.pingResult.text = getString(R.string.pingTesting)
-        HttpHelper(lifecycleScope, settings).measureDelay { binding.pingResult.text = it }
+        HttpHelper(lifecycleScope, settings).measureDelay(!settings.transparentProxy) {
+            binding.pingResult.text = it
+        }
     }
 
     private fun hasPostNotification(): Boolean {

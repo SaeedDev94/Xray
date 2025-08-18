@@ -126,11 +126,12 @@ class Settings(private val context: Context) {
         get() = sharedPreferences.getBoolean("transparentProxy", false)
         set(value) = sharedPreferences.edit { putBoolean("transparentProxy", value) }
 
-    fun xrayCoreFile(): File = File(context.filesDir, "xray")
-    fun xrayHelperFile(): File = File(context.filesDir, "xrayhelper")
-    fun testConfig(): File = File(context.filesDir, "test.json")
-    fun xrayConfig(): File = File(context.filesDir, "config.json")
-    fun tun2socksConfig(): File = File(context.filesDir, "tun2socks.yml")
-    fun xrayHelperConfig(): File = File(context.filesDir, "config.yml")
-    fun xrayCorePid(): File = File(context.filesDir, "core.pid")
+    fun baseDir(): File = context.filesDir
+    fun xrayCoreFile(): File = File(baseDir(), "xray")
+    fun xrayHelperFile(): File = File(baseDir(), "xrayhelper")
+    fun testConfig(): File = File(baseDir(), "test.json")
+    fun xrayConfig(): File = File(baseDir(), "config.json")
+    fun tun2socksConfig(): File = File(baseDir(), "tun2socks.yml")
+    fun xrayHelperConfig(): File = File(baseDir(), "config.yml")
+    fun xrayCorePid(): File = File(baseDir(), "core.pid")
 }

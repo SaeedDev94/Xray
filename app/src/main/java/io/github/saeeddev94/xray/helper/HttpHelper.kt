@@ -62,10 +62,10 @@ class HttpHelper(
         }
     }
 
-    fun measureDelay(callback: (result: String) -> Unit) {
+    fun measureDelay(proxy: Boolean, callback: (result: String) -> Unit) {
         scope.launch(Dispatchers.IO) {
             val start = System.currentTimeMillis()
-            val connection = getConnection()
+            val connection = getConnection(proxy)
             var result = "HTTP {status}, {delay} ms"
 
             result = try {
@@ -86,12 +86,12 @@ class HttpHelper(
         }
     }
 
-    private suspend fun getConnection(): HttpURLConnection {
+    private suspend fun getConnection(withProxy: Boolean): HttpURLConnection {
         return withContext(Dispatchers.IO) {
             val link = settings.pingAddress
             val method = "HEAD"
             val address = InetSocketAddress(settings.socksAddress, settings.socksPort.toInt())
-            val proxy = Proxy(Proxy.Type.SOCKS, address)
+            val proxy = if (withProxy) Proxy(Proxy.Type.SOCKS, address) else null
             val timeout = settings.pingTimeout * 1000
 
             getConnection(link, method, proxy, timeout)

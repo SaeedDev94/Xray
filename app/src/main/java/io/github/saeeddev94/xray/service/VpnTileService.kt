@@ -9,8 +9,11 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.core.content.edit
 import io.github.saeeddev94.xray.R
+import io.github.saeeddev94.xray.Settings
 
 class VpnTileService : TileService() {
+
+    private val settings by lazy { Settings(applicationContext) }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         requestListeningState(this, ComponentName(this, VpnTileService::class.java))
@@ -32,8 +35,13 @@ class VpnTileService : TileService() {
 
     override fun onClick() {
         super.onClick()
+        val transparentProxy = settings.transparentProxy
         when (qsTile?.state) {
-            Tile.STATE_INACTIVE -> TProxyService.start(applicationContext)
+            Tile.STATE_INACTIVE -> {
+                TProxyService.start(
+                    applicationContext, !transparentProxy, !transparentProxy
+                )
+            }
             Tile.STATE_ACTIVE -> TProxyService.stop(applicationContext)
         }
     }

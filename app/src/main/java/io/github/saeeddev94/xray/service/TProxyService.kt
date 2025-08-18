@@ -51,7 +51,7 @@ class TProxyService : VpnService() {
         fun stop(context: Context) = startCommand(context, STOP_VPN_SERVICE_ACTION_NAME)
         fun newConfig(context: Context) = startCommand(context, NEW_CONFIG_SERVICE_ACTION_NAME)
 
-        fun start(context: Context, check: Boolean = true) {
+        fun start(context: Context, check: Boolean, foreground: Boolean) {
             if (check && prepare(context) != null) {
                 Log.e(
                     "TProxyService",
@@ -59,7 +59,7 @@ class TProxyService : VpnService() {
                 )
                 return
             }
-            startCommand(context, START_VPN_SERVICE_ACTION_NAME, true)
+            startCommand(context, START_VPN_SERVICE_ACTION_NAME, foreground)
         }
 
         private fun startCommand(context: Context, name: String, foreground: Boolean = false) {
@@ -142,7 +142,7 @@ class TProxyService : VpnService() {
 
     private fun start(profile: Profile?) {
         if (profile == null) {
-            startVPN(null)
+            if (!settings.transparentProxy) startVPN(null)
         } else {
             getConfig(profile)?.let {
                 startXray(it)
@@ -152,7 +152,7 @@ class TProxyService : VpnService() {
     }
 
     private fun newConfig(profile: Profile?) {
-        if (!isRunning) return
+        if (!getIsRunning() || (profile == null && settings.transparentProxy)) return
         stopXray()
         val name = configName(profile)
         val config = if (profile == null) null
@@ -160,19 +160,39 @@ class TProxyService : VpnService() {
         if (profile == null || config != null) {
             showToast(name)
             broadcastStart(NEW_CONFIG_SERVICE_ACTION_NAME, name)
-            notificationManager.notify(VPN_SERVICE_NOTIFICATION_ID, createNotification(name))
+            if (!settings.transparentProxy) {
+                notificationManager.notify(
+                    VPN_SERVICE_NOTIFICATION_ID,
+                    createNotification(name)
+                )
+            }
         }
     }
 
     private fun startXray(config: XrayConfig) {
+        if (settings.transparentProxy) {
+            transparentProxyHelper.startService()
+            return
+        }
         XrayCore.start(config.dir, config.file)
     }
 
     private fun stopXray() {
+        if (settings.transparentProxy) {
+            transparentProxyHelper.stopService()
+            return
+        }
         XrayCore.stop()
     }
 
     private fun startVPN(profile: Profile?) {
+        if (settings.transparentProxy) {
+            transparentProxyHelper.enableProxy()
+            broadcastStart(START_VPN_SERVICE_ACTION_NAME, configName(profile))
+            showToast("Start VPN")
+            return
+        }
+
         /** Create Tun */
         val tun = Builder()
         val tunName = getString(R.string.appName)
@@ -260,6 +280,14 @@ class TProxyService : VpnService() {
     }
 
     private fun stopVPN() {
+        if (settings.transparentProxy) {
+            transparentProxyHelper.disableProxy()
+            stopXray()
+            broadcastStop()
+            showToast("Stop VPN")
+            return
+        }
+
         TProxyStopService()
         stopXray()
         runCatching { tunDevice?.close() }
