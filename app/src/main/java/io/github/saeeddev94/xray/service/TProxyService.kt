@@ -23,6 +23,7 @@ import io.github.saeeddev94.xray.activity.MainActivity
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.dto.XrayConfig
 import io.github.saeeddev94.xray.helper.FileHelper
+import io.github.saeeddev94.xray.helper.TransparentProxyHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -75,6 +76,7 @@ class TProxyService : VpnService() {
 
     private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
     private val settings by lazy { Settings(applicationContext) }
+    private val transparentProxyHelper by lazy { TransparentProxyHelper(settings) }
     private val profileRepository by lazy { Xray::class.cast(application).profileRepository }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -277,6 +279,11 @@ class TProxyService : VpnService() {
     }
 
     private fun broadcastStatus() {
+        val isRunning = if (settings.transparentProxy) {
+            transparentProxyHelper.isRunning()
+        } else {
+            this.isRunning
+        }
         Intent(STATUS_VPN_SERVICE_ACTION_NAME).also {
             it.`package` = BuildConfig.APPLICATION_ID
             it.putExtra("isRunning", isRunning)
