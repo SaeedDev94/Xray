@@ -112,6 +112,14 @@ class TProxyService : VpnService() {
 
     private fun configName(profile: Profile?): String = profile?.name ?: settings.tunName
 
+    private fun getIsRunning(): Boolean {
+        return if (settings.transparentProxy) {
+            transparentProxyHelper.isRunning()
+        } else {
+            isRunning
+        }
+    }
+
     private suspend fun getProfile(): Profile? {
         return if (settings.selectedProfile == 0L) {
             null
@@ -279,14 +287,9 @@ class TProxyService : VpnService() {
     }
 
     private fun broadcastStatus() {
-        val isRunning = if (settings.transparentProxy) {
-            transparentProxyHelper.isRunning()
-        } else {
-            this.isRunning
-        }
         Intent(STATUS_VPN_SERVICE_ACTION_NAME).also {
             it.`package` = BuildConfig.APPLICATION_ID
-            it.putExtra("isRunning", isRunning)
+            it.putExtra("isRunning", getIsRunning())
             sendBroadcast(it)
         }
     }
