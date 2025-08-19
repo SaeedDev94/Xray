@@ -288,9 +288,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             TProxyService.stop(applicationContext)
             return
         }
-        TProxyService.start(
-            applicationContext, false, !settings.transparentProxy
-        )
+        TProxyService.start(applicationContext, false)
     }
 
     private fun profileSelect(index: Int, profile: ProfileList) {

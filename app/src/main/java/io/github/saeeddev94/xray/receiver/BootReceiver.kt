@@ -13,10 +13,10 @@ class BootReceiver : BroadcastReceiver() {
         val settings = Settings(context)
         val transparentProxy = settings.transparentProxy
         val xrayCorePid = settings.xrayCorePid()
+        val networkMonitorPid = settings.networkMonitorPid()
         if (xrayCorePid.exists()) xrayCorePid.delete()
+        if (networkMonitorPid.exists()) networkMonitorPid.delete()
         if (!settings.bootAutoStart) return
-        TProxyService.start(
-            context, !transparentProxy, !transparentProxy
-        )
+        TProxyService.start(context, !transparentProxy)
     }
 }

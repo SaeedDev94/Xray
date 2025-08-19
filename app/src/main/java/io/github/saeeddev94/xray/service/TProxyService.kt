@@ -39,11 +39,12 @@ class TProxyService : VpnService() {
             System.loadLibrary("hev-socks5-tunnel")
         }
 
-        const val STATUS_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStatus"
-        const val STOP_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStop"
-        const val START_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStart"
-        const val NEW_CONFIG_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.NewConfig"
-        const val NETWORK_UPDATE_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.NetworkUpdate"
+        const val PKG_NAME = BuildConfig.APPLICATION_ID
+        const val STATUS_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.VpnStatus"
+        const val STOP_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.VpnStop"
+        const val START_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.VpnStart"
+        const val NEW_CONFIG_SERVICE_ACTION_NAME = "$PKG_NAME.NewConfig"
+        const val NETWORK_UPDATE_SERVICE_ACTION_NAME = "$PKG_NAME.NetworkUpdate"
         private const val VPN_SERVICE_NOTIFICATION_ID = 1
         private const val OPEN_MAIN_ACTIVITY_ACTION_ID = 2
         private const val STOP_VPN_SERVICE_ACTION_ID = 3
@@ -53,7 +54,7 @@ class TProxyService : VpnService() {
         fun newConfig(context: Context) = startCommand(context, NEW_CONFIG_SERVICE_ACTION_NAME)
         fun networkUpdate(context: Context) = startCommand(context, NETWORK_UPDATE_SERVICE_ACTION_NAME)
 
-        fun start(context: Context, check: Boolean, foreground: Boolean) {
+        fun start(context: Context, check: Boolean) {
             if (check && prepare(context) != null) {
                 Log.e(
                     "TProxyService",
@@ -61,7 +62,7 @@ class TProxyService : VpnService() {
                 )
                 return
             }
-            startCommand(context, START_VPN_SERVICE_ACTION_NAME, foreground)
+            startCommand(context, START_VPN_SERVICE_ACTION_NAME, true)
         }
 
         private fun startCommand(context: Context, name: String, foreground: Boolean = false) {
@@ -78,7 +79,7 @@ class TProxyService : VpnService() {
 
     private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
     private val settings by lazy { Settings(applicationContext) }
-    private val transparentProxyHelper by lazy { TransparentProxyHelper(settings) }
+    private val transparentProxyHelper by lazy { TransparentProxyHelper(this, settings) }
     private val profileRepository by lazy { Xray::class.cast(application).profileRepository }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -96,8 +97,8 @@ class TProxyService : VpnService() {
                 START_VPN_SERVICE_ACTION_NAME -> start(getProfile())
                 NEW_CONFIG_SERVICE_ACTION_NAME -> newConfig(getProfile())
                 STOP_VPN_SERVICE_ACTION_NAME -> stopVPN()
-                NETWORK_UPDATE_SERVICE_ACTION_NAME -> networkUpdate()
                 STATUS_VPN_SERVICE_ACTION_NAME -> broadcastStatus()
+                NETWORK_UPDATE_SERVICE_ACTION_NAME -> transparentProxyHelper.networkUpdate()
             }
         }
         return START_STICKY
@@ -143,10 +144,6 @@ class TProxyService : VpnService() {
         return XrayConfig(dir.absolutePath, config.absolutePath)
     }
 
-    private fun networkUpdate() {
-        // TODO
-    }
-
     private fun start(profile: Profile?) {
         if (profile == null) {
             if (!settings.transparentProxy) startVPN(null)
@@ -167,12 +164,7 @@ class TProxyService : VpnService() {
         if (profile == null || config != null) {
             showToast(name)
             broadcastStart(NEW_CONFIG_SERVICE_ACTION_NAME, name)
-            if (!settings.transparentProxy) {
-                notificationManager.notify(
-                    VPN_SERVICE_NOTIFICATION_ID,
-                    createNotification(name)
-                )
-            }
+            notificationManager.notify(VPN_SERVICE_NOTIFICATION_ID, createNotification(name))
         }
     }
 
@@ -195,86 +187,84 @@ class TProxyService : VpnService() {
     private fun startVPN(profile: Profile?) {
         if (settings.transparentProxy) {
             transparentProxyHelper.enableProxy()
-            broadcastStart(START_VPN_SERVICE_ACTION_NAME, configName(profile))
-            showToast("Start VPN")
-            return
-        }
-
-        /** Create Tun */
-        val tun = Builder()
-        val tunName = getString(R.string.appName)
-
-        /** Basic tun config */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) tun.setMetered(false)
-        tun.setMtu(settings.tunMtu)
-        tun.setSession(tunName)
-
-        /** IPv4 */
-        tun.addAddress(settings.tunAddress, settings.tunPrefix)
-        tun.addDnsServer(settings.primaryDns)
-        tun.addDnsServer(settings.secondaryDns)
-
-        /** IPv6 */
-        if (settings.enableIpV6) {
-            tun.addAddress(settings.tunAddressV6, settings.tunPrefixV6)
-            tun.addDnsServer(settings.primaryDnsV6)
-            tun.addDnsServer(settings.secondaryDnsV6)
-            tun.addRoute("::", 0)
-        }
-
-        /** Bypass LAN (IPv4) */
-        if (settings.bypassLan) {
-            resources.getStringArray(R.array.publicIpAddresses).forEach {
-                val address = it.split('/')
-                tun.addRoute(address[0], address[1].toInt())
-            }
+            transparentProxyHelper.monitorNetwork()
         } else {
-            tun.addRoute("0.0.0.0", 0)
+            /** Create Tun */
+            val tun = Builder()
+            val tunName = getString(R.string.appName)
+
+            /** Basic tun config */
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) tun.setMetered(false)
+            tun.setMtu(settings.tunMtu)
+            tun.setSession(tunName)
+
+            /** IPv4 */
+            tun.addAddress(settings.tunAddress, settings.tunPrefix)
+            tun.addDnsServer(settings.primaryDns)
+            tun.addDnsServer(settings.secondaryDns)
+
+            /** IPv6 */
+            if (settings.enableIpV6) {
+                tun.addAddress(settings.tunAddressV6, settings.tunPrefixV6)
+                tun.addDnsServer(settings.primaryDnsV6)
+                tun.addDnsServer(settings.secondaryDnsV6)
+                tun.addRoute("::", 0)
+            }
+
+            /** Bypass LAN (IPv4) */
+            if (settings.bypassLan) {
+                resources.getStringArray(R.array.publicIpAddresses).forEach {
+                    val address = it.split('/')
+                    tun.addRoute(address[0], address[1].toInt())
+                }
+            } else {
+                tun.addRoute("0.0.0.0", 0)
+            }
+
+            /** Apps Routing */
+            if (settings.appsRoutingMode) tun.addDisallowedApplication(applicationContext.packageName)
+            settings.appsRouting.split("\n").forEach {
+                val packageName = it.trim()
+                if (packageName.isBlank()) return@forEach
+                if (settings.appsRoutingMode) tun.addDisallowedApplication(packageName)
+                else tun.addAllowedApplication(packageName)
+            }
+
+            /** Build tun device */
+            tunDevice = tun.establish()
+
+            /** Check tun device */
+            if (tunDevice == null) {
+                Log.e("TProxyService", "tun#establish failed")
+                return
+            }
+
+            /** Create, Update tun2socks config */
+            val tun2socksConfig = arrayListOf(
+                "tunnel:",
+                "  name: $tunName",
+                "  mtu: ${settings.tunMtu}",
+                "socks5:",
+                "  address: ${settings.socksAddress}",
+                "  port: ${settings.socksPort}",
+            )
+            if (
+                settings.socksUsername.trim().isNotEmpty() &&
+                settings.socksPassword.trim().isNotEmpty()
+            ) {
+                tun2socksConfig.add("  username: ${settings.socksUsername}")
+                tun2socksConfig.add("  password: ${settings.socksPassword}")
+            }
+            tun2socksConfig.add(if (settings.socksUdp) "  udp: udp" else "  udp: tcp")
+            tun2socksConfig.add("")
+            FileHelper.createOrUpdate(
+                settings.tun2socksConfig(),
+                tun2socksConfig.joinToString("\n")
+            )
+
+            /** Start tun2socks */
+            TProxyStartService(settings.tun2socksConfig().absolutePath, tunDevice!!.fd)
         }
-
-        /** Apps Routing */
-        if (settings.appsRoutingMode) tun.addDisallowedApplication(applicationContext.packageName)
-        settings.appsRouting.split("\n").forEach {
-            val packageName = it.trim()
-            if (packageName.isBlank()) return@forEach
-            if (settings.appsRoutingMode) tun.addDisallowedApplication(packageName)
-            else tun.addAllowedApplication(packageName)
-        }
-
-        /** Build tun device */
-        tunDevice = tun.establish()
-
-        /** Check tun device */
-        if (tunDevice == null) {
-            Log.e("TProxyService", "tun#establish failed")
-            return
-        }
-
-        /** Create, Update tun2socks config */
-        val tun2socksConfig = arrayListOf(
-            "tunnel:",
-            "  name: $tunName",
-            "  mtu: ${settings.tunMtu}",
-            "socks5:",
-            "  address: ${settings.socksAddress}",
-            "  port: ${settings.socksPort}",
-        )
-        if (
-            settings.socksUsername.trim().isNotEmpty() &&
-            settings.socksPassword.trim().isNotEmpty()
-        ) {
-            tun2socksConfig.add("  username: ${settings.socksUsername}")
-            tun2socksConfig.add("  password: ${settings.socksPassword}")
-        }
-        tun2socksConfig.add(if (settings.socksUdp) "  udp: udp" else "  udp: tcp")
-        tun2socksConfig.add("")
-        FileHelper.createOrUpdate(
-            settings.tun2socksConfig(),
-            tun2socksConfig.joinToString("\n")
-        )
-
-        /** Start tun2socks */
-        TProxyStartService(settings.tun2socksConfig().absolutePath, tunDevice!!.fd)
 
         /** Service Notification */
         val name = configName(profile)
@@ -289,19 +279,15 @@ class TProxyService : VpnService() {
     private fun stopVPN() {
         if (settings.transparentProxy) {
             transparentProxyHelper.disableProxy()
-            stopXray()
-            broadcastStop()
-            showToast("Stop VPN")
-            return
+        } else {
+            TProxyStopService()
+            runCatching { tunDevice?.close() }
+            tunDevice = null
+            isRunning = false
         }
-
-        TProxyStopService()
         stopXray()
-        runCatching { tunDevice?.close() }
         stopForeground(STOP_FOREGROUND_REMOVE)
         showToast("Stop VPN")
-        tunDevice = null
-        isRunning = false
         broadcastStop()
         stopSelf()
     }

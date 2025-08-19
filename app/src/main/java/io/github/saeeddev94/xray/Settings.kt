@@ -122,6 +122,9 @@ class Settings(private val context: Context) {
     var tproxyPort: Int
         get() = sharedPreferences.getInt("tproxyPort", 10888)
         set(value) = sharedPreferences.edit { putInt("tproxyPort", value) }
+    var tproxyAutoConnect: Boolean
+        get() = sharedPreferences.getBoolean("tproxyAutoConnect", false)
+        set(value) = sharedPreferences.edit { putBoolean("tproxyAutoConnect", value) }
     var transparentProxy: Boolean
         get() = sharedPreferences.getBoolean("transparentProxy", false)
         set(value) = sharedPreferences.edit { putBoolean("transparentProxy", value) }
@@ -134,4 +137,6 @@ class Settings(private val context: Context) {
     fun tun2socksConfig(): File = File(baseDir(), "tun2socks.yml")
     fun xrayHelperConfig(): File = File(baseDir(), "config.yml")
     fun xrayCorePid(): File = File(baseDir(), "core.pid")
+    fun networkMonitorPid(): File = File(baseDir(), "monitor.pid")
+    fun networkMonitorScript(): File = File(baseDir(), "monitor.sh")
 }

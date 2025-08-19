@@ -38,9 +38,7 @@ class VpnTileService : TileService() {
         val transparentProxy = settings.transparentProxy
         when (qsTile?.state) {
             Tile.STATE_INACTIVE -> {
-                TProxyService.start(
-                    applicationContext, !transparentProxy, !transparentProxy
-                )
+                TProxyService.start(applicationContext, !transparentProxy)
             }
             Tile.STATE_ACTIVE -> TProxyService.stop(applicationContext)
         }

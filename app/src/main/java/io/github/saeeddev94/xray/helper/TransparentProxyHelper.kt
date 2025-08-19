@@ -1,9 +1,16 @@
 package io.github.saeeddev94.xray.helper
 
+import android.content.Context
 import com.topjohnwu.superuser.Shell
 import io.github.saeeddev94.xray.Settings
+import io.github.saeeddev94.xray.service.TProxyService
 
-class TransparentProxyHelper(private val settings: Settings) {
+class TransparentProxyHelper(
+    private val context: Context,
+    private val settings: Settings,
+) {
+
+    private val networkStateHelper by lazy { NetworkStateHelper() }
 
     fun isRunning(): Boolean = settings.xrayCorePid().exists()
 
@@ -22,6 +29,27 @@ class TransparentProxyHelper(private val settings: Settings) {
 
     fun disableProxy() {
         Shell.cmd("${cmd()} proxy disable").exec()
+    }
+
+    fun monitorNetwork() {
+        val script = settings.networkMonitorScript()
+        val pid = settings.networkMonitorPid()
+        if (!settings.tproxyAutoConnect || pid.exists()) return
+        networkStateHelper.monitor(script, pid)
+    }
+
+    fun networkUpdate() {
+        if (!settings.tproxyAutoConnect) return
+        val state = networkStateHelper.getState()
+        val isOnline = networkStateHelper.isOnline(state)
+        val isRunning = settings.xrayCorePid().exists()
+        if (!isOnline) {
+            TProxyService.stop(context)
+            return
+        }
+        if (!isRunning) {
+            TProxyService.start(context, false)
+        }
     }
 
     private fun cmd(): String {
