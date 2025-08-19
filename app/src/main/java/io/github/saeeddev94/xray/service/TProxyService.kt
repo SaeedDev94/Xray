@@ -43,6 +43,7 @@ class TProxyService : VpnService() {
         const val STOP_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStop"
         const val START_VPN_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.VpnStart"
         const val NEW_CONFIG_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.NewConfig"
+        const val NETWORK_UPDATE_SERVICE_ACTION_NAME = "${BuildConfig.APPLICATION_ID}.NetworkUpdate"
         private const val VPN_SERVICE_NOTIFICATION_ID = 1
         private const val OPEN_MAIN_ACTIVITY_ACTION_ID = 2
         private const val STOP_VPN_SERVICE_ACTION_ID = 3
@@ -50,6 +51,7 @@ class TProxyService : VpnService() {
         fun status(context: Context) = startCommand(context, STATUS_VPN_SERVICE_ACTION_NAME)
         fun stop(context: Context) = startCommand(context, STOP_VPN_SERVICE_ACTION_NAME)
         fun newConfig(context: Context) = startCommand(context, NEW_CONFIG_SERVICE_ACTION_NAME)
+        fun networkUpdate(context: Context) = startCommand(context, NETWORK_UPDATE_SERVICE_ACTION_NAME)
 
         fun start(context: Context, check: Boolean, foreground: Boolean) {
             if (check && prepare(context) != null) {
@@ -94,6 +96,7 @@ class TProxyService : VpnService() {
                 START_VPN_SERVICE_ACTION_NAME -> start(getProfile())
                 NEW_CONFIG_SERVICE_ACTION_NAME -> newConfig(getProfile())
                 STOP_VPN_SERVICE_ACTION_NAME -> stopVPN()
+                NETWORK_UPDATE_SERVICE_ACTION_NAME -> networkUpdate()
                 STATUS_VPN_SERVICE_ACTION_NAME -> broadcastStatus()
             }
         }
@@ -138,6 +141,10 @@ class TProxyService : VpnService() {
             return null
         }
         return XrayConfig(dir.absolutePath, config.absolutePath)
+    }
+
+    private fun networkUpdate() {
+        // TODO
     }
 
     private fun start(profile: Profile?) {
