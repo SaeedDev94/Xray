@@ -253,6 +253,23 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:baselineAligned="false">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tproxyBypassWiFi"
+                android:labelFor="@id/tproxyBypassWiFi" />
+            <EditText
+                android:id="@+id/tproxyBypassWiFi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:autofillHints="" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:baselineAligned="false">
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/tproxyAutoConnect"
                 android:layout_width="match_parent"

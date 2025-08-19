@@ -122,6 +122,9 @@ class Settings(private val context: Context) {
     var tproxyPort: Int
         get() = sharedPreferences.getInt("tproxyPort", 10888)
         set(value) = sharedPreferences.edit { putInt("tproxyPort", value) }
+    var tproxyBypassWiFi: Set<String>
+        get() = sharedPreferences.getStringSet("tproxyBypassWiFi", mutableSetOf<String>())!!
+        set(value) = sharedPreferences.edit { putStringSet("tproxyBypassWiFi", value) }
     var tproxyAutoConnect: Boolean
         get() = sharedPreferences.getBoolean("tproxyAutoConnect", false)
         set(value) = sharedPreferences.edit { putBoolean("tproxyAutoConnect", value) }

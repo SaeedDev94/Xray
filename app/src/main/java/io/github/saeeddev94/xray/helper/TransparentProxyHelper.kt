@@ -43,7 +43,10 @@ class TransparentProxyHelper(
         val state = networkStateHelper.getState()
         val isOnline = networkStateHelper.isOnline(state)
         val isRunning = settings.xrayCorePid().exists()
-        if (!isOnline) {
+        val tproxyBypassWiFi = settings.tproxyBypassWiFi
+        val wifi = state.wifi ?: ""
+        val bypassWiFi = tproxyBypassWiFi.isNotEmpty() && tproxyBypassWiFi.contains(wifi)
+        if (!isOnline || bypassWiFi) {
             TProxyService.stop(context)
             return
         }

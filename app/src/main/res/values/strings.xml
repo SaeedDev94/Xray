@@ -86,6 +86,7 @@
     <string name="tunPrefixV6">Prefix</string>
     <string name="tproxyAddress">TPROXY Address</string>
     <string name="tproxyPort">TPROXY Port</string>
+    <string name="tproxyBypassWiFi">TPROXY Bypass WiFi</string>
     <string name="tproxyAutoConnect">TPROXY Auto Connect</string>
     <string name="transparentProxy">Transparent Proxy</string>
 </resources>
