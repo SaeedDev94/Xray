@@ -8,8 +8,8 @@ class NetworkStateHelper() {
 
     fun monitor(script: File, pid: File) {
         if (!script.exists()) makeScript(script)
-        val dir = "/data/misc/net"
-        val cmd = "nohup inotifyd ${script.absolutePath} $dir:w" +
+        val file = "/data/misc/net/rt_tables"
+        val cmd = "nohup inotifyd ${script.absolutePath} $file:w" +
                 " > /dev/null 2>&1 & echo $! > ${pid.absolutePath}"
         Shell.cmd(cmd).exec()
     }
