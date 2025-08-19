@@ -12,6 +12,8 @@ class BootReceiver : BroadcastReceiver() {
         if (context == null || intent == null || intent.action != Intent.ACTION_BOOT_COMPLETED) return
         val settings = Settings(context)
         val transparentProxy = settings.transparentProxy
+        val xrayCorePid = settings.xrayCorePid()
+        if (xrayCorePid.exists()) xrayCorePid.delete()
         if (!settings.bootAutoStart) return
         TProxyService.start(
             context, !transparentProxy, !transparentProxy
