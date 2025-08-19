@@ -110,14 +110,6 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".receiver.NetworkUpdateReceiver"
-            android:exported="true"
-            tools:ignore="ExportedReceiver">
-            <intent-filter>
-                <action android:name="io.github.saeeddev94.xray.NetworkUpdate" />
-            </intent-filter>
-        </receiver>
-        <receiver
             android:name=".receiver.BootReceiver"
             android:exported="true">
             <intent-filter>

@@ -28,13 +28,8 @@ class NetworkStateHelper() {
         val content = arrayListOf(
             "#!/bin/sh",
             "",
-            "pid=\$(pidof $pkg)",
-            "if [ -z \"\$pid\" ]; then",
-            "  am start-foreground-service -n $pkg/.service.TProxyService",
-            "  sleep 1",
-            "fi",
-            "am broadcast -p $pkg -a $action",
-            ""
+            "am start-foreground-service -n $pkg/.service.TProxyService -a $action",
+            "",
         ).joinToString("\n")
         FileHelper.createOrUpdate(file, content)
         Shell.cmd("chown root:root ${file.absolutePath}").exec()
