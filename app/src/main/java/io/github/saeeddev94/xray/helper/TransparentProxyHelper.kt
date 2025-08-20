@@ -31,6 +31,10 @@ class TransparentProxyHelper(
         Shell.cmd("${cmd()} proxy disable").exec()
     }
 
+    fun refreshProxy() {
+        Shell.cmd("${cmd()} proxy refresh").exec()
+    }
+
     fun monitorNetwork() {
         val script = settings.networkMonitorScript()
         val pid = settings.networkMonitorPid()
@@ -52,7 +56,9 @@ class TransparentProxyHelper(
         }
         if (!isRunning) {
             TProxyService.start(context, false)
+            return
         }
+        refreshProxy()
     }
 
     private fun cmd(): String {
