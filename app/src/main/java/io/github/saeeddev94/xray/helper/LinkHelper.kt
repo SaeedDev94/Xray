@@ -78,6 +78,34 @@ class LinkHelper(
     private fun inbounds(): JSONArray {
         val inbounds = JSONArray()
 
+        val sniffing = JSONObject()
+        sniffing.put("enabled", true)
+        val sniffingDestOverride = JSONArray()
+        sniffingDestOverride.put("http")
+        sniffingDestOverride.put("tls")
+        sniffingDestOverride.put("quic")
+        sniffing.put("destOverride", sniffingDestOverride)
+
+        val tproxy = JSONObject()
+        tproxy.put("listen", settings.tproxyAddress)
+        tproxy.put("port", settings.tproxyPort)
+        tproxy.put("protocol", "dokodemo-door")
+
+        val tproxySettings = JSONObject()
+        tproxySettings.put("network", "tcp,udp")
+        tproxySettings.put("followRedirect", true)
+
+        val tproxySockopt = JSONObject()
+        tproxySockopt.put("tproxy", "tproxy")
+
+        val tproxyStreamSettings = JSONObject()
+        tproxyStreamSettings.put("sockopt", tproxySockopt)
+
+        tproxy.put("settings", tproxySettings)
+        tproxy.put("sniffing", sniffing)
+        tproxy.put("streamSettings", tproxyStreamSettings)
+        tproxy.put("tag", "all-in")
+
         val socks = JSONObject()
         socks.put("listen", settings.socksAddress)
         socks.put("port", settings.socksPort.toInt())
@@ -99,19 +127,12 @@ class LinkHelper(
             socksSettings.put("accounts", accounts)
         }
 
-        val sniffing = JSONObject()
-        sniffing.put("enabled", true)
-        val sniffingDestOverride = JSONArray()
-        sniffingDestOverride.put("http")
-        sniffingDestOverride.put("tls")
-        sniffingDestOverride.put("quic")
-        sniffing.put("destOverride", sniffingDestOverride)
-
         socks.put("settings", socksSettings)
         socks.put("sniffing", sniffing)
         socks.put("tag", "socks")
 
-        inbounds.put(socks)
+        if (settings.transparentProxy) inbounds.put(tproxy)
+        else inbounds.put(socks)
 
         return inbounds
     }
@@ -134,9 +155,14 @@ class LinkHelper(
         block.put("protocol", "blackhole")
         block.put("tag", "block")
 
+        val dns = JSONObject()
+        dns.put("protocol", "dns")
+        dns.put("tag", "dns-out")
+
         outbounds.put(proxy)
         outbounds.put(direct)
         outbounds.put(block)
+        if (settings.transparentProxy) outbounds.put(dns)
 
         return outbounds
     }
@@ -148,12 +174,22 @@ class LinkHelper(
         val rules = JSONArray()
 
         val proxyDns = JSONObject()
-        val proxyDnsIp = JSONArray()
-        proxyDnsIp.put(settings.primaryDns)
-        proxyDnsIp.put(settings.secondaryDns)
-        proxyDns.put("ip", proxyDnsIp)
-        proxyDns.put("port", 53)
-        proxyDns.put("outboundTag", "proxy")
+
+        if (settings.transparentProxy) {
+            val inboundTag = JSONArray()
+            inboundTag.put("all-in")
+            proxyDns.put("network", "udp")
+            proxyDns.put("port", 53)
+            proxyDns.put("inboundTag", inboundTag)
+            proxyDns.put("outboundTag", "dns-out")
+        } else {
+            val proxyDnsIp = JSONArray()
+            proxyDnsIp.put(settings.primaryDns)
+            proxyDnsIp.put(settings.secondaryDns)
+            proxyDns.put("ip", proxyDnsIp)
+            proxyDns.put("port", 53)
+            proxyDns.put("outboundTag", "proxy")
+        }
 
         val directPrivate = JSONObject()
         val directPrivateIp = JSONArray()
