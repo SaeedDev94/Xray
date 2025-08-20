@@ -7,6 +7,10 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.net.VpnService
 import android.os.Build
 import android.os.Handler
@@ -78,6 +82,7 @@ class TProxyService : VpnService() {
     }
 
     private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
+    private val connectivityManager by lazy { getSystemService(ConnectivityManager::class.java) }
     private val settings by lazy { Settings(applicationContext) }
     private val transparentProxyHelper by lazy { TransparentProxyHelper(this, settings) }
     private val profileRepository by lazy { Xray::class.cast(application).profileRepository }
@@ -85,6 +90,7 @@ class TProxyService : VpnService() {
 
     private var isRunning: Boolean = false
     private var tunDevice: ParcelFileDescriptor? = null
+    private var cellularCallback: ConnectivityManager.NetworkCallback? = null
     private var toast: Toast? = null
 
     private external fun TProxyStartService(configPath: String, fd: Int)
@@ -110,6 +116,8 @@ class TProxyService : VpnService() {
 
     override fun onDestroy() {
         scope.cancel()
+        cellularCallback?.let { connectivityManager.unregisterNetworkCallback(it) }
+        cellularCallback = null
         toast = null
         super.onDestroy()
     }
@@ -269,6 +277,19 @@ class TProxyService : VpnService() {
         /** Service Notification */
         val name = configName(profile)
         startForeground(VPN_SERVICE_NOTIFICATION_ID, createNotification(name))
+
+        /** Listen for cellular changes */
+        if (cellularCallback == null) {
+            val request = NetworkRequest.Builder()
+                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+                .build()
+            cellularCallback = object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    this@TProxyService.transparentProxyHelper.networkUpdate()
+                }
+            }
+            connectivityManager.registerNetworkCallback(request, cellularCallback!!)
+        }
 
         /** Broadcast start event */
         showToast("Start VPN")
