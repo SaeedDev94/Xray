@@ -157,25 +157,27 @@ class SettingsActivity : AppCompatActivity() {
             .map { it.trim() }
             .filter { it.isNotBlank() }
             .toSet()
-        settings.tproxyAutoConnect =
-            advanced.findViewById<MaterialSwitch>(R.id.tproxyAutoConnect).isChecked
+
 
         lifecycleScope.launch {
-            val tproxy = advanced.findViewById<MaterialSwitch>(R.id.transparentProxy).isChecked
+            val autoConnect = advanced.findViewById<MaterialSwitch>(R.id.tproxyAutoConnect).isChecked
+            val transparentProxy = advanced.findViewById<MaterialSwitch>(R.id.transparentProxy).isChecked
+            val disabledTproxy = !autoConnect || !transparentProxy
             val monitor = settings.networkMonitorPid()
             val xray = settings.xrayCorePid()
             var stopService = false
-            if (!tproxy && monitor.exists()) {
+            if (disabledTproxy && monitor.exists()) {
                 val path = monitor.absolutePath
                 Shell.cmd("kill \$(cat $path) && rm $path").exec()
             }
-            if (!tproxy && xray.exists()) {
+            if (disabledTproxy && xray.exists()) {
                 transparentProxyHelper.disableProxy()
                 transparentProxyHelper.stopService()
                 stopService = true
             }
             withContext(Dispatchers.Main) {
-                settings.transparentProxy = tproxy
+                settings.tproxyAutoConnect = autoConnect
+                settings.transparentProxy = transparentProxy
                 if (stopService) TProxyService.stop(this@SettingsActivity)
                 finish()
             }
