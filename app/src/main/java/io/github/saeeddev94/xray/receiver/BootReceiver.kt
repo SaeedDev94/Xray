@@ -17,8 +17,8 @@ class BootReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val systemUpTime = SystemClock.elapsedRealtime()
-        val oneMinutes = 60L * 1000L
-        val isAppLaunch = systemUpTime > oneMinutes
+        val twoMinutes = 2L * 60L * 1000L
+        val isAppLaunch = systemUpTime > twoMinutes
         if (
             context == null ||
             intent == null ||
