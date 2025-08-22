@@ -56,7 +56,6 @@ class TProxyService : VpnService() {
         fun status(context: Context) = startCommand(context, STATUS_VPN_SERVICE_ACTION_NAME)
         fun stop(context: Context) = startCommand(context, STOP_VPN_SERVICE_ACTION_NAME)
         fun newConfig(context: Context) = startCommand(context, NEW_CONFIG_SERVICE_ACTION_NAME)
-        fun networkUpdate(context: Context) = startCommand(context, NETWORK_UPDATE_SERVICE_ACTION_NAME)
 
         fun start(context: Context, check: Boolean) {
             if (check && prepare(context) != null) {
