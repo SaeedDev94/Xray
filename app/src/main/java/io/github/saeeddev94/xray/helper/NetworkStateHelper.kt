@@ -43,7 +43,7 @@ class NetworkStateHelper() {
                 " | awk -F ',' '{print \$1}'" +
                 " | head -n 1"
         val result = Shell.cmd(cmd).exec()
-        if (!result.isSuccess) return null
+        if (!result.isSuccess || result.out.isEmpty()) return null
         val ssid = result.out.first()
         if (ssid == "<unknown ssid>") return null
         return ssid.trim('"')
@@ -54,7 +54,7 @@ class NetworkStateHelper() {
                 " && settings get global mobile_data1" +
                 " && settings get global mobile_data2"
         val result = Shell.cmd(cmd).exec()
-        if (!result.isSuccess) return false
+        if (!result.isSuccess || result.out.isEmpty()) return false
         return result.out.contains("1")
     }
 

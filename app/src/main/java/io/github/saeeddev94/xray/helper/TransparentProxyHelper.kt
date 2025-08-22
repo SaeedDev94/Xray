@@ -42,15 +42,22 @@ class TransparentProxyHelper(
         networkStateHelper.monitor(script, pid)
     }
 
-    fun networkUpdate() {
+    fun networkState(): NetworkStateHelper.NetworkState {
+        return networkStateHelper.getState()
+    }
+
+    fun bypassWiFi(state: NetworkStateHelper.NetworkState): Boolean {
+        val tproxyBypassWiFi = settings.tproxyBypassWiFi
+        val ssid = state.wifi ?: ""
+        return tproxyBypassWiFi.isNotEmpty() && tproxyBypassWiFi.contains(ssid)
+    }
+
+    fun networkUpdate(value: NetworkStateHelper.NetworkState? = null) {
         if (!settings.tproxyAutoConnect) return
-        val state = networkStateHelper.getState()
+        val state = value ?: networkState()
         val isOnline = networkStateHelper.isOnline(state)
         val isRunning = settings.xrayCorePid().exists()
-        val tproxyBypassWiFi = settings.tproxyBypassWiFi
-        val wifi = state.wifi ?: ""
-        val bypassWiFi = tproxyBypassWiFi.isNotEmpty() && tproxyBypassWiFi.contains(wifi)
-        if (!isOnline || bypassWiFi) {
+        if (!isOnline || bypassWiFi(state)) {
             TProxyService.stop(context)
             return
         }
