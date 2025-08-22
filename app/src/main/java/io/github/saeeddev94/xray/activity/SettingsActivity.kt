@@ -8,15 +8,23 @@ import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.materialswitch.MaterialSwitch
+import com.topjohnwu.superuser.Shell
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.adapter.SettingAdapter
 import io.github.saeeddev94.xray.databinding.ActivitySettingsBinding
+import io.github.saeeddev94.xray.helper.TransparentProxyHelper
+import io.github.saeeddev94.xray.service.TProxyService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SettingsActivity : AppCompatActivity() {
 
     private val settings by lazy { Settings(applicationContext) }
+    private val transparentProxyHelper by lazy { TransparentProxyHelper(this, settings) }
     private lateinit var binding: ActivitySettingsBinding
     private lateinit var adapter: SettingAdapter
     private lateinit var basic: View
@@ -151,9 +159,26 @@ class SettingsActivity : AppCompatActivity() {
             .toSet()
         settings.tproxyAutoConnect =
             advanced.findViewById<MaterialSwitch>(R.id.tproxyAutoConnect).isChecked
-        settings.transparentProxy =
-            advanced.findViewById<MaterialSwitch>(R.id.transparentProxy).isChecked
 
-        finish()
+        lifecycleScope.launch {
+            val tproxy = advanced.findViewById<MaterialSwitch>(R.id.transparentProxy).isChecked
+            val monitor = settings.networkMonitorPid()
+            val xray = settings.xrayCorePid()
+            var stopService = false
+            if (!tproxy && monitor.exists()) {
+                val path = monitor.absolutePath
+                Shell.cmd("kill \$(cat $path) && rm $path").exec()
+            }
+            if (!tproxy && xray.exists()) {
+                transparentProxyHelper.disableProxy()
+                transparentProxyHelper.stopService()
+                stopService = true
+            }
+            withContext(Dispatchers.Main) {
+                settings.transparentProxy = tproxy
+                if (stopService) TProxyService.stop(this@SettingsActivity)
+                finish()
+            }
+        }
     }
 }
