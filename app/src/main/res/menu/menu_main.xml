@@ -15,6 +15,9 @@
                 android:id="@+id/newProfile"
                 android:title="@string/newProfile" />
             <item
+                android:id="@+id/scanQrCode"
+                android:title="@string/scanQrCode" />
+            <item
                 android:id="@+id/fromClipboard"
                 android:title="@string/fromClipboard" />
         </menu>

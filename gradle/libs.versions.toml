@@ -8,6 +8,7 @@ androidxAppCompat = "1.7.1"
 androidxLifecycleViewmodelKtx = "2.9.2"
 androidxRoom = "2.7.2"
 blacksquircleUi = "2.9.0"
+codeScanner="2.3.2"
 googleMaterial = "1.12.0"
 libsuCore = "5.2.2"
 
@@ -23,6 +24,7 @@ blacksquircle-ui-editorkit = { group = "com.blacksquircle.ui", name = "editorkit
 blacksquircle-ui-language-json = { group = "com.blacksquircle.ui", name = "language-json", version.ref = "blacksquircleUi" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "googleMaterial" }
 topjohnwu-libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsuCore" }
+yuriy-budiyev-code-scanner = { group = "com.github.yuriy-budiyev", name = "code-scanner", version.ref = "codeScanner" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -3,6 +3,7 @@
     <string name="noValue">-</string>
     <string name="drawerOpen">Open drawer</string>
     <string name="drawerClose">Close drawer</string>
+    <string name="scanQrCode">Scan QrCode</string>
     <string name="fromClipboard">From Clipboard</string>
     <string name="loading">Loading…</string>
     <string name="vpnStart">START</string>

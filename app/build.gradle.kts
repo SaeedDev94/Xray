@@ -95,4 +95,5 @@ dependencies {
     implementation(libs.blacksquircle.ui.language.json)
     implementation(libs.google.material)
     implementation(libs.topjohnwu.libsu.core)
+    implementation(libs.yuriy.budiyev.code.scanner)
 }

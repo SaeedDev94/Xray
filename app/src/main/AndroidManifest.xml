@@ -5,10 +5,12 @@
 
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
@@ -58,6 +60,9 @@
         <activity
             android:name=".activity.LinksManagerActivity"
             android:theme="@style/TransparentTheme" />
+        <activity
+            android:name=".activity.ScannerActivity"
+            android:parentActivityName=".activity.MainActivity" />
         <activity
             android:name=".activity.AssetsActivity"
             android:parentActivityName=".activity.MainActivity" />

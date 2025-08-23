@@ -63,12 +63,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val profilesRecyclerView by lazy { findViewById<RecyclerView>(R.id.profilesRecyclerView) }
     private val profiles = arrayListOf<ProfileList>()
 
+    private var cameraPermission = registerForActivityResult(RequestPermission()) {
+        if (!it) return@registerForActivityResult
+        scannerLauncher.launch(
+            Intent(applicationContext, ScannerActivity::class.java)
+        )
+    }
     private val notificationPermission = registerForActivityResult(RequestPermission()) {
         onToggleButtonClick()
     }
     private val linksManager = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
         refreshLinks()
+    }
+    private var scannerLauncher = registerForActivityResult(StartActivityForResult()) {
+        val link = it.data?.getStringExtra("link")
+        if (it.resultCode != RESULT_OK || link == null) return@registerForActivityResult
+        this@MainActivity.processLink(link)
     }
     private val vpnLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode != RESULT_OK) return@registerForActivityResult
@@ -197,6 +208,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.refreshLinks -> refreshLinks()
             R.id.newProfile -> startActivity(ProfileActivity.getIntent(applicationContext))
+            R.id.scanQrCode -> cameraPermission.launch(android.Manifest.permission.CAMERA)
             R.id.fromClipboard -> {
                 runCatching {
                     clipboardManager.primaryClip!!.getItemAt(0).text.toString().trim()
