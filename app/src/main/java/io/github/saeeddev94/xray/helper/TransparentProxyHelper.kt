@@ -38,7 +38,7 @@ class TransparentProxyHelper(
     fun monitorNetwork() {
         val script = settings.networkMonitorScript()
         val pid = settings.networkMonitorPid()
-        if (!settings.tproxyAutoConnect || pid.exists()) return
+        if (!settings.tproxyAutoConnect || !settings.transparentProxy || pid.exists()) return
         networkStateHelper.monitor(script, pid)
     }
 
