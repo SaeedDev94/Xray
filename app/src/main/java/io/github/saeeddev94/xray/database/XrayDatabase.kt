@@ -10,15 +10,20 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [
+        Config::class,
         Link::class,
         Profile::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
-@TypeConverters(Link.Type.Convertor::class)
+@TypeConverters(
+    Link.Type.Convertor::class,
+    Config.Mode.Convertor::class,
+)
 abstract class XrayDatabase : RoomDatabase() {
 
+    abstract fun configDao(): ConfigDao
     abstract fun linkDao(): LinkDao
     abstract fun profileDao(): ProfileDao
 
@@ -74,6 +79,38 @@ abstract class XrayDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // create config table
+                db.execSQL("""
+                    CREATE TABLE configs (
+                        id INTEGER PRIMARY KEY NOT NULL,
+                        log TEXT NOT NULL,
+                        dns TEXT NOT NULL,
+                        inbounds TEXT NOT NULL,
+                        outbounds TEXT NOT NULL,
+                        routing TEXT NOT NULL,
+                        log_mode INTEGER NOT NULL,
+                        dns_mode INTEGER NOT NULL,
+                        inbounds_mode INTEGER NOT NULL,
+                        outbounds_mode INTEGER NOT NULL,
+                        routing_mode INTEGER NOT NULL
+                    )
+                """)
+
+                // insert the row
+                db.execSQL("""
+                    INSERT INTO configs (
+                        log, dns, inbounds, outbounds, routing,
+                        log_mode, dns_mode, inbounds_mode, outbounds_mode, routing_mode
+                    ) VALUES (
+                        '{}', '{}', '[]', '[]', '{}',
+                        0, 0, 0, 0, 0
+                    )
+                """)
+            }
+        }
+
         @Volatile
         private var db: XrayDatabase? = null
 
@@ -81,13 +118,16 @@ abstract class XrayDatabase : RoomDatabase() {
             if (db == null) {
                 synchronized(this) {
                     if (db == null) {
+                        val migrations = arrayOf(
+                            MIGRATION_1_2,
+                            MIGRATION_2_3,
+                            MIGRATION_3_4,
+                        )
                         db = Room.databaseBuilder(
                             context.applicationContext,
                             XrayDatabase::class.java,
                             "xray"
-                        ).addMigrations(MIGRATION_1_2)
-                            .addMigrations(MIGRATION_2_3)
-                            .build()
+                        ).addMigrations(*migrations).build()
                     }
                 }
             }

@@ -20,6 +20,7 @@
     <string name="links">Links</string>
     <string name="logs">Logs</string>
     <string name="appsRouting">Apps Routing</string>
+    <string name="configs">Configs</string>
     <string name="settings">Settings</string>
     <string name="geoIp">GeoIP</string>
     <string name="geoSite">GeoSite</string>
@@ -46,6 +47,7 @@
     <string name="appIcon">App Icon</string>
     <string name="openJson">Open Json</string>
     <string name="appsRoutingSave">Save</string>
+    <string name="saveConfigs">Save Configs</string>
     <string name="appsRoutingExcludeMode">Mode: Exclude</string>
     <string name="appsRoutingIncludeMode">Mode: Include</string>
     <string name="saveSettings">Save Settings</string>

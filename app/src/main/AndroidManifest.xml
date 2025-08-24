@@ -76,6 +76,9 @@
             android:name=".activity.AppsRoutingActivity"
             android:parentActivityName=".activity.MainActivity" />
         <activity
+            android:name=".activity.ConfigsActivity"
+            android:parentActivityName=".activity.MainActivity" />
+        <activity
             android:name=".activity.SettingsActivity"
             android:parentActivityName=".activity.MainActivity" />
         <service

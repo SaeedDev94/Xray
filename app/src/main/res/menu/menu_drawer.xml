@@ -38,6 +38,10 @@
             android:icon="@drawable/baseline_alt_route"
             android:title="@string/appsRouting" />
         <item
+            android:id="@+id/configs"
+            android:icon="@drawable/baseline_config"
+            android:title="@string/configs" />
+        <item
             android:id="@+id/settings"
             android:icon="@drawable/baseline_settings"
             android:title="@string/settings" />
