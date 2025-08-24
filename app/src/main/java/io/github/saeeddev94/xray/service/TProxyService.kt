@@ -24,8 +24,10 @@ import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.Xray
 import io.github.saeeddev94.xray.activity.MainActivity
+import io.github.saeeddev94.xray.database.Config
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.dto.XrayConfig
+import io.github.saeeddev94.xray.helper.ConfigHelper
 import io.github.saeeddev94.xray.helper.FileHelper
 import io.github.saeeddev94.xray.helper.TransparentProxyHelper
 import kotlinx.coroutines.CoroutineScope
@@ -84,6 +86,7 @@ class TProxyService : VpnService() {
     private val connectivityManager by lazy { getSystemService(ConnectivityManager::class.java) }
     private val settings by lazy { Settings(applicationContext) }
     private val transparentProxyHelper by lazy { TransparentProxyHelper(this, settings) }
+    private val configRepository by lazy { Xray::class.cast(application).configRepository }
     private val profileRepository by lazy { Xray::class.cast(application).profileRepository }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -99,8 +102,8 @@ class TProxyService : VpnService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         scope.launch {
             when (intent?.action) {
-                START_VPN_SERVICE_ACTION_NAME -> start(getProfile())
-                NEW_CONFIG_SERVICE_ACTION_NAME -> newConfig(getProfile())
+                START_VPN_SERVICE_ACTION_NAME -> start(getProfile(), globalConfigs())
+                NEW_CONFIG_SERVICE_ACTION_NAME -> newConfig(getProfile(), globalConfigs())
                 STOP_VPN_SERVICE_ACTION_NAME -> stopVPN()
                 STATUS_VPN_SERVICE_ACTION_NAME -> broadcastStatus()
                 NETWORK_UPDATE_SERVICE_ACTION_NAME -> transparentProxyHelper.networkUpdate()
@@ -139,10 +142,15 @@ class TProxyService : VpnService() {
         }
     }
 
-    private fun getConfig(profile: Profile): XrayConfig? {
+    private suspend fun globalConfigs(): Config {
+        return configRepository.get()
+    }
+
+    private fun getConfig(profile: Profile, globalConfigs: Config): XrayConfig? {
         val dir: File = applicationContext.filesDir
         val config: File = settings.xrayConfig()
-        FileHelper.createOrUpdate(config, profile.config)
+        val configHelper = ConfigHelper(profile.config, globalConfigs)
+        FileHelper.createOrUpdate(config, configHelper.toString())
         val error: String = XrayCore.test(dir.absolutePath, config.absolutePath)
         if (error.isNotEmpty()) {
             showToast(error)
@@ -151,23 +159,23 @@ class TProxyService : VpnService() {
         return XrayConfig(dir.absolutePath, config.absolutePath)
     }
 
-    private fun start(profile: Profile?) {
+    private fun start(profile: Profile?, globalConfigs: Config) {
         if (profile == null) {
             if (!settings.transparentProxy) startVPN(null)
         } else {
-            getConfig(profile)?.let {
+            getConfig(profile, globalConfigs)?.let {
                 startXray(it)
                 startVPN(profile)
             }
         }
     }
 
-    private fun newConfig(profile: Profile?) {
+    private fun newConfig(profile: Profile?, globalConfigs: Config) {
         if (!getIsRunning() || (profile == null && settings.transparentProxy)) return
         stopXray()
         val name = configName(profile)
         val config = if (profile == null) null
-        else getConfig(profile).also { if (it == null) stopVPN() else startXray(it) }
+        else getConfig(profile, globalConfigs).also { if (it == null) stopVPN() else startXray(it) }
         if (profile == null || config != null) {
             showToast(name)
             broadcastStart(NEW_CONFIG_SERVICE_ACTION_NAME, name)
