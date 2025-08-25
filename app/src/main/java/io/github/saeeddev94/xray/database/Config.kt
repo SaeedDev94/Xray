@@ -14,25 +14,25 @@ data class Config(
     @ColumnInfo(name = "id")
     var id: Int = 1,
     @ColumnInfo(name = "log")
-    var log: String,
+    var log: String = "{}",
     @ColumnInfo(name = "dns")
-    var dns: String,
+    var dns: String = "{}",
     @ColumnInfo(name = "inbounds")
-    var inbounds: String,
+    var inbounds: String = "[]",
     @ColumnInfo(name = "outbounds")
-    var outbounds: String,
+    var outbounds: String = "[]",
     @ColumnInfo(name = "routing")
-    var routing: String,
+    var routing: String = "{}",
     @ColumnInfo(name = "log_mode")
-    var logMode: Mode,
+    var logMode: Mode = Mode.Disable,
     @ColumnInfo(name = "dns_mode")
-    var dnsMode: Mode,
+    var dnsMode: Mode = Mode.Disable,
     @ColumnInfo(name = "inbounds_mode")
-    var inboundsMode: Mode,
+    var inboundsMode: Mode = Mode.Disable,
     @ColumnInfo(name = "outbounds_mode")
-    var outboundsMode: Mode,
+    var outboundsMode: Mode = Mode.Disable,
     @ColumnInfo(name = "routing_mode")
-    var routingMode: Mode,
+    var routingMode: Mode = Mode.Disable,
 ) : Parcelable {
     enum class Mode(val value: Int) {
         Disable(0),

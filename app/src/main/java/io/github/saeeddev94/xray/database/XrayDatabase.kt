@@ -97,17 +97,6 @@ abstract class XrayDatabase : RoomDatabase() {
                         routing_mode INTEGER NOT NULL
                     )
                 """)
-
-                // insert the row
-                db.execSQL("""
-                    INSERT INTO configs (
-                        log, dns, inbounds, outbounds, routing,
-                        log_mode, dns_mode, inbounds_mode, outbounds_mode, routing_mode
-                    ) VALUES (
-                        '{}', '{}', '[]', '[]', '{}',
-                        0, 0, 0, 0, 0
-                    )
-                """)
             }
         }
 
