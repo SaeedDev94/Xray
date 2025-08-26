@@ -1,0 +1,1 @@
+- Show Xray-core logs on "Transparent Proxy" mode
