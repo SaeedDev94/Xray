@@ -142,4 +142,5 @@ class Settings(private val context: Context) {
     fun xrayCorePid(): File = File(baseDir(), "core.pid")
     fun networkMonitorPid(): File = File(baseDir(), "monitor.pid")
     fun networkMonitorScript(): File = File(baseDir(), "monitor.sh")
+    fun xrayCoreLogs(): File = File(baseDir(), "error.log")
 }

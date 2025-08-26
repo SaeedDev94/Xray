@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.github.saeeddev94.xray.BuildConfig
 import io.github.saeeddev94.xray.R
+import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.databinding.ActivityLogsBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,6 +27,7 @@ import java.nio.charset.StandardCharsets
 class LogsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLogsBinding
+    private val settings by lazy { Settings(applicationContext) }
 
     companion object {
         private const val MAX_BUFFERED_LINES = (1 shl 14) - 1
@@ -58,7 +60,11 @@ class LogsActivity : AppCompatActivity() {
 
     private fun flush() {
         lifecycleScope.launch(Dispatchers.IO) {
-            val command = listOf("logcat", "-c")
+            val command = if (settings.transparentProxy) {
+                listOf("echo", "''", ">", settings.xrayCoreLogs().absolutePath)
+            } else {
+                listOf("logcat", "-c")
+            }
             val process = ProcessBuilder(command).start()
             process.waitFor()
             withContext(Dispatchers.Main) {
@@ -81,7 +87,11 @@ class LogsActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private suspend fun streamingLog() = withContext(Dispatchers.IO) {
-        val cmd = listOf("logcat", "-v", "time", "-s", "GoLog,${BuildConfig.APPLICATION_ID}")
+        val cmd = if (settings.transparentProxy) {
+            listOf("tail", "-f", settings.xrayCoreLogs().absolutePath)
+        } else {
+            listOf("logcat", "-v", "time", "-s", "GoLog,${BuildConfig.APPLICATION_ID}")
+        }
         val builder = ProcessBuilder(cmd)
         builder.environment()["LC_ALL"] = "C"
         var process: Process? = null
