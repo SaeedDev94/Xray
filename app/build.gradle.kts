@@ -26,10 +26,6 @@ android {
         targetSdk = 36
         versionCode = calcVersionCode()
         versionName = "11.3.2"
-
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     buildFeatures {
