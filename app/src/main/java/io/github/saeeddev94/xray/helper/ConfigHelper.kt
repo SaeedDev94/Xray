@@ -1,11 +1,13 @@
 package io.github.saeeddev94.xray.helper
 
+import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.database.Config
 import org.json.JSONObject
 
 class ConfigHelper(
-    base: String,
+    settings: Settings,
     config: Config,
+    base: String,
 ) {
     private val base: JSONObject = JsonHelper.makeObject(base)
 
@@ -15,6 +17,7 @@ class ConfigHelper(
         process("inbounds", config.inbounds, config.inboundsMode)
         process("outbounds", config.outbounds, config.outboundsMode)
         process("routing", config.routing, config.routingMode)
+        if (settings.tproxyHotspot || settings.tproxyTethering) sharedInbounds()
     }
 
     override fun toString(): String {
@@ -44,5 +47,18 @@ class ConfigHelper(
         val final = if (mode == Config.Mode.Replace) newValue
         else JsonHelper.mergeArrays(oldValue, newValue, "protocol")
         base.put(key, final)
+    }
+
+    private fun sharedInbounds() {
+        val key = "inbounds"
+        val inbounds = JsonHelper.getArray(base, key)
+        for (i in 0 until inbounds.length()) {
+            val inbound = inbounds[i]
+            if (inbound is JSONObject && inbound.has("listen")) {
+                inbound.remove("listen")
+                inbounds.put(i, inbound)
+            }
+        }
+        base.put(key, inbounds)
     }
 }

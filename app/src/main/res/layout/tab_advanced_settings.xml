@@ -221,6 +221,46 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:text="@string/hotspotInterface"
+                    android:labelFor="@id/hotspotInterface" />
+                <EditText
+                    android:id="@+id/hotspotInterface"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:autofillHints="" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tetheringInterface"
+                    android:labelFor="@id/tetheringInterface" />
+                <EditText
+                    android:id="@+id/tetheringInterface"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:autofillHints="" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="@string/tproxyAddress"
                     android:labelFor="@id/tproxyAddress" />
                 <EditText
@@ -275,6 +315,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/tproxyAutoConnect" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:baselineAligned="false">
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/tproxyHotspot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tproxyHotspot" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:baselineAligned="false">
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/tproxyTethering"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tproxyTethering" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

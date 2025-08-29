@@ -96,11 +96,17 @@ class SettingsActivity : AppCompatActivity() {
         advanced.findViewById<EditText>(R.id.tunPrefix).setText(settings.tunPrefix.toString())
         advanced.findViewById<EditText>(R.id.tunAddressV6).setText(settings.tunAddressV6)
         advanced.findViewById<EditText>(R.id.tunPrefixV6).setText(settings.tunPrefixV6.toString())
+        advanced.findViewById<EditText>(R.id.hotspotInterface).setText(settings.hotspotInterface)
+        advanced.findViewById<EditText>(R.id.tetheringInterface).setText(settings.tetheringInterface)
         advanced.findViewById<EditText>(R.id.tproxyAddress).setText(settings.tproxyAddress)
         advanced.findViewById<EditText>(R.id.tproxyPort).setText(settings.tproxyPort.toString())
         advanced.findViewById<EditText>(R.id.tproxyBypassWiFi).setText(settings.tproxyBypassWiFi.joinToString(", "))
         advanced.findViewById<MaterialSwitch>(R.id.tproxyAutoConnect).isChecked =
             settings.tproxyAutoConnect
+        advanced.findViewById<MaterialSwitch>(R.id.tproxyHotspot).isChecked =
+            settings.tproxyHotspot
+        advanced.findViewById<MaterialSwitch>(R.id.tproxyTethering).isChecked =
+            settings.tproxyTethering
         advanced.findViewById<MaterialSwitch>(R.id.transparentProxy).isChecked =
             settings.transparentProxy
     }
@@ -149,6 +155,8 @@ class SettingsActivity : AppCompatActivity() {
         settings.tunPrefix = advanced.findViewById<EditText>(R.id.tunPrefix).text.toString().toInt()
         settings.tunAddressV6 = advanced.findViewById<EditText>(R.id.tunAddressV6).text.toString()
         settings.tunPrefixV6 = advanced.findViewById<EditText>(R.id.tunPrefixV6).text.toString().toInt()
+        settings.hotspotInterface = advanced.findViewById<EditText>(R.id.hotspotInterface).text.toString()
+        settings.tetheringInterface = advanced.findViewById<EditText>(R.id.tetheringInterface).text.toString()
         settings.tproxyAddress = advanced.findViewById<EditText>(R.id.tproxyAddress).text.toString()
         settings.tproxyPort = advanced.findViewById<EditText>(R.id.tproxyPort).text.toString().toInt()
         settings.tproxyBypassWiFi = advanced.findViewById<EditText>(R.id.tproxyBypassWiFi).text
@@ -157,6 +165,10 @@ class SettingsActivity : AppCompatActivity() {
             .map { it.trim() }
             .filter { it.isNotBlank() }
             .toSet()
+        settings.tproxyHotspot =
+            advanced.findViewById<MaterialSwitch>(R.id.tproxyHotspot).isChecked
+        settings.tproxyTethering =
+            advanced.findViewById<MaterialSwitch>(R.id.tproxyTethering).isChecked
 
 
         lifecycleScope.launch {

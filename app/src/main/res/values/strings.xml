@@ -87,9 +87,13 @@
     <string name="tunPrefix">Prefix</string>
     <string name="tunAddressV6">Tun Address (IPv6)</string>
     <string name="tunPrefixV6">Prefix</string>
+    <string name="hotspotInterface">Hotspot Interface</string>
+    <string name="tetheringInterface">Tethering Interface</string>
     <string name="tproxyAddress">TPROXY Address</string>
     <string name="tproxyPort">TPROXY Port</string>
     <string name="tproxyBypassWiFi">TPROXY Bypass WiFi</string>
     <string name="tproxyAutoConnect">TPROXY Auto Connect</string>
+    <string name="tproxyHotspot">TPROXY Hotspot</string>
+    <string name="tproxyTethering">TPROXY Tethering</string>
     <string name="transparentProxy">Transparent Proxy</string>
 </resources>

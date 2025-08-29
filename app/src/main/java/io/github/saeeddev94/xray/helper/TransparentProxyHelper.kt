@@ -90,6 +90,7 @@ class TransparentProxyHelper(
             "  enableIPv6: ${settings.enableIpV6}",
             "  mode: ${if (settings.appsRoutingMode) "blacklist" else "whitelist"}",
         )
+
         val appsList = settings.appsRouting.split("\n")
             .map { it.trim() }
             .filter { it.trim().isNotBlank() }
@@ -97,6 +98,22 @@ class TransparentProxyHelper(
             yml.add("  pkgList:")
             appsList.forEach { yml.add("    - $it") }
         }
+
+        val includedInterfaces = arrayListOf<String>()
+        val excludedInterfaces = arrayListOf<String>()
+        if (settings.tproxyHotspot) includedInterfaces.add(settings.hotspotInterface)
+        else excludedInterfaces.add(settings.hotspotInterface)
+        if (settings.tproxyTethering) includedInterfaces.add(settings.tetheringInterface)
+        else excludedInterfaces.add(settings.tetheringInterface)
+        if (includedInterfaces.isNotEmpty()) {
+            yml.add("  apList:")
+            includedInterfaces.forEach { yml.add("    - $it") }
+        }
+        if (excludedInterfaces.isNotEmpty()) {
+            yml.add("  ignoreList:")
+            excludedInterfaces.forEach { yml.add("    - $it") }
+        }
+
         yml.add("")
         FileHelper.createOrUpdate(
             settings.xrayHelperConfig(),

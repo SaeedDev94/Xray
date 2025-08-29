@@ -116,6 +116,12 @@ class Settings(private val context: Context) {
     var tunPrefixV6: Int
         get() = sharedPreferences.getInt("tunPrefixV6", 128)
         set(value) = sharedPreferences.edit { putInt("tunPrefixV6", value) }
+    var hotspotInterface
+        get() = sharedPreferences.getString("hotspotInterface", "wlan2")!!
+        set(value) = sharedPreferences.edit { putString("hotspotInterface", value) }
+    var tetheringInterface
+        get() = sharedPreferences.getString("tetheringInterface", "rndis0")!!
+        set(value) = sharedPreferences.edit { putString("tetheringInterface", value) }
     var tproxyAddress: String
         get() = sharedPreferences.getString("tproxyAddress", "127.0.0.1")!!
         set(value) = sharedPreferences.edit { putString("tproxyAddress", value) }
@@ -128,6 +134,12 @@ class Settings(private val context: Context) {
     var tproxyAutoConnect: Boolean
         get() = sharedPreferences.getBoolean("tproxyAutoConnect", false)
         set(value) = sharedPreferences.edit { putBoolean("tproxyAutoConnect", value) }
+    var tproxyHotspot: Boolean
+        get() = sharedPreferences.getBoolean("tproxyHotspot", false)
+        set(value) = sharedPreferences.edit { putBoolean("tproxyHotspot", value) }
+    var tproxyTethering: Boolean
+        get() = sharedPreferences.getBoolean("tproxyTethering", false)
+        set(value) = sharedPreferences.edit { putBoolean("tproxyTethering", value) }
     var transparentProxy: Boolean
         get() = sharedPreferences.getBoolean("transparentProxy", false)
         set(value) = sharedPreferences.edit { putBoolean("transparentProxy", value) }
