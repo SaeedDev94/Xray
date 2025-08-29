@@ -182,19 +182,13 @@ class TProxyService : VpnService() {
     }
 
     private fun startXray(config: XrayConfig) {
-        if (settings.transparentProxy) {
-            transparentProxyHelper.startService()
-            return
-        }
-        XrayCore.start(config.dir, config.file)
+        if (settings.transparentProxy) transparentProxyHelper.startService()
+        else XrayCore.start(config.dir, config.file)
     }
 
     private fun stopXray() {
-        if (settings.transparentProxy) {
-            transparentProxyHelper.stopService()
-            return
-        }
-        XrayCore.stop()
+        if (settings.transparentProxy) transparentProxyHelper.stopService()
+        else XrayCore.stop()
     }
 
     private fun startVPN(profile: Profile?) {
