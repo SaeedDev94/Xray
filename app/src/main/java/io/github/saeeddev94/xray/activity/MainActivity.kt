@@ -309,7 +309,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         lifecycleScope.launch {
             val ref = if (selectedProfile > 0L) profileViewModel.find(selectedProfile) else null
             withContext(Dispatchers.Main) {
-                settings.selectedProfile = if (selectedProfile == profile.id) 0L else profile.id
+                if (selectedProfile == profile.id) return@withContext
+                settings.selectedProfile = profile.id
                 profileAdapter.notifyItemChanged(index)
                 if (isRunning) TProxyService.newConfig(applicationContext)
                 if (ref == null || ref.id == profile.id) return@withContext

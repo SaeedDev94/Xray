@@ -1,7 +1,6 @@
 # Xray
 <img src="metadata/en-US/images/featureGraphic.png" alt="App Cover" height="150" />  
-This is a simple GUI client for <a href="https://github.com/XTLS/Xray-core">XTLS/Xray-core</a><br />
-Also you can use it independent of Xray-core just for your socks proxy (Like SocksDroid)
+This is a simple GUI client for <a href="https://github.com/XTLS/Xray-core">XTLS/Xray-core</a>
 
 # Screenshots
 <img src="metadata/en-US/images/phoneScreenshots/screenshot-01-home.png" alt="MainActivity" height="666" /><img src="metadata/en-US/images/phoneScreenshots/screenshot-02-assets.png" alt="AssetsActivity" height="666" /><img src="metadata/en-US/images/phoneScreenshots/screenshot-03-settings-basic.png" alt="SettingsActivity: Basic Tab" height="666" /><img src="metadata/en-US/images/phoneScreenshots/screenshot-04-settings-advanced.png" alt="SettingsActivity: Advanced Tab" height="666" />

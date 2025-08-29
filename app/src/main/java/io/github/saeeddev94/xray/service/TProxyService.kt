@@ -160,26 +160,24 @@ class TProxyService : VpnService() {
     }
 
     private fun start(profile: Profile?, globalConfigs: Config) {
-        if (profile == null) {
-            if (!settings.transparentProxy) startVPN(null)
-        } else {
-            getConfig(profile, globalConfigs)?.let {
-                startXray(it)
-                startVPN(profile)
-            }
+        if (profile == null) return
+        getConfig(profile, globalConfigs)?.let {
+            startXray(it)
+            startVPN(profile)
         }
     }
 
     private fun newConfig(profile: Profile?, globalConfigs: Config) {
-        if (!getIsRunning() || (profile == null && settings.transparentProxy)) return
+        if (!getIsRunning() || profile == null) return
         stopXray()
-        val name = configName(profile)
-        val config = if (profile == null) null
-        else getConfig(profile, globalConfigs).also { if (it == null) stopVPN() else startXray(it) }
-        if (profile == null || config != null) {
+        getConfig(profile, globalConfigs).also {
+            if (it == null) stopVPN() else startXray(it)
+        }?.let {
+            val name = configName(profile)
+            val notification = createNotification(name)
             showToast(name)
             broadcastStart(NEW_CONFIG_SERVICE_ACTION_NAME, name)
-            notificationManager.notify(VPN_SERVICE_NOTIFICATION_ID, createNotification(name))
+            notificationManager.notify(VPN_SERVICE_NOTIFICATION_ID, notification)
         }
     }
 
