@@ -1,0 +1,2 @@
+- Selected Profile is no longer optional! (For socks proxy just create a simple Xray-core config)
+- Share TPROXY for Hotspot and (USB) Tethering
