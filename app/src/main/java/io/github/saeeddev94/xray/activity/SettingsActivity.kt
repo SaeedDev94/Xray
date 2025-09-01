@@ -138,7 +138,7 @@ class SettingsActivity : AppCompatActivity() {
         settings.refreshLinksInterval =
             basic.findViewById<EditText>(R.id.refreshLinksInterval).text.toString().toInt()
         settings.bypassLan = basic.findViewById<MaterialSwitch>(R.id.bypassLan).isChecked
-        settings.enableIpV6 = basic.findViewById<MaterialSwitch>(R.id.enableIpV6).isChecked
+        val enableIpV6 = basic.findViewById<MaterialSwitch>(R.id.enableIpV6).isChecked
         settings.socksUdp = basic.findViewById<MaterialSwitch>(R.id.socksUdp).isChecked
         settings.bootAutoStart = basic.findViewById<MaterialSwitch>(R.id.bootAutoStart).isChecked
         settings.refreshLinksOnOpen =
@@ -155,42 +155,54 @@ class SettingsActivity : AppCompatActivity() {
         settings.tunPrefix = advanced.findViewById<EditText>(R.id.tunPrefix).text.toString().toInt()
         settings.tunAddressV6 = advanced.findViewById<EditText>(R.id.tunAddressV6).text.toString()
         settings.tunPrefixV6 = advanced.findViewById<EditText>(R.id.tunPrefixV6).text.toString().toInt()
-        settings.hotspotInterface = advanced.findViewById<EditText>(R.id.hotspotInterface).text.toString()
-        settings.tetheringInterface = advanced.findViewById<EditText>(R.id.tetheringInterface).text.toString()
-        settings.tproxyAddress = advanced.findViewById<EditText>(R.id.tproxyAddress).text.toString()
-        settings.tproxyPort = advanced.findViewById<EditText>(R.id.tproxyPort).text.toString().toInt()
-        settings.tproxyBypassWiFi = advanced.findViewById<EditText>(R.id.tproxyBypassWiFi).text
+        val hotspotInterface = advanced.findViewById<EditText>(R.id.hotspotInterface).text.toString()
+        val tetheringInterface = advanced.findViewById<EditText>(R.id.tetheringInterface).text.toString()
+        val tproxyAddress = advanced.findViewById<EditText>(R.id.tproxyAddress).text.toString()
+        val tproxyPort = advanced.findViewById<EditText>(R.id.tproxyPort).text.toString().toInt()
+        val tproxyBypassWiFi = advanced.findViewById<EditText>(R.id.tproxyBypassWiFi).text
             .toString()
             .split(",")
             .map { it.trim() }
             .filter { it.isNotBlank() }
             .toSet()
-        settings.tproxyHotspot =
-            advanced.findViewById<MaterialSwitch>(R.id.tproxyHotspot).isChecked
-        settings.tproxyTethering =
-            advanced.findViewById<MaterialSwitch>(R.id.tproxyTethering).isChecked
-
+        val tproxyAutoConnect = advanced.findViewById<MaterialSwitch>(R.id.tproxyAutoConnect).isChecked
+        val tproxyHotspot = advanced.findViewById<MaterialSwitch>(R.id.tproxyHotspot).isChecked
+        val tproxyTethering = advanced.findViewById<MaterialSwitch>(R.id.tproxyTethering).isChecked
+        val transparentProxy = advanced.findViewById<MaterialSwitch>(R.id.transparentProxy).isChecked
 
         lifecycleScope.launch {
-            val autoConnect = advanced.findViewById<MaterialSwitch>(R.id.tproxyAutoConnect).isChecked
-            val transparentProxy = advanced.findViewById<MaterialSwitch>(R.id.transparentProxy).isChecked
-            val disabledTproxy = !autoConnect || !transparentProxy
-            val monitor = settings.networkMonitorPid()
-            val xray = settings.xrayCorePid()
-            var stopService = false
-            if (disabledTproxy && monitor.exists()) {
-                val path = monitor.absolutePath
-                Shell.cmd("kill \$(cat $path) && rm $path").exec()
+            val tproxySettingsChanged = settings.enableIpV6 != enableIpV6 ||
+                    settings.hotspotInterface != hotspotInterface ||
+                    settings.tetheringInterface != tetheringInterface ||
+                    settings.tproxyAddress != tproxyAddress ||
+                    settings.tproxyPort != tproxyPort ||
+                    settings.tproxyBypassWiFi != tproxyBypassWiFi ||
+                    settings.tproxyAutoConnect != tproxyAutoConnect ||
+                    settings.tproxyHotspot != tproxyHotspot ||
+                    settings.tproxyTethering != tproxyTethering ||
+                    settings.transparentProxy != transparentProxy
+            val stopNetworkMonitor = tproxySettingsChanged && settings.networkMonitorPid().exists()
+            val stopXrayCore = tproxySettingsChanged && settings.xrayCorePid().exists()
+            if (stopNetworkMonitor) {
+                val path = settings.networkMonitorPid().absolutePath
+                Shell.cmd("kill $(cat $path) && rm $path").exec()
             }
-            if (disabledTproxy && xray.exists()) {
+            if (stopXrayCore) {
                 transparentProxyHelper.disableProxy()
                 transparentProxyHelper.stopService()
-                stopService = true
             }
             withContext(Dispatchers.Main) {
-                settings.tproxyAutoConnect = autoConnect
+                settings.enableIpV6 = enableIpV6
+                settings.hotspotInterface = hotspotInterface
+                settings.tetheringInterface = tetheringInterface
+                settings.tproxyAddress = tproxyAddress
+                settings.tproxyPort = tproxyPort
+                settings.tproxyBypassWiFi = tproxyBypassWiFi
+                settings.tproxyAutoConnect = tproxyAutoConnect
+                settings.tproxyHotspot = tproxyHotspot
+                settings.tproxyTethering = tproxyTethering
                 settings.transparentProxy = transparentProxy
-                if (stopService) TProxyService.stop(this@SettingsActivity)
+                if (stopXrayCore) TProxyService.stop(this@SettingsActivity)
                 finish()
             }
         }
