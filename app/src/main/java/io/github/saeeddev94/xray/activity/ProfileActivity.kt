@@ -18,9 +18,12 @@ import com.blacksquircle.ui.language.json.JsonLanguage
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
+import io.github.saeeddev94.xray.database.Config
 import io.github.saeeddev94.xray.database.Profile
 import io.github.saeeddev94.xray.databinding.ActivityProfileBinding
+import io.github.saeeddev94.xray.helper.ConfigHelper
 import io.github.saeeddev94.xray.helper.FileHelper
+import io.github.saeeddev94.xray.viewmodel.ConfigViewModel
 import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,8 +51,10 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private val settings by lazy { Settings(applicationContext) }
+    private val configViewModel: ConfigViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
     private lateinit var binding: ActivityProfileBinding
+    private lateinit var config: Config
     private lateinit var profile: Profile
     private var id: Long = 0L
 
@@ -61,6 +66,14 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        lifecycleScope.launch {
+            val config = configViewModel.get()
+            withContext(Dispatchers.Main) {
+                this@ProfileActivity.config = config
+            }
+        }
+
         val jsonUri = intent.data
         if (Intent.ACTION_VIEW == intent.action && jsonUri != null) {
             val profile = Profile()
@@ -134,7 +147,8 @@ class ProfileActivity : AppCompatActivity() {
         profile.name = binding.profileName.text.toString()
         profile.config = binding.profileConfig.text.toString()
         lifecycleScope.launch {
-            val error = isValid(profile.config)
+            val configHelper = ConfigHelper(settings, config, profile.config)
+            val error = isValid(configHelper.toString())
             if (check && error.isNotEmpty()) {
                 withContext(Dispatchers.Main) {
                     showError(error)
