@@ -35,6 +35,17 @@ class TransparentProxyHelper(
         Shell.cmd("${cmd()} proxy refresh").exec()
     }
 
+    fun kill() {
+        if (settings.networkMonitorPid().exists()) {
+            val path = settings.networkMonitorPid().absolutePath
+            Shell.cmd("kill $(cat $path) && rm $path").exec()
+        }
+        if (settings.xrayCorePid().exists()) {
+            disableProxy()
+            stopService()
+        }
+    }
+
     fun monitorNetwork() {
         val script = settings.networkMonitorScript()
         val pid = settings.networkMonitorPid()

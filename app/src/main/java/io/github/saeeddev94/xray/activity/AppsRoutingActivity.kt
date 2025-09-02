@@ -19,6 +19,8 @@ import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.adapter.AppsRoutingAdapter
 import io.github.saeeddev94.xray.databinding.ActivityAppsRoutingBinding
 import io.github.saeeddev94.xray.dto.AppList
+import io.github.saeeddev94.xray.helper.TransparentProxyHelper
+import io.github.saeeddev94.xray.service.TProxyService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,6 +28,7 @@ import kotlinx.coroutines.withContext
 class AppsRoutingActivity : AppCompatActivity() {
 
     private val settings by lazy { Settings(applicationContext) }
+    private val transparentProxyHelper by lazy { TransparentProxyHelper(this, settings) }
     private lateinit var binding: ActivityAppsRoutingBinding
     private lateinit var appsList: RecyclerView
     private lateinit var appsRoutingAdapter: AppsRoutingAdapter
@@ -161,10 +164,22 @@ class AppsRoutingActivity : AppCompatActivity() {
     }
 
     private fun saveAppsRouting() {
-        binding.search.clearFocus()
-        settings.appsRoutingMode = appsRoutingMode
-        settings.appsRouting = appsRouting.joinToString("\n")
-        finish()
+        val appsRoutingMode = this.appsRoutingMode
+        val appsRouting = this.appsRouting.joinToString("\n")
+
+        lifecycleScope.launch {
+            val tproxySettingsChanged = settings.appsRoutingMode != appsRoutingMode ||
+                    settings.appsRouting != appsRouting
+            val stopService = tproxySettingsChanged && settings.xrayCorePid().exists()
+            if (tproxySettingsChanged) transparentProxyHelper.kill()
+            withContext(Dispatchers.Main) {
+                binding.search.clearFocus()
+                settings.appsRoutingMode = appsRoutingMode
+                settings.appsRouting = appsRouting
+                if (stopService) TProxyService.stop(this@AppsRoutingActivity)
+                finish()
+            }
+        }
     }
 
 }

@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.materialswitch.MaterialSwitch
-import com.topjohnwu.superuser.Shell
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.adapter.SettingAdapter
@@ -181,16 +180,8 @@ class SettingsActivity : AppCompatActivity() {
                     settings.tproxyHotspot != tproxyHotspot ||
                     settings.tproxyTethering != tproxyTethering ||
                     settings.transparentProxy != transparentProxy
-            val stopNetworkMonitor = tproxySettingsChanged && settings.networkMonitorPid().exists()
-            val stopXrayCore = tproxySettingsChanged && settings.xrayCorePid().exists()
-            if (stopNetworkMonitor) {
-                val path = settings.networkMonitorPid().absolutePath
-                Shell.cmd("kill $(cat $path) && rm $path").exec()
-            }
-            if (stopXrayCore) {
-                transparentProxyHelper.disableProxy()
-                transparentProxyHelper.stopService()
-            }
+            val stopService = tproxySettingsChanged && settings.xrayCorePid().exists()
+            if (tproxySettingsChanged) transparentProxyHelper.kill()
             withContext(Dispatchers.Main) {
                 settings.enableIpV6 = enableIpV6
                 settings.hotspotInterface = hotspotInterface
@@ -202,7 +193,7 @@ class SettingsActivity : AppCompatActivity() {
                 settings.tproxyHotspot = tproxyHotspot
                 settings.tproxyTethering = tproxyTethering
                 settings.transparentProxy = transparentProxy
-                if (stopXrayCore) TProxyService.stop(this@SettingsActivity)
+                if (stopService) TProxyService.stop(this@SettingsActivity)
                 finish()
             }
         }
