@@ -1,0 +1,4 @@
+- Xray-core: v25.8.31
+- Fix empty list if selected link become inactive
+- Profile: consider (global) "Configs" on validating
+- Call TProxyService#stop() on TPROXY Apps Routing Change
