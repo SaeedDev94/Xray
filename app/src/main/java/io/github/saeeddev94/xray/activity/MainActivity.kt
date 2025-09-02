@@ -233,11 +233,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun onNewTabs(value: List<Link>) {
-        val isEmpty = value.isEmpty()
         binding.linksTab.removeOnTabSelectedListener(linksTabListener)
         binding.linksTab.removeAllTabs()
-        binding.linksTab.isVisible = !isEmpty
-        if (isEmpty) return
+        binding.linksTab.isVisible = !value.isEmpty()
         val list = value.toMutableList()
         list.add(0, Link(name = "All"))
         list.forEach {
