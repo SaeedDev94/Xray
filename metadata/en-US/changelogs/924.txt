@@ -1,0 +1,1 @@
+- Fix restore selected link tab on open
