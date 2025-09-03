@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var profileAdapter: ProfileAdapter
+    private lateinit var tabs: List<Link>
     private val profilesRecyclerView by lazy { findViewById<RecyclerView>(R.id.profilesRecyclerView) }
     private val profiles = arrayListOf<ProfileList>()
 
@@ -160,7 +161,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 profileViewModel.profiles.collectLatest {
-                    profileViewModel.next(settings.selectedLink)
+                    val tabs = if (::tabs.isInitialized) tabs else linkViewModel.activeLinks()
+                    val list = tabsList(tabs)
+                    val index = tabsIndex(list)
+                    profileViewModel.next(list[index].id)
                 }
             }
         }
@@ -232,24 +236,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    private fun tabsList(list: List<Link>): List<Link> {
+        tabs = list
+        return listOf(Link(name = "All")) + tabs
+    }
+
+    private fun tabsIndex(list: List<Link>): Int {
+        return list.indexOfFirst { it.id == settings.selectedLink }.takeIf { it != -1 } ?: 0
+    }
+
     private fun onNewTabs(value: List<Link>) {
         binding.linksTab.removeOnTabSelectedListener(linksTabListener)
         binding.linksTab.removeAllTabs()
         binding.linksTab.isVisible = !value.isEmpty()
-        val list = value.toMutableList()
-        list.add(0, Link(name = "All"))
+        val list = tabsList(value)
+        val index = tabsIndex(list)
         list.forEach {
             val tab = binding.linksTab.newTab()
             tab.tag = it.id
             tab.text = it.name
             binding.linksTab.addTab(tab)
         }
-        var selected = list.indexOfFirst { it.id == settings.selectedLink }
-        if (selected == -1) {
-            selected = 0
-            settings.selectedLink = 0L
-        }
-        binding.linksTab.selectTab(binding.linksTab.getTabAt(selected))
+        binding.linksTab.selectTab(binding.linksTab.getTabAt(index))
         binding.linksTab.addOnTabSelectedListener(linksTabListener)
     }
 
