@@ -1,3 +1,5 @@
+[English](README.md) | [Русский](README_RU.md)
+
 # Xray
 <img src="metadata/en-US/images/featureGraphic.png" alt="App Cover" height="150" />  
 This is a simple GUI client for <a href="https://github.com/XTLS/Xray-core">XTLS/Xray-core</a><br />
