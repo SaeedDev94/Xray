@@ -1,22 +1,22 @@
 <resources>
     <string name="appName">Xray</string>
     <string name="noValue">-</string>
-    <string name="drawerOpen">Открыть шкафчик</string>
-    <string name="drawerClose">Закрыть шкафчик</string>
+    <string name="drawerOpen">Открыть меню</string>
+    <string name="drawerClose">Закрыть меню</string>
     <string name="fromClipboard">Из буфера обмена</string>
     <string name="loading">Загрузка…</string>
-    <string name="vpnStart">ЗАПУСК</string>
+    <string name="vpnStart">ПУСК</string>
     <string name="vpnStop">СТОП</string>
-    <string name="pingNotConnected">Не подключен</string>
+    <string name="pingNotConnected">Не подключено</string>
     <string name="pingConnected">Подключено, нажмите для проверки соединения</string>
-    <string name="pingTesting">Тестирование…</string>
+    <string name="pingTesting">Проверка…</string>
     <string name="appFullName">SaeedDev94/Xray</string>
     <string name="xrayLabel">XTLS/Xray-core</string>
     <string name="tun2socksLabel">heiher/hev-socks5-tunnel</string>
     <string name="tun2socksVersion">2.7.4</string>
-    <string name="assets">Ресурсы</string>
-    <string name="logs">журнал</string>
-    <string name="excludedApps">Исключенные приложения</string>
+    <string name="assets">Активы</string>
+    <string name="logs">Логи</string>
+    <string name="excludedApps">Исключённые приложения</string>
     <string name="settings">Настройки</string>
     <string name="geoIp">GeoIP</string>
     <string name="geoSite">GeoSite</string>
@@ -27,37 +27,33 @@
     <string name="editIcon">Изменить значок</string>
     <string name="deleteIcon">Удалить значок</string>
     <string name="downloadIcon">Скачать значок</string>
-    <string name="fileOpenIcon">Значок открытия файла</string>
-    <string name="copyLogs">Копировать журнал</string>
-    <string name="deleteLogs">Удалить журнал</string>
+    <string name="fileOpenIcon">Открыть файл значка</string>
+    <string name="copyLogs">Копировать логи</string>
+    <string name="deleteLogs">Удалить логи</string>
     <string name="appIcon">Значок приложения</string>
-    <string name="openJson">Открыть Json</string>
-    <string name="saveExcludedApps">Сохранить исключенные приложения</string>
+    <string name="openJson">Открыть Json-файл</string>
+    <string name="saveExcludedApps">Сохранить исключённые приложения</string>
     <string name="saveSettings">Сохранить настройки</string>
     <string name="saveProfile">Сохранить профиль</string>
-
-    <!-- Основные настройки -->
-    <string name="socksAddress">Адрес Socks</string>
-    <string name="socksPort">Порт Socks</string>
-    <string name="socksUsername">Имя пользователя Socks</string>
-    <string name="socksPassword">Пароль Socks</string>
-    <string name="geoIpAddress">GeoIP адрес</string>
-    <string name="geoSiteAddress">GeoSite адрес</string>
-    <string name="pingAddress">Адрес Ping</string>
-    <string name="pingTimeout">Задержка Ping</string>
-    <string name="bypassLan">Обойти LAN (IPv4)</string>
+    <string name="socksAddress">Адрес SOCKS-прокси</string>
+    <string name="socksPort">Порт SOCKS-прокси</string>
+    <string name="socksUsername">Имя пользователя SOCKS-прокси</string>
+    <string name="socksPassword">Пароль SOCKS-прокси</string>
+    <string name="geoIpAddress">Адрес GeoIP</string>
+    <string name="geoSiteAddress">Адрес GeoSite</string>
+    <string name="pingAddress">Адрес Ping-запроса</string>
+    <string name="pingTimeout">Таймаут Ping-запросов</string>
+    <string name="bypassLan">Обойти LAN-сеть (IPv4)</string>
     <string name="enableIpV6">Включить IPv6</string>
-    <string name="socksUdp">Socks UDP</string>
-
-<!-- Расширенные настройки -->
+    <string name="socksUdp">SOCKS UDP</string>
     <string name="primaryDns">Первичный DNS (v4)</string>
     <string name="secondaryDns">Вторичный DNS (v4)</string>
     <string name="primaryDnsV6">Первичный DNS (v6)</string>
     <string name="secondaryDnsV6">Вторичный DNS (v6)</string>
     <string name="tunName">Имя туннеля</string>
-    <string name="tunMtu">MTU туннель</string>
+    <string name="tunMtu">MTU туннеля</string>
     <string name="tunAddress">Адрес туннеля (IPv4)</string>
-    <string name="tunPrefix">Префикс</string>
+    <string name="tunPrefix">Префикс адреса туннеля (IPv4)</string>
     <string name="tunAddressV6">Адрес туннеля (IPv6)</string>
-    <string name="tunPrefixV6">Префикс</string>
+    <string name="tunPrefixV6">Префикс адреса туннеля (IPv6)</string>
 </resources>
