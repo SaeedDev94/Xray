@@ -220,7 +220,7 @@ class TProxyService : VpnService() {
 
             /** Bypass LAN (IPv4) */
             if (settings.bypassLan) {
-                resources.getStringArray(R.array.publicIpAddresses).forEach {
+                settings.tunRoutes.forEach {
                     val address = it.split('/')
                     tun.addRoute(address[0], address[1].toInt())
                 }

@@ -319,5 +319,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/transparentProxy" />
+        <LinearLayout
+            android:id="@+id/tunRoutes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tunRoutes" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/baseline_settings"
+                android:contentDescription="@string/tunRoutes" />
+        </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

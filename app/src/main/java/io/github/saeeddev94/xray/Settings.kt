@@ -35,6 +35,14 @@ class Settings(private val context: Context) {
         get() = sharedPreferences.getString("excludedApps", "")!!
         set(value) = sharedPreferences.edit { putString("excludedApps", value) }
 
+    /** Tun Routes */
+    var tunRoutes: Set<String>
+        get() = sharedPreferences.getStringSet(
+            "tunRoutes",
+            context.resources.getStringArray(R.array.publicIpAddresses).toSet()
+        )!!
+        set(value) = sharedPreferences.edit { putStringSet("tunRoutes", value) }
+
     /** Basic */
     var socksAddress: String
         get() = sharedPreferences.getString("socksAddress", "127.0.0.1")!!

@@ -96,4 +96,5 @@
     <string name="tproxyHotspot">TPROXY Hotspot</string>
     <string name="tproxyTethering">TPROXY Tethering</string>
     <string name="transparentProxy">Transparent Proxy</string>
+    <string name="tunRoutes">Tun Routes</string>
 </resources>

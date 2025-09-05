@@ -2,13 +2,16 @@ package io.github.saeeddev94.xray.activity
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
 import io.github.saeeddev94.xray.R
 import io.github.saeeddev94.xray.Settings
@@ -108,6 +111,25 @@ class SettingsActivity : AppCompatActivity() {
             settings.tproxyTethering
         advanced.findViewById<MaterialSwitch>(R.id.transparentProxy).isChecked =
             settings.transparentProxy
+
+        advanced.findViewById<LinearLayout>(R.id.tunRoutes).setOnClickListener { tunRoutes() }
+    }
+
+    private fun tunRoutes() {
+        val tunRoutes = resources.getStringArray(R.array.publicIpAddresses).toSet()
+        val layout = layoutInflater.inflate(R.layout.layout_tun_routes, null)
+        val editText = layout.findViewById<EditText>(R.id.tunRoutesEditText)
+        val getValue = {
+            editText.text.toString().lines().map { it.trim() }.filter { it.isNotBlank() }.toSet()
+        }
+        editText.setText(settings.tunRoutes.joinToString("\n"))
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.tunRoutes)
+            .setView(layout)
+            .setPositiveButton("Save") { _, _ -> settings.tunRoutes = getValue() }
+            .setNeutralButton("Reset") { _, _ -> settings.tunRoutes = tunRoutes }
+            .setNegativeButton("Close", null)
+            .show()
     }
 
     private fun applySettings() {
