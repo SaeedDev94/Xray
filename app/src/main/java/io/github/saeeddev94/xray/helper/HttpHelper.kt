@@ -49,7 +49,7 @@ class HttpHelper(
                     connection.connect()
                     responseCode = connection.responseCode
                     connection.inputStream.bufferedReader().use { it.readText() }
-                } catch (error: Exception) {
+                } catch (_: Exception) {
                     null
                 } finally {
                     connection.disconnect()

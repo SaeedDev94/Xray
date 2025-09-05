@@ -39,8 +39,8 @@ class NetworkStateHelper() {
     private fun getWifi(): String? {
         val cmd = "dumpsys wifi" +
                 " | grep 'mWifiInfo SSID'" +
-                " | awk -F 'SSID: ' '{print \$2}'" +
-                " | awk -F ',' '{print \$1}'" +
+                " | awk -F 'SSID: ' '{print $2}'" +
+                " | awk -F ',' '{print $1}'" +
                 " | head -n 1"
         val result = Shell.cmd(cmd).exec()
         if (!result.isSuccess || result.out.isEmpty()) return null

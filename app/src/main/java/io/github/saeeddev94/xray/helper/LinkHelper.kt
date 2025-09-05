@@ -22,7 +22,7 @@ class LinkHelper(
         val decoded = tryDecodeBase64(base64)
         val response = try {
             JSONObject(decoded)
-        } catch (error: JSONException) {
+        } catch (_: JSONException) {
             JSONObject()
         }
         val data = response.optJSONObject("data") ?: JSONObject()

@@ -170,7 +170,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         intent?.data?.let { deepLink ->
             val pathSegments = deepLink.pathSegments
-            if (pathSegments.size > 0) processLink(pathSegments[0])
+            if (pathSegments.isNotEmpty()) processLink(pathSegments[0])
         }
     }
 
@@ -398,7 +398,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun hasPostNotification(): Boolean {
-        val sharedPref = getSharedPreferences("app", Context.MODE_PRIVATE)
+        val sharedPref = getSharedPreferences("app", MODE_PRIVATE)
         val key = "request_notification_permission"
         val askedBefore = sharedPref.getBoolean(key, false)
         if (askedBefore) return true

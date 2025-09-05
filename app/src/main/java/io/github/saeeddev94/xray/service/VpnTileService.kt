@@ -1,7 +1,6 @@
 package io.github.saeeddev94.xray.service
 
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.drawable.Icon
@@ -69,7 +68,7 @@ class VpnTileService : TileService() {
     }
 
     private fun sharedPref(): SharedPreferences {
-        return getSharedPreferences("vpn_tile", Context.MODE_PRIVATE)
+        return getSharedPreferences("vpn_tile", MODE_PRIVATE)
     }
 
 }
