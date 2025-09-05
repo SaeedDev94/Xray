@@ -288,66 +288,36 @@
                     android:autofillHints="" />
             </LinearLayout>
         </LinearLayout>
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:baselineAligned="false">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/tproxyBypassWiFi"
-                android:labelFor="@id/tproxyBypassWiFi" />
-            <EditText
-                android:id="@+id/tproxyBypassWiFi"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:autofillHints="" />
-        </LinearLayout>
-        <LinearLayout
+            android:text="@string/tproxyBypassWiFi"
+            android:labelFor="@id/tproxyBypassWiFi" />
+        <EditText
+            android:id="@+id/tproxyBypassWiFi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:baselineAligned="false">
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/tproxyAutoConnect"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/tproxyAutoConnect" />
-        </LinearLayout>
-        <LinearLayout
+            android:inputType="text"
+            android:autofillHints="" />
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/tproxyAutoConnect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:baselineAligned="false">
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/tproxyHotspot"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/tproxyHotspot" />
-        </LinearLayout>
-        <LinearLayout
+            android:text="@string/tproxyAutoConnect" />
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/tproxyHotspot"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:baselineAligned="false">
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/tproxyTethering"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/tproxyTethering" />
-        </LinearLayout>
-        <LinearLayout
+            android:text="@string/tproxyHotspot" />
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/tproxyTethering"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:baselineAligned="false">
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/transparentProxy"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/transparentProxy" />
-        </LinearLayout>
+            android:text="@string/tproxyTethering" />
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/transparentProxy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/transparentProxy" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
