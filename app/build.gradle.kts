@@ -45,12 +45,6 @@ android {
         }
     }
 
-    packaging {
-        jniLibs {
-            keepDebugSymbols += "**/*.so"
-        }
-    }
-
     splits {
         abi {
             isEnable = true
