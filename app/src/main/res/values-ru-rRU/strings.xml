@@ -17,8 +17,6 @@
     <string name="appsRouting">Маршрутизация приложений</string>
     <string name="configs">Конфигурации</string>
     <string name="settings">Настройки</string>
-    <string name="geoIp">GeoIP</string>
-    <string name="geoSite">GeoSite</string>
     <string name="refreshLinks">Обновить ссылки</string>
     <string name="newLink">Новая ссылка</string>
     <string name="editLink">Изменить ссылку</string>
@@ -87,4 +85,5 @@
     <string name="tproxyHotspot">TPROXY для точки доступа</string>
     <string name="tproxyTethering">TPROXY для раздачи</string>
     <string name="transparentProxy">Прозрачный прокси</string>
+    <string name="tunRoutes">Маршруты туннеля</string>
 </resources>
