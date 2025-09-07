@@ -41,6 +41,7 @@ import io.github.saeeddev94.xray.dto.ProfileList
 import io.github.saeeddev94.xray.helper.HttpHelper
 import io.github.saeeddev94.xray.helper.LinkHelper
 import io.github.saeeddev94.xray.helper.ProfileTouchHelper
+import io.github.saeeddev94.xray.helper.TransparentProxyHelper
 import io.github.saeeddev94.xray.service.TProxyService
 import io.github.saeeddev94.xray.viewmodel.LinkViewModel
 import io.github.saeeddev94.xray.viewmodel.ProfileViewModel
@@ -54,6 +55,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private val clipboardManager by lazy { getSystemService(ClipboardManager::class.java) }
     private val settings by lazy { Settings(applicationContext) }
+    private val transparentProxyHelper by lazy { TransparentProxyHelper(this, settings) }
     private val linkViewModel: LinkViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
     private var isRunning: Boolean = false
@@ -171,6 +173,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         intent?.data?.let { deepLink ->
             val pathSegments = deepLink.pathSegments
             if (pathSegments.isNotEmpty()) processLink(pathSegments[0])
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            if (settings.transparentProxy) transparentProxyHelper.install()
         }
     }
 

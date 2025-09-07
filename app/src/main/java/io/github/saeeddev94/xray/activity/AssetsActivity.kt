@@ -41,10 +41,6 @@ class AssetsActivity : AppCompatActivity() {
         val file = settings.xrayCoreFile()
         writeToFile(it, file) { makeExeFile(file) }
     }
-    private val xrayHelperLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
-        val file = settings.xrayHelperFile()
-        writeToFile(it, file) { makeExeFile(file) }
-    }
 
     private fun geoIpFile(): File = File(applicationContext.filesDir, "geoip.dat")
     private fun geoSiteFile(): File = File(applicationContext.filesDir, "geosite.dat")
@@ -81,10 +77,6 @@ class AssetsActivity : AppCompatActivity() {
         // XTLS/Xray-core
         binding.xrayCoreFile.setOnClickListener { runAsRoot { xrayCoreLauncher.launch(mimeType) } }
         binding.xrayCoreDelete.setOnClickListener { delete(settings.xrayCoreFile()) }
-
-        // Asterisk4Magisk/XrayHelper
-        binding.xrayHelperFile.setOnClickListener { runAsRoot { xrayHelperLauncher.launch(mimeType) } }
-        binding.xrayHelperDelete.setOnClickListener { delete(settings.xrayHelperFile()) }
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -98,14 +90,10 @@ class AssetsActivity : AppCompatActivity() {
     }
 
     private fun getXrayCoreVersion(file: File): String {
-        return getExeVersion(file, "${file.absolutePath} version", "Xray")
+        return getExeVersion(file, "${file.absolutePath} version")
     }
 
-    private fun getXrayHelperVersion(file: File): String {
-        return getExeVersion(file, "${file.absolutePath} --help", "XrayHelper")
-    }
-
-    private fun getExeVersion(file: File, cmd: String, name: String): String {
+    private fun getExeVersion(file: File, cmd: String): String {
         val exists = file.exists()
         val invalid = {
             delete(file)
@@ -115,7 +103,7 @@ class AssetsActivity : AppCompatActivity() {
             val result = Shell.cmd(cmd).exec()
             if (result.isSuccess) {
                 val txt = result.out.first()
-                val match = "$name (.*?) ".toRegex().find(txt)
+                val match = "Xray (.*?) ".toRegex().find(txt)
                 match?.groups?.get(1)?.value ?: invalid()
             } else invalid()
         } else getString(R.string.noValue)
@@ -141,12 +129,6 @@ class AssetsActivity : AppCompatActivity() {
         binding.xrayCoreVersion.text = getXrayCoreVersion(xrayCore)
         binding.xrayCoreSetup.isVisible = !xrayCoreExists
         binding.xrayCoreInstalled.isVisible = xrayCoreExists
-
-        val xrayHelper = settings.xrayHelperFile()
-        val xrayHelperExists = xrayHelper.exists()
-        binding.xrayHelperVersion.text = getXrayHelperVersion(xrayHelper)
-        binding.xrayHelperSetup.isVisible = !xrayHelperExists
-        binding.xrayHelperInstalled.isVisible = xrayHelperExists
     }
 
     private fun download(url: String, file: File, setup: LinearLayout, progressBar: ProgressBar) {

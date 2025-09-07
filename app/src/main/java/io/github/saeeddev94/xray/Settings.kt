@@ -23,6 +23,11 @@ class Settings(private val context: Context) {
         get() = sharedPreferences.getLong("lastRefreshLinks", 0L)
         set(value) = sharedPreferences.edit { putLong("lastRefreshLinks", value) }
 
+    /** XrayHelper Version Code */
+    var xrayHelperVersionCode: Int
+        get() = sharedPreferences.getInt("xrayHelperVersionCode", 0)
+        set(value) = sharedPreferences.edit { putInt("xrayHelperVersionCode", value) }
+
     /**
      * Apps Routing
      * Mode: true -> exclude, false -> include

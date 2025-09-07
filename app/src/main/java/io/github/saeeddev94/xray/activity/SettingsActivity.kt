@@ -134,10 +134,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun applySettings() {
         val transparentProxy = advanced.findViewById<MaterialSwitch>(R.id.transparentProxy).isChecked
-        if (
-            transparentProxy &&
-            (!settings.xrayCoreFile().exists() || !settings.xrayHelperFile().exists())
-        ) {
+        if (transparentProxy && !settings.xrayCoreFile().exists()) {
             Toast.makeText(
                 applicationContext, "Install the assets", Toast.LENGTH_SHORT
             ).show()

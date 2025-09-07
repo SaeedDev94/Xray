@@ -2,8 +2,10 @@ package io.github.saeeddev94.xray.helper
 
 import android.content.Context
 import com.topjohnwu.superuser.Shell
+import io.github.saeeddev94.xray.BuildConfig
 import io.github.saeeddev94.xray.Settings
 import io.github.saeeddev94.xray.service.TProxyService
+import java.io.FileOutputStream
 
 class TransparentProxyHelper(
     private val context: Context,
@@ -77,6 +79,22 @@ class TransparentProxyHelper(
             return
         }
         refreshProxy()
+    }
+
+    fun install() {
+        val xrayHelper = settings.xrayHelperFile()
+        val appVersionCode = BuildConfig.VERSION_CODE
+        val xrayHelperVersionCode = settings.xrayHelperVersionCode
+        if (xrayHelper.exists() && xrayHelperVersionCode == appVersionCode) return
+        if (xrayHelper.exists()) xrayHelper.delete()
+        context.assets.open(xrayHelper.name).use { input ->
+            FileOutputStream(xrayHelper).use { output ->
+                input.copyTo(output)
+            }
+        }
+        Shell.cmd("chown root:root ${xrayHelper.absolutePath}").exec()
+        Shell.cmd("chmod +x ${xrayHelper.absolutePath}").exec()
+        settings.xrayHelperVersionCode = appVersionCode
     }
 
     private fun cmd(): String {
