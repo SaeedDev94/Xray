@@ -7,3 +7,6 @@
 [submodule "XrayCore/Xray-core"]
 	path = XrayCore/Xray-core
 	url = https://github.com/XTLS/Xray-core.git
+[submodule "XrayHelper"]
+	path = XrayHelper
+	url = https://github.com/SaeedDev94/XrayHelper.git

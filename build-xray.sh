@@ -77,9 +77,10 @@ rm gradle/wrapper/gradle-wrapper.jar
 cd app
 gradle clean
 
-# Build XrayCore
+# Build XrayCore and XrayHelper
 pushd ..
 ./buildXrayCore.sh $NATIVE_ARCH
+./buildXrayHelper.sh $NATIVE_ARCH
 popd
 
 # Build app
