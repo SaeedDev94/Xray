@@ -1,6 +1,7 @@
 #!/bin/bash
 
 TARGET="$1"
+REFRESH="$2"
 ARCHS=(arm arm64 386 amd64)
 DEST="../app/libs"
 
@@ -26,7 +27,6 @@ check_target() {
 
 prepare_go() {
   echo "Install dependencies"
-  cd XrayCore
   # rm go*
   # go mod init XrayCore
   # go mod edit -replace github.com/xtls/xray-core=./Xray-core
@@ -47,11 +47,16 @@ build_android() {
 
 refresh_dependencies() {
   echo "Gradle: refresh dependencies"
-  cd ..
   ./gradlew --refresh-dependencies clean
 }
 
 check_target
+
+pushd XrayCore
 prepare_go
 build_android
-refresh_dependencies
+popd
+
+if [[ -n "$REFRESH" ]]; then
+  refresh_dependencies
+fi

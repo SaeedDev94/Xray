@@ -14,7 +14,6 @@ ANDROID_NDK_VERSION="28.2.13676358"
 JAVA_VERSION="17"
 GRADLE_VERSION="8.14.3"
 GO_VERSION="go1.25.1"
-GO_MOBILE_VERSION="v0.0.0-20250813145510-f12310a0cfd9"
 
 # Install Tools
 apt-get install -t trixie-backports -y golang-go
@@ -79,11 +78,8 @@ cd app
 gradle clean
 
 # Build XrayCore
-pushd ../XrayCore
-go install golang.org/x/mobile/cmd/gomobile@$GO_MOBILE_VERSION
-go mod download
-gomobile init
-gomobile bind -o "../app/libs/XrayCore.aar" -androidapi 26 -target "android/$NATIVE_ARCH" -ldflags="-buildid=" -trimpath
+pushd ..
+./buildXrayCore.sh $NATIVE_ARCH
 popd
 
 # Build app
