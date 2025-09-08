@@ -93,7 +93,7 @@ BUILD_NAME="Xray-$RELEASE_TAG-$VERSION_CODE.apk"
 cd build/outputs/apk/release
 echo "$KS_FILE" > /tmp/xray_base64.txt
 base64 -d /tmp/xray_base64.txt > /tmp/xray.jks
-zipalign -p -f -v 4 "app-$ABI_TARGET-release-unsigned.apk" "$BUILD_NAME"
+zipalign -p -f -v 16 "app-$ABI_TARGET-release-unsigned.apk" "$BUILD_NAME"
 apksigner sign --ks /tmp/xray.jks --ks-pass "pass:$KS_PASSWORD" --ks-key-alias "$KEY_ALIAS" --key-pass "pass:$KEY_PASSWORD" "$BUILD_NAME"
 rm /tmp/xray_base64.txt /tmp/xray.jks
 
