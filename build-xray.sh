@@ -69,8 +69,8 @@ export PATH="$GOPATH/bin:$PATH"
 # Clone repo
 git clone https://github.com/SaeedDev94/Xray.git $REPO_DIR
 cd $REPO_DIR
-git submodule update --init --recursive
 git checkout "$RELEASE_TAG"
+git submodule update --init --recursive
 
 # Clean task
 rm gradle/wrapper/gradle-wrapper.jar
