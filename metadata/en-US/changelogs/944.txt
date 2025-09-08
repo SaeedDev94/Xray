@@ -1,2 +1,1 @@
-- JDK 21
 - Auto install xrayhelper asset
