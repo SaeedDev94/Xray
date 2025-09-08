@@ -33,7 +33,9 @@ build_android() {
   echo "Building XrayHelper for $TARGET"
   local OUTPUT="$DEST/xrayhelper"
   rm -f $OUTPUT
-  CGO_ENABLED=0 GOOS=linux GOARCH=$TARGET go build -v -o $OUTPUT -ldflags "-s -w -buildid=" -trimpath ./main
+  CGO_ENABLED=0 GOOS=linux GOARCH=$TARGET \
+    go build -v -o $OUTPUT \
+    -ldflags "-s -w -buildid=" -buildvcs=false -trimpath ./main
 }
 
 check_target
