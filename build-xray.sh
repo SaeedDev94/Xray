@@ -3,7 +3,7 @@
 # Update repo
 apt-get update
 apt-get install -y ca-certificates
-echo "deb https://deb.debian.org/debian trixie-backports main" > /etc/apt/sources.list.d/backports.list
+echo "deb https://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list
 apt-get update || apt-get update
 apt-get dist-upgrade -y
 
@@ -16,7 +16,7 @@ GRADLE_VERSION="8.14.3"
 GO_VERSION="go1.25.1"
 
 # Install Tools
-apt-get install -t trixie-backports -y golang-go
+apt-get install -t bookworm-backports -y golang-go
 apt-get install -y git openjdk-$JAVA_VERSION-jdk-headless sdkmanager wget unzip gcc libc-dev
 sdkmanager "platform-tools" "platforms;$ANDROID_PLATFORM_VERSION" "build-tools;$ANDROID_SDK_VERSION"
 sdkmanager --install "ndk;$ANDROID_NDK_VERSION" --channel=3

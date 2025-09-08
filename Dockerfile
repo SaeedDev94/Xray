@@ -1,4 +1,4 @@
-FROM debian:trixie
+FROM debian:bookworm
 
 ENV LANG=C.UTF-8 \
     DEBIAN_FRONTEND=noninteractive
