@@ -148,20 +148,18 @@ class LinksManagerActivity : AppCompatActivity() {
     }
 
     private fun subscriptionProfiles(link: Link, value: String): List<Profile> {
-        return runCatching {
-            val decoded = LinkHelper.tryDecodeBase64(value).trim()
-            decoded.split("\n")
-                .reversed()
-                .map { LinkHelper(settings, it) }
-                .filter { it.isValid() }
-                .map { linkHelper ->
-                    val profile = Profile()
-                    profile.linkId = link.id
-                    profile.config = linkHelper.json()
-                    profile.name = linkHelper.remark()
-                    profile
-                }
-        }.getOrNull() ?: listOf()
+        val decoded = runCatching { LinkHelper.tryDecodeBase64(value).trim() }.getOrNull() ?: ""
+        return decoded.split("\n")
+            .reversed()
+            .map { LinkHelper(settings, it) }
+            .filter { it.isValid() }
+            .map { linkHelper ->
+                val profile = Profile()
+                profile.linkId = link.id
+                profile.config = linkHelper.json()
+                profile.name = linkHelper.remark()
+                profile
+            }
     }
 
     private suspend fun manageProfiles(
