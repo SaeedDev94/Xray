@@ -8,7 +8,7 @@ replace github.com/xtls/libxray => ./libXray
 
 require (
 	github.com/xtls/libxray v0.0.0-00010101000000-000000000000
-	github.com/xtls/xray-core v1.250726.0
+	github.com/xtls/xray-core v1.250911.0
 )
 
 require (
