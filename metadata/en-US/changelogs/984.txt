@@ -1,0 +1,1 @@
+- Fix profiles filter issue on app open
