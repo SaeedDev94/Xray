@@ -34,7 +34,8 @@ prepare_go() {
   # go mod tidy
   # go get golang.org/x/mobile
   # go get google.golang.org/genproto
-  go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20250813145510-f12310a0cfd9
+  local VERSION=$(awk -F ' ' '/golang.org\/x\/mobile/ {print $2}' go.mod)
+  go install golang.org/x/mobile/cmd/gomobile@$VERSION
   go mod download
 }
 
