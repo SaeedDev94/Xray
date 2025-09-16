@@ -72,7 +72,4 @@ rm /tmp/xray_base64.txt /tmp/xray.jks
 VERSION_CODE=$(cat app/versionCode.txt)
 ((VERSION_CODE += ABI_ID))
 BUILD_NAME="Xray-$RELEASE_TAG-$VERSION_CODE.apk"
-mv "app/build/outputs/apk/release/app-$ABI_TARGET-release.apk" "$BUILD_NAME"
-
-# Move app to dist dir
-mv "$BUILD_NAME" "$DIST_DIR"
+mv "app/build/outputs/apk/release/app-$ABI_TARGET-release.apk" "$DIST_DIR/$BUILD_NAME"
