@@ -10,12 +10,14 @@ apt-get dist-upgrade -y
 # Tools version
 ANDROID_PLATFORM_VERSION="android-35"
 ANDROID_SDK_VERSION="35.0.0"
+ANDROID_NDK_VERSION="28.2.13676358"
 JAVA_VERSION="17"
 
 # Install Tools
 apt-get install -t bookworm-backports -y golang-go
 apt-get install -y git openjdk-$JAVA_VERSION-jdk-headless sdkmanager wget unzip gcc libc-dev
 sdkmanager "platform-tools" "platforms;$ANDROID_PLATFORM_VERSION" "build-tools;$ANDROID_SDK_VERSION"
+sdkmanager --install "ndk;$ANDROID_NDK_VERSION" --channel=3
 
 # Define dirs
 HOME_DIR="/home/vagrant"
@@ -25,6 +27,7 @@ REPO_DIR="$BUILD_DIR/io.github.saeeddev94.xray"
 # Set vars
 export JAVA_HOME="/usr/lib/jvm/java-$JAVA_VERSION-openjdk-amd64"
 export ANDROID_HOME="/opt/android-sdk"
+export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION"
 
 # Set path
 export PATH="$JAVA_HOME/bin:$PATH"
