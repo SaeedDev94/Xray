@@ -36,11 +36,9 @@ cd $REPO_DIR
 git checkout "$RELEASE_TAG"
 git submodule update --init --recursive
 
-# Setup SDK
-sdkmanager "platform-tools" "platforms;$ANDROID_PLATFORM_VERSION" "build-tools;$ANDROID_SDK_VERSION"
-
-# Setup NDK
+# Setup SDK & NDK
 ANDROID_NDK_VERSION=$(awk -F '"' '/ndkVersion/ {print $2}' app/build.gradle.kts)
+sdkmanager "platform-tools" "platforms;$ANDROID_PLATFORM_VERSION" "build-tools;$ANDROID_SDK_VERSION"
 sdkmanager --install "ndk;$ANDROID_NDK_VERSION" --channel=3
 
 # Setup gradle
