@@ -63,18 +63,16 @@ gradle clean
 ./buildGo.sh $NATIVE_ARCH
 
 # Build app
+echo "$KS_FILE" > /tmp/xray_base64.txt
+base64 -d /tmp/xray_base64.txt > /tmp/xray.jks
 gradle -PabiId=$ABI_ID -PabiTarget=$ABI_TARGET assembleRelease
+rm /tmp/xray_base64.txt /tmp/xray.jks
 
-# Sign app
+# Build name
 VERSION_CODE=$(cat app/versionCode.txt)
 ((VERSION_CODE += ABI_ID))
 BUILD_NAME="Xray-$RELEASE_TAG-$VERSION_CODE.apk"
-cd app/build/outputs/apk/release
-echo "$KS_FILE" > /tmp/xray_base64.txt
-base64 -d /tmp/xray_base64.txt > /tmp/xray.jks
-zipalign -p -f -v 16 "app-$ABI_TARGET-release-unsigned.apk" "$BUILD_NAME"
-apksigner sign --ks /tmp/xray.jks --ks-pass "pass:$KS_PASSWORD" --ks-key-alias "$KEY_ALIAS" --key-pass "pass:$KEY_PASSWORD" "$BUILD_NAME"
-rm /tmp/xray_base64.txt /tmp/xray.jks
+mv "app/build/outputs/apk/release/app-$ABI_TARGET-release.apk" "$BUILD_NAME"
 
 # Move app to dist dir
 mv "$BUILD_NAME" "$DIST_DIR"
