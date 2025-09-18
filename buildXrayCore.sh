@@ -2,6 +2,7 @@
 
 TARGET="$1"
 REFRESH="$2"
+SETUP="$3"
 ARCHS=(arm arm64 386 amd64)
 DEST="../app/libs"
 
@@ -27,13 +28,15 @@ check_target() {
 
 prepare_go() {
   echo "Install dependencies"
-  # rm go*
-  # go mod init XrayCore
-  # go mod edit -replace github.com/xtls/xray-core=./Xray-core
-  # go mod edit -replace github.com/xtls/libxray=./libXray
-  # go mod tidy
-  # go get golang.org/x/mobile
-  # go get google.golang.org/genproto
+  if [[ -n "$SETUP" ]]; then
+    rm go*
+    go mod init XrayCore
+    go mod edit -replace github.com/xtls/xray-core=./Xray-core
+    go mod edit -replace github.com/xtls/libxray=./libXray
+    go mod tidy
+    go get golang.org/x/mobile
+    go get google.golang.org/genproto
+  fi
   local VERSION=$(awk -F ' ' '/golang.org\/x\/mobile/ {print $2}' go.mod)
   go install golang.org/x/mobile/cmd/gomobile@$VERSION
   go mod download
