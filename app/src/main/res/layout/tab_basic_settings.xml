@@ -195,6 +195,11 @@
             android:layout_height="wrap_content"
             android:text="@string/socksUdp" />
         <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/tun2socks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tun2socks" />
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/bootAutoStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

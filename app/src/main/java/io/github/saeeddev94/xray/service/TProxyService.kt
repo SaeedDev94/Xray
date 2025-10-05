@@ -197,7 +197,7 @@ class TProxyService : VpnService() {
         if (settings.transparentProxy) {
             transparentProxyHelper.enableProxy()
             transparentProxyHelper.monitorNetwork()
-        } else {
+        } else if (settings.tun2socks) {
             /** Create Tun */
             val tun = Builder()
             val tunName = getString(R.string.appName)

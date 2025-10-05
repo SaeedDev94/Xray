@@ -72,6 +72,7 @@
     <string name="bypassLan">Bypass LAN (IPv4)</string>
     <string name="enableIpV6">Enable IPv6</string>
     <string name="socksUdp">Socks UDP</string>
+    <string name="tun2socks">Tun2socks</string>
     <string name="bootAutoStart">Boot Auto Start</string>
     <string name="refreshLinksOnOpen">Refresh Links On Open</string>
 

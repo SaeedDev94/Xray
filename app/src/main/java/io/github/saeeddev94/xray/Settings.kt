@@ -91,6 +91,9 @@ class Settings(private val context: Context) {
     var socksUdp: Boolean
         get() = sharedPreferences.getBoolean("socksUdp", true)
         set(value) = sharedPreferences.edit { putBoolean("socksUdp", value) }
+    var tun2socks: Boolean
+        get() = sharedPreferences.getBoolean("tun2socks", true)
+        set(value) = sharedPreferences.edit { putBoolean("tun2socks", value) }
     var bootAutoStart: Boolean
         get() = sharedPreferences.getBoolean("bootAutoStart", false)
         set(value) = sharedPreferences.edit { putBoolean("bootAutoStart", value) }

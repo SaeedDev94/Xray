@@ -2,7 +2,6 @@ package io.github.saeeddev94.xray.activity
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -81,6 +80,7 @@ class SettingsActivity : AppCompatActivity() {
         basic.findViewById<MaterialSwitch>(R.id.bypassLan).isChecked = settings.bypassLan
         basic.findViewById<MaterialSwitch>(R.id.enableIpV6).isChecked = settings.enableIpV6
         basic.findViewById<MaterialSwitch>(R.id.socksUdp).isChecked = settings.socksUdp
+        basic.findViewById<MaterialSwitch>(R.id.tun2socks).isChecked = settings.tun2socks
         basic.findViewById<MaterialSwitch>(R.id.bootAutoStart).isChecked = settings.bootAutoStart
         basic.findViewById<MaterialSwitch>(R.id.refreshLinksOnOpen).isChecked =
             settings.refreshLinksOnOpen
@@ -158,6 +158,7 @@ class SettingsActivity : AppCompatActivity() {
         settings.bypassLan = basic.findViewById<MaterialSwitch>(R.id.bypassLan).isChecked
         val enableIpV6 = basic.findViewById<MaterialSwitch>(R.id.enableIpV6).isChecked
         settings.socksUdp = basic.findViewById<MaterialSwitch>(R.id.socksUdp).isChecked
+        settings.tun2socks = basic.findViewById<MaterialSwitch>(R.id.tun2socks).isChecked
         settings.bootAutoStart = basic.findViewById<MaterialSwitch>(R.id.bootAutoStart).isChecked
         settings.refreshLinksOnOpen =
             basic.findViewById<MaterialSwitch>(R.id.refreshLinksOnOpen).isChecked
