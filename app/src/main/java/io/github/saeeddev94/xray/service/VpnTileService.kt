@@ -34,10 +34,10 @@ class VpnTileService : TileService() {
 
     override fun onClick() {
         super.onClick()
-        val transparentProxy = settings.transparentProxy
+        val proxy = !settings.tun2socks || settings.transparentProxy
         when (qsTile?.state) {
             Tile.STATE_INACTIVE -> {
-                TProxyService.start(applicationContext, !transparentProxy)
+                TProxyService.start(applicationContext, !proxy)
             }
             Tile.STATE_ACTIVE -> TProxyService.stop(applicationContext)
         }

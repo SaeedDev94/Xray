@@ -49,6 +49,6 @@ class BootReceiver : BroadcastReceiver() {
             }
             return
         }
-        TProxyService.start(context, true)
+        TProxyService.start(context, settings.tun2socks)
     }
 }

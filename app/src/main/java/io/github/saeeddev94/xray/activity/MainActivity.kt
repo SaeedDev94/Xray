@@ -296,7 +296,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun onToggleButtonClick() {
-        if (settings.transparentProxy) {
+        if (!settings.tun2socks || settings.transparentProxy) {
             toggleVpnService()
             return
         }
