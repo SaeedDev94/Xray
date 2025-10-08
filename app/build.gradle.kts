@@ -23,7 +23,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = calcVersionCode()
-        versionName = "11.8.6"
+        versionName = "11.8.7"
     }
 
     buildFeatures {
