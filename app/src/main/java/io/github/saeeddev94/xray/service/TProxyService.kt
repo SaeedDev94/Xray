@@ -151,9 +151,13 @@ class TProxyService : VpnService() {
     private fun getConfig(profile: Profile, globalConfigs: Config): XrayConfig? {
         val dir: File = applicationContext.filesDir
         val config: File = settings.xrayConfig()
-        val configHelper = ConfigHelper(settings, globalConfigs, profile.config)
-        FileHelper.createOrUpdate(config, configHelper.toString())
-        val error: String = XrayCore.test(dir.absolutePath, config.absolutePath)
+        val configHelper = runCatching { ConfigHelper(settings, globalConfigs, profile.config) }
+        val error: String = if (configHelper.isSuccess) {
+            FileHelper.createOrUpdate(config, configHelper.getOrNull().toString())
+            XrayCore.test(dir.absolutePath, config.absolutePath)
+        } else {
+            configHelper.exceptionOrNull()?.message ?: getString(R.string.invalidProfile)
+        }
         if (error.isNotEmpty()) {
             showToast(error)
             return null

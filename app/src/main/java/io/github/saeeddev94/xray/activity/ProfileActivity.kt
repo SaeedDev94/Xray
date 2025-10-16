@@ -147,8 +147,12 @@ class ProfileActivity : AppCompatActivity() {
         profile.name = binding.profileName.text.toString()
         profile.config = binding.profileConfig.text.toString()
         lifecycleScope.launch {
-            val configHelper = ConfigHelper(settings, config, profile.config)
-            val error = isValid(configHelper.toString())
+            val configHelper = runCatching { ConfigHelper(settings, config, profile.config) }
+            val error = if (configHelper.isSuccess) {
+                isValid(configHelper.getOrNull().toString())
+            } else {
+                configHelper.exceptionOrNull()?.message ?: getString(R.string.invalidProfile)
+            }
             if (check && error.isNotEmpty()) {
                 withContext(Dispatchers.Main) {
                     showError(error)

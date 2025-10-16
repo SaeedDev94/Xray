@@ -5,13 +5,9 @@ import org.json.JSONObject
 
 class JsonHelper {
     companion object {
-        fun makeObject(value: String) = runCatching {
-            JSONObject(value)
-        }.getOrNull() ?: JSONObject()
+        fun makeObject(value: String) = JSONObject(value)
 
-        fun makeArray(value: String) = runCatching {
-            JSONArray(value)
-        }.getOrNull() ?: JSONArray()
+        fun makeArray(value: String) = JSONArray(value)
 
         fun getObject(value: JSONObject, key: String) =
             value.optJSONObject(key) ?: JSONObject()
