@@ -16,14 +16,14 @@ fun calcVersionCode(): Int {
 
 android {
     namespace = "io.github.saeeddev94.xray"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.github.saeeddev94.xray"
         minSdk = 26
         targetSdk = 36
         versionCode = calcVersionCode()
-        versionName = "12.0.0"
+        versionName = "12.1.0"
     }
 
     buildFeatures {

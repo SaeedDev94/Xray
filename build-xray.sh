@@ -8,8 +8,8 @@ apt-get update || apt-get update
 apt-get dist-upgrade -y
 
 # Tools version
-ANDROID_PLATFORM_VERSION="android-35"
-ANDROID_SDK_VERSION="35.0.0"
+ANDROID_PLATFORM_VERSION="android-36"
+ANDROID_SDK_VERSION="36.0.0"
 JAVA_VERSION="17"
 
 # Install Tools
