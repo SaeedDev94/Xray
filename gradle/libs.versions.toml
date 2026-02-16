@@ -1,9 +1,9 @@
 [versions]
 agp = "9.0.1"
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 ksp = "2.3.3"
-androidxActivityKtx = "1.10.1"
-androidxCoreKtx = "1.16.0"
+androidxActivityKtx = "1.12.4"
+androidxCoreKtx = "1.17.0"
 androidxAppCompat = "1.7.1"
 androidxLifecycleViewmodelKtx = "2.10.0"
 androidxRoom = "2.8.4"
