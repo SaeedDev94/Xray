@@ -3,14 +3,14 @@
 # Update repo
 apt-get update
 apt-get install -y ca-certificates
-echo "deb https://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list
+echo "deb https://deb.debian.org/debian trixie-backports main" > /etc/apt/sources.list.d/backports.list
 apt-get update || apt-get update
 apt-get dist-upgrade -y
 
 # Tools version
 ANDROID_PLATFORM_VERSION="android-36"
 ANDROID_SDK_VERSION="36.0.0"
-JAVA_VERSION="17"
+JAVA_VERSION="21"
 
 # Install Tools
 apt-get install -t bookworm-backports -y golang-go
