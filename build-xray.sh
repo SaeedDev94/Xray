@@ -13,7 +13,7 @@ ANDROID_SDK_VERSION="36.0.0"
 JAVA_VERSION="21"
 
 # Install Tools
-apt-get install -t bookworm-backports -y golang-go
+apt-get install -t trixie-backports -y golang-go
 apt-get install -y git openjdk-$JAVA_VERSION-jdk-headless sdkmanager wget unzip gcc libc-dev
 
 # Define dirs
