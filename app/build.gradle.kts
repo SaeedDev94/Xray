@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.parcelize)
-    alias(libs.plugins.devtools.ksp)
+    alias(libs.plugins.google.ksp)
 }
 
 val abiId: String by project

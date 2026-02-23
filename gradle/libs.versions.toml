@@ -29,4 +29,4 @@ yuriy-budiyev-code-scanner = { group = "com.github.yuriy-budiyev", name = "code-
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "parcelize" }
-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
