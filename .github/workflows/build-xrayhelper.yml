@@ -1,0 +1,171 @@
+name: Build XrayHelper
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v1.0.0)'
+        required: false
+        default: 'dev'
+
+jobs:
+  build-arm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: XrayHelper/go.mod
+          cache-dependency-path: XrayHelper/go.sum
+
+      - name: Build arm (armv7)
+        run: |
+          cd XrayHelper
+          go mod download
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 \
+            go build -v -o xrayhelper-arm-v7 \
+            -ldflags "-s -w -buildid=" -buildvcs=false -trimpath .
+
+      - name: Upload arm artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xrayhelper-arm-v7
+          path: XrayHelper/xrayhelper-arm-v7
+
+  build-arm64:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: XrayHelper/go.mod
+          cache-dependency-path: XrayHelper/go.sum
+
+      - name: Build arm64
+        run: |
+          cd XrayHelper
+          go mod download
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 \
+            go build -v -o xrayhelper-arm64 \
+            -ldflags "-s -w -buildid=" -buildvcs=false -trimpath .
+
+      - name: Upload arm64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xrayhelper-arm64
+          path: XrayHelper/xrayhelper-arm64
+
+  build-x86:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: XrayHelper/go.mod
+          cache-dependency-path: XrayHelper/go.sum
+
+      - name: Build x86 (32-bit)
+        run: |
+          cd XrayHelper
+          go mod download
+          CGO_ENABLED=0 GOOS=linux GOARCH=386 \
+            go build -v -o xrayhelper-x86 \
+            -ldflags "-s -w -buildid=" -buildvcs=false -trimpath .
+
+      - name: Upload x86 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xrayhelper-x86
+          path: XrayHelper/xrayhelper-x86
+
+  build-amd64:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: XrayHelper/go.mod
+          cache-dependency-path: XrayHelper/go.sum
+
+      - name: Build amd64 (x86_64)
+        run: |
+          cd XrayHelper
+          go mod download
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+            go build -v -o xrayhelper-amd64 \
+            -ldflags "-s -w -buildid=" -buildvcs=false -trimpath .
+
+      - name: Upload amd64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xrayhelper-amd64
+          path: XrayHelper/xrayhelper-amd64
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: [build-arm, build-arm64, build-x86, build-amd64]
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: xrayhelper-*
+          merge-multiple: true
+          path: dist
+
+      - name: Create checksums
+        run: |
+          cd dist
+          sha256sum xrayhelper-* > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Publish to release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          prerelease: false
+          draft: false
+          files: |
+            dist/xrayhelper-*
+            dist/SHA256SUMS.txt
+
+      - name: Upload dev build
+        if: github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: xrayhelper-${{ inputs.version }}
+          name: XrayHelper ${{ inputs.version }}
+          prerelease: true
+          draft: false
+          files: |
+            dist/xrayhelper-*
+            dist/SHA256SUMS.txt
