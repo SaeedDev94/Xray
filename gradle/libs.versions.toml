@@ -8,7 +8,7 @@ androidxAppCompat = "1.7.1"
 androidxLifecycleViewmodelKtx = "2.10.0"
 androidxRoom = "2.8.4"
 blacksquircleUi = "2.9.0"
-googleMaterial = "1.13.0"
+googleMaterial = "1.14.0"
 libsuCore = "5.2.2"
 codeScanner="2.3.2"
 
