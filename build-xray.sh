@@ -12,28 +12,28 @@ HOME_DIR="/home/vagrant"
 BUILD_DIR="$HOME_DIR/build"
 REPO_DIR="$BUILD_DIR/io.github.saeeddev94.xray"
 
+# Clone repo
+apt-get install -y git
+git clone https://github.com/SaeedDev94/Xray.git $REPO_DIR
+cd $REPO_DIR
+git checkout "$RELEASE_TAG"
+git submodule update --init --recursive
+
 # Tools version
 SDK_VERSION=$(awk -F ' ' '/compileSdk/ {print $3}' app/build.gradle.kts)
 JAVA_VERSION=$(awk -F '_' '/JVM/ {print $2}' app/build.gradle.kts)
 
 # Set vars
-BUILD_TOOLS="$SDK_VERSION.1.0"
 export ANDROID_HOME="/opt/android-sdk"
 export JAVA_HOME="/usr/lib/jvm/java-$JAVA_VERSION-openjdk-amd64"
 
 # Set path
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
-export PATH="$ANDROID_HOME/build-tools/$BUILD_TOOLS:$PATH"
+export PATH="$ANDROID_HOME/build-tools/$SDK_VERSION.0.0:$PATH"
 export PATH="$JAVA_HOME/bin:$PATH"
 
 # Install Tools
-apt-get install -y git openjdk-$JAVA_VERSION-jdk-headless sdkmanager wget unzip gcc libc-dev golang-go
-
-# Clone repo
-git clone https://github.com/SaeedDev94/Xray.git $REPO_DIR
-cd $REPO_DIR
-git checkout "$RELEASE_TAG"
-git submodule update --init --recursive
+apt-get install -y openjdk-$JAVA_VERSION-jdk-headless sdkmanager wget unzip gcc libc-dev golang-go
 
 # Build dependencies
 ./buildGo.sh $NATIVE_ARCH

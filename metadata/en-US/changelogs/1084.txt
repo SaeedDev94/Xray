@@ -1,0 +1,2 @@
+- Xray-core: v26.5.9
+- hev-socks5-tunnel: v2.15.0
