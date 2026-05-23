@@ -7,27 +7,27 @@ echo "deb https://deb.debian.org/debian forky main" > /etc/apt/sources.list.d/fo
 apt-get update || apt-get update
 apt-get dist-upgrade -y
 
-# Tools version
-ANDROID_PLATFORM_VERSION="android-36"
-ANDROID_SDK_VERSION="36.0.0"
-JAVA_VERSION="21"
-
-# Install Tools
-apt-get install -y git openjdk-$JAVA_VERSION-jdk-headless sdkmanager wget unzip gcc libc-dev golang-go
-
 # Define dirs
 HOME_DIR="/home/vagrant"
 BUILD_DIR="$HOME_DIR/build"
 REPO_DIR="$BUILD_DIR/io.github.saeeddev94.xray"
 
+# Tools version
+SDK_VERSION=$(awk -F ' ' '/compileSdk/ {print $3}' app/build.gradle.kts)
+JAVA_VERSION=$(awk -F '_' '/JVM/ {print $2}' app/build.gradle.kts)
+
 # Set vars
-export JAVA_HOME="/usr/lib/jvm/java-$JAVA_VERSION-openjdk-amd64"
+BUILD_TOOLS="$SDK_VERSION.1.0"
 export ANDROID_HOME="/opt/android-sdk"
+export JAVA_HOME="/usr/lib/jvm/java-$JAVA_VERSION-openjdk-amd64"
 
 # Set path
-export PATH="$JAVA_HOME/bin:$PATH"
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
-export PATH="$ANDROID_HOME/build-tools/$ANDROID_SDK_VERSION:$PATH"
+export PATH="$ANDROID_HOME/build-tools/$BUILD_TOOLS:$PATH"
+export PATH="$JAVA_HOME/bin:$PATH"
+
+# Install Tools
+apt-get install -y git openjdk-$JAVA_VERSION-jdk-headless sdkmanager wget unzip gcc libc-dev golang-go
 
 # Clone repo
 git clone https://github.com/SaeedDev94/Xray.git $REPO_DIR
@@ -35,10 +35,8 @@ cd $REPO_DIR
 git checkout "$RELEASE_TAG"
 git submodule update --init --recursive
 
-# Setup SDK & NDK
-ANDROID_NDK_VERSION=$(awk -F '"' '/ndkVersion/ {print $2}' app/build.gradle.kts)
-sdkmanager "platform-tools" "platforms;$ANDROID_PLATFORM_VERSION" "build-tools;$ANDROID_SDK_VERSION"
-sdkmanager --install "ndk;$ANDROID_NDK_VERSION" --channel=3
+# Build dependencies
+./buildGo.sh $NATIVE_ARCH
 
 # Setup gradle
 GRADLE_DIR="$BUILD_DIR/gradle"
@@ -59,9 +57,6 @@ export PATH="$GRADLE_DIR/$GRADLE_VERSION/bin:$PATH"
 # Clean task
 rm gradle/wrapper/gradle-wrapper.jar
 gradle clean
-
-# Build dependencies
-./buildGo.sh $NATIVE_ARCH
 
 # Build app
 echo "$KS_FILE" > /tmp/xray_base64.txt
