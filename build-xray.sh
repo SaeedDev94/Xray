@@ -33,35 +33,19 @@ export PATH="$ANDROID_HOME/build-tools/$SDK_VERSION.0.0:$PATH"
 export PATH="$JAVA_HOME/bin:$PATH"
 
 # Install Tools
-apt-get install -y openjdk-$JAVA_VERSION-jdk-headless sdkmanager wget unzip gcc libc-dev golang-go
+apt-get install -y openjdk-$JAVA_VERSION-jdk-headless sdkmanager golang-go gcc libc-dev
 
 # Build dependencies
 ./buildGo.sh $NATIVE_ARCH
 
 # Setup gradle
-GRADLE_DIR="$BUILD_DIR/gradle"
-GRADLE_URL=$(grep distributionUrl gradle/wrapper/gradle-wrapper.properties | \
-  cut -d '=' -f 2 | \
-  sed 's#\\##g')
-GRADLE_ARCHIVE=$(basename $GRADLE_URL)
-GRADLE_VERSION=$(echo "$GRADLE_ARCHIVE" | sed -E 's/gradle-([0-9.]+)-bin\.zip/\1/')
-mkdir -p $GRADLE_DIR
-pushd $GRADLE_DIR
-wget "$GRADLE_URL"
-unzip "$GRADLE_ARCHIVE"
-rm "$GRADLE_ARCHIVE"
-mv * "$GRADLE_VERSION"
-popd
-export PATH="$GRADLE_DIR/$GRADLE_VERSION/bin:$PATH"
-
-# Clean task
-rm gradle/wrapper/gradle-wrapper.jar
-gradle clean
+./gradlew clean
+./gradlew --version
 
 # Build app
 echo "$KS_FILE" > /tmp/xray_base64.txt
 base64 -d /tmp/xray_base64.txt > /tmp/xray.jks
-gradle -PabiId=$ABI_ID -PabiTarget=$ABI_TARGET assembleRelease
+./gradlew -PabiId=$ABI_ID -PabiTarget=$ABI_TARGET assembleRelease
 rm /tmp/xray_base64.txt /tmp/xray.jks
 
 # Build name
