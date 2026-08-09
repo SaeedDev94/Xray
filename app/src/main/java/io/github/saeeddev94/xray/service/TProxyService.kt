@@ -97,8 +97,9 @@ class TProxyService : VpnService() {
     private var cellularCallback: ConnectivityManager.NetworkCallback? = null
     private var toast: Toast? = null
 
-    private external fun TProxyStartService(configPath: String, fd: Int)
-    private external fun TProxyStopService()
+    private external fun TProxyStartService(configPath: String, fd: Int): Boolean
+    private external fun TProxyStopService(): Boolean
+    private external fun TProxyIsRunning(): Boolean
     private external fun TProxyGetStats(): LongArray
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
