@@ -46,7 +46,12 @@ build_android() {
   echo "Building XrayCore for $TARGET"
   rm -f "$DEST/XrayCore*"
   gomobile init
-  gomobile bind -o "$DEST/XrayCore.aar" -androidapi 26 -target "android/$TARGET" -ldflags="-buildid=" -trimpath
+  gomobile bind \
+    -o "$DEST/XrayCore.aar" \
+    -androidapi 26 \
+    -target "android/$TARGET" \
+    -ldflags="-checklinkname=0 -buildid=" \
+    -trimpath
 }
 
 refresh_dependencies() {
