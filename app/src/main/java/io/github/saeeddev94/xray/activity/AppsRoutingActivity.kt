@@ -1,6 +1,5 @@
 package io.github.saeeddev94.xray.activity
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -138,10 +137,6 @@ class AppsRoutingActivity : AppCompatActivity() {
             val selected = ArrayList<AppList>()
             val unselected = ArrayList<AppList>()
             packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS).forEach {
-                val permissions = it.requestedPermissions
-                if (
-                    permissions == null || !permissions.contains(Manifest.permission.INTERNET)
-                ) return@forEach
                 val appIcon = it.applicationInfo!!.loadIcon(packageManager)
                 val appName = it.applicationInfo!!.loadLabel(packageManager).toString()
                 val packageName = it.packageName
