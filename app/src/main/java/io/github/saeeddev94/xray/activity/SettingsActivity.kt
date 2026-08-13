@@ -21,6 +21,7 @@ import io.github.saeeddev94.xray.service.TProxyService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.security.SecureRandom
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -84,6 +85,7 @@ class SettingsActivity : AppCompatActivity() {
         basic.findViewById<MaterialSwitch>(R.id.bootAutoStart).isChecked = settings.bootAutoStart
         basic.findViewById<MaterialSwitch>(R.id.refreshLinksOnOpen).isChecked =
             settings.refreshLinksOnOpen
+        basic.findViewById<MaterialSwitch>(R.id.hardwareId).isChecked = settings.hardwareId
     }
 
     @SuppressLint("SetTextI18n")
@@ -164,6 +166,14 @@ class SettingsActivity : AppCompatActivity() {
         settings.bootAutoStart = basic.findViewById<MaterialSwitch>(R.id.bootAutoStart).isChecked
         settings.refreshLinksOnOpen =
             basic.findViewById<MaterialSwitch>(R.id.refreshLinksOnOpen).isChecked
+        settings.hardwareId = basic.findViewById<MaterialSwitch>(R.id.hardwareId).isChecked
+
+        /** Generate hardware id */
+        if (settings.hardwareId && settings.hardwareIdHeader.isNullOrBlank()) {
+            settings.hardwareIdHeader = ByteArray(16).also {
+                SecureRandom().nextBytes(it)
+            }.joinToString("") { "%02x".format(it) }
+        }
 
         /** Advanced */
         settings.primaryDns = advanced.findViewById<EditText>(R.id.primaryDns).text.toString()

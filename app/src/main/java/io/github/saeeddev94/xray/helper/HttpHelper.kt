@@ -25,6 +25,7 @@ class HttpHelper(
             proxy: Proxy? = null,
             timeout: Int = 5000,
             userAgent: String? = null,
+            hardwareId: String? = null,
         ): HttpURLConnection {
             val url = URL(link)
             val connection = if (proxy == null) {
@@ -36,14 +37,19 @@ class HttpHelper(
             connection.connectTimeout = timeout
             connection.readTimeout = timeout
             userAgent?.let { connection.setRequestProperty("User-Agent", it) }
+            hardwareId?.let { connection.setRequestProperty("x-hwid", it) }
             connection.setRequestProperty("Connection", "close")
             return connection
         }
 
-        suspend fun get(link: String, userAgent: String? = null): String {
+        suspend fun get(link: String, userAgent: String? = null, hardwareId: String? = null): String {
             return withContext(Dispatchers.IO) {
                 val defaultUserAgent = "${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME}"
-                val connection = getConnection(link, userAgent = userAgent ?: defaultUserAgent)
+                val connection = getConnection(
+                    link,
+                    userAgent = userAgent ?: defaultUserAgent,
+                    hardwareId = hardwareId,
+                )
                 var responseCode = 0
                 val responseBody = try {
                     connection.connect()

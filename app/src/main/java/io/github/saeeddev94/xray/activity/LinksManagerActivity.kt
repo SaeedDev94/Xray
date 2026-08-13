@@ -102,7 +102,9 @@ class LinksManagerActivity : AppCompatActivity() {
             links.forEach { link ->
                 val profiles = profileViewModel.linkProfiles(link.id)
                 runCatching {
-                    val content = HttpHelper.get(link.address, link.userAgent).trim()
+                    val hardwareId = settings.hardwareId && !settings.hardwareIdHeader.isNullOrBlank()
+                    val hardwareIdHeader = if (hardwareId) settings.hardwareIdHeader else null
+                    val content = HttpHelper.get(link.address, link.userAgent, hardwareIdHeader).trim()
                     val newProfiles = if (link.type == Link.Type.Json) {
                         jsonProfiles(link, content)
                     } else {

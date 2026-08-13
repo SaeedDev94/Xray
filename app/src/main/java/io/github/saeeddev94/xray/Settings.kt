@@ -8,6 +8,11 @@ class Settings(private val context: Context) {
 
     private val sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
+    /** HWID Header */
+    var hardwareIdHeader: String?
+        get() = sharedPreferences.getString("hardwareIdHeader", null)
+        set(value) = sharedPreferences.edit { putString("hardwareIdHeader", value) }
+
     /** Active Link ID */
     var selectedLink: Long
         get() = sharedPreferences.getLong("selectedLink", 0L)
@@ -100,6 +105,9 @@ class Settings(private val context: Context) {
     var refreshLinksOnOpen: Boolean
         get() = sharedPreferences.getBoolean("refreshLinksOnOpen", false)
         set(value) = sharedPreferences.edit { putBoolean("refreshLinksOnOpen", value) }
+    var hardwareId: Boolean
+        get() = sharedPreferences.getBoolean("hardwareId", false)
+        set(value) = sharedPreferences.edit { putBoolean("hardwareId", value) }
 
     /** Advanced */
     var primaryDns: String
