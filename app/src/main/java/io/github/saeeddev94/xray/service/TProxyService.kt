@@ -261,6 +261,9 @@ class TProxyService : VpnService() {
                 "socks5:",
                 "  address: ${settings.socksAddress}",
                 "  port: ${settings.socksPort}",
+                "misc:",
+                "  tcp-read-write-timeout: ${settings.tunTcpReadWriteTimeout}",
+                "  udp-read-write-timeout: ${settings.tunUdpReadWriteTimeout}",
             )
             if (
                 settings.socksUsername.trim().isNotEmpty() &&

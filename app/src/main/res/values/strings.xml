@@ -87,6 +87,8 @@
     <string name="tunPrefix">Prefix</string>
     <string name="tunAddressV6">Tun Address (IPv6)</string>
     <string name="tunPrefixV6">Prefix</string>
+    <string name="tunTcpReadWriteTimeout">Hev TCP R/W Timeout</string>
+    <string name="tunUdpReadWriteTimeout">Hev UDP R/W Timeout</string>
     <string name="hotspotInterface">Hotspot Interface</string>
     <string name="tetheringInterface">Tethering Interface</string>
     <string name="tproxyAddress">TPROXY Address</string>

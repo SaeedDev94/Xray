@@ -132,6 +132,12 @@ class Settings(private val context: Context) {
     var tunPrefixV6: Int
         get() = sharedPreferences.getInt("tunPrefixV6", 128)
         set(value) = sharedPreferences.edit { putInt("tunPrefixV6", value) }
+    var tunTcpReadWriteTimeout: Int
+        get() = sharedPreferences.getInt("tunTcpReadWriteTimeout", 300000)
+        set(value) = sharedPreferences.edit { putInt("tunTcpReadWriteTimeout", value) }
+    var tunUdpReadWriteTimeout: Int
+        get() = sharedPreferences.getInt("tunTcpReadWriteTimeout", 60000)
+        set(value) = sharedPreferences.edit { putInt("tunTcpReadWriteTimeout", value) }
     var hotspotInterface
         get() = sharedPreferences.getString("hotspotInterface", "wlan2")!!
         set(value) = sharedPreferences.edit { putString("hotspotInterface", value) }
