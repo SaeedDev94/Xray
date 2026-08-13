@@ -62,7 +62,7 @@ class VpnTileService : TileService() {
         tile.apply {
             state = newState
             label = newLabel
-            icon = Icon.createWithResource(applicationContext, R.drawable.vpn_key)
+            icon = Icon.createWithResource(applicationContext, R.drawable.baseline_vpn_key)
             updateTile()
         }
     }
