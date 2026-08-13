@@ -1,0 +1,5 @@
+- hev-socks5-tunnel: v2.17.0
+- Advanced Settings: hev tcp,udp read,write timeout (#88)
+- svg qs tile icon (#90)
+- Apps Routing: remove internet permission check (#92)
+- Implement X-HWID (#94)

@@ -22,7 +22,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = calcVersionCode()
-        versionName = "12.4.0"
+        versionName = "12.5.0"
     }
 
     buildFeatures {
