@@ -1,4 +1,4 @@
-- hev-socks5-tunnel: v2.17.0
+- hev-socks5-tunnel: v2.17.1
 - Advanced Settings: hev tcp,udp read,write timeout (#88)
 - svg qs tile icon (#90)
 - Apps Routing: remove internet permission check (#92)
