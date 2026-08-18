@@ -258,12 +258,12 @@ class TProxyService : VpnService() {
                 "tunnel:",
                 "  name: $tunName",
                 "  mtu: ${settings.tunMtu}",
-                "socks5:",
-                "  address: ${settings.socksAddress}",
-                "  port: ${settings.socksPort}",
                 "misc:",
                 "  tcp-read-write-timeout: ${settings.tunTcpReadWriteTimeout}",
                 "  udp-read-write-timeout: ${settings.tunUdpReadWriteTimeout}",
+                "socks5:",
+                "  address: ${settings.socksAddress}",
+                "  port: ${settings.socksPort}",
             )
             if (
                 settings.socksUsername.trim().isNotEmpty() &&
