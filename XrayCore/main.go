@@ -27,7 +27,7 @@ func Version() string {
 
 func Json(link string) string {
 	response := ShareResponse{}
-	xrayJson, err := share.ConvertShareLinksToXrayJson(link)
+	xrayJson, err := share.ConvertShareLinksToXrayJson(link, "")
 	if err == nil {
 		response.Data = xrayJson
 	} else {
