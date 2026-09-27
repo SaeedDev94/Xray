@@ -163,13 +163,11 @@ class TProxyService : VpnService() {
     }
 
     private fun start(profile: Profile?, globalConfigs: Config) {
-        if (getIsRunning()) {
-            startForeground(
-                VPN_SERVICE_NOTIFICATION_ID,
-                createNotification(configName(profile)),
-            )
-            return
-        }
+        startForeground(
+            VPN_SERVICE_NOTIFICATION_ID,
+            createNotification(configName(profile)),
+        )
+        if (getIsRunning()) return
         val config = profile?.let { getConfig(it, globalConfigs) }
         if (config == null) return
         startXray(config)
