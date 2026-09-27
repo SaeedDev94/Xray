@@ -71,9 +71,13 @@ class TProxyService : VpnService() {
         getSystemService(NotificationManager::class.java)
     }
 
+    @Suppress("FunctionName")
     private external fun TProxyStartService(configPath: String, fd: Int): Boolean
+    @Suppress("FunctionName")
     private external fun TProxyStopService(): Boolean
+    @Suppress("FunctionName", "unused")
     private external fun TProxyIsRunning(): Boolean
+    @Suppress("FunctionName", "unused")
     private external fun TProxyGetStats(): LongArray
 
     override fun onCreate() {
@@ -271,7 +275,7 @@ class TProxyService : VpnService() {
                 return false
             }
 
-            /** Create, Update tun2socks config */
+            /** Create, Update T2S config */
             val tun2socksConfig = arrayListOf(
                 "tunnel:",
                 "  name: $tunName",
@@ -297,7 +301,7 @@ class TProxyService : VpnService() {
                 tun2socksConfig.joinToString("\n")
             )
 
-            /** Start tun2socks */
+            /** Start T2S */
             TProxyStartService(settings.tun2socksConfig().absolutePath, tunDevice!!.fd)
         }
 
