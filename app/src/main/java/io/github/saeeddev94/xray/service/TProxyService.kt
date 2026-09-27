@@ -385,8 +385,8 @@ class TProxyService : VpnService() {
     }
 
     private fun createNotificationChannel(): String {
-        val id = "XrayVpnServiceNotification"
-        val name = "Xray VPN Service"
+        val id = "XrayNotification"
+        val name = "VPN Service"
         val channel = NotificationChannel(id, name, NotificationManager.IMPORTANCE_LOW)
         notificationManager.createNotificationChannel(channel)
         return id
@@ -415,9 +415,9 @@ class TProxyService : VpnService() {
         }
 
         const val PKG_NAME = BuildConfig.APPLICATION_ID
-        const val START_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.VpnStart"
+        const val START_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.StartService"
         const val NEW_CONFIG_SERVICE_ACTION_NAME = "$PKG_NAME.NewConfig"
-        const val STOP_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.VpnStop"
+        const val STOP_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.StopService"
         const val NETWORK_UPDATE_SERVICE_ACTION_NAME = "$PKG_NAME.NetworkUpdate"
         private const val VPN_SERVICE_NOTIFICATION_ID = 1
         private const val OPEN_MAIN_ACTIVITY_ACTION_ID = 2
