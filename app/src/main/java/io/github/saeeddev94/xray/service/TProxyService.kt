@@ -1,7 +1,6 @@
 package io.github.saeeddev94.xray.service
 
 import XrayCore.XrayCore
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -43,7 +42,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.reflect.cast
 
-@SuppressLint("VpnServicePolicy")
+@Suppress("VpnServicePolicy")
 class TProxyService : VpnService() {
 
     private val mainHandler by lazy { Handler(Looper.getMainLooper()) }
