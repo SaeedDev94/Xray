@@ -57,6 +57,7 @@ class TProxyService : VpnService() {
     private val configRepository by lazy { app.configRepository }
     private val profileRepository by lazy { app.profileRepository }
 
+    @Volatile
     private var isRunning: Boolean = false
     private var tunDevice: ParcelFileDescriptor? = null
     private var cellularCallback: ConnectivityManager.NetworkCallback? = null
@@ -118,11 +119,10 @@ class TProxyService : VpnService() {
     private fun configName(profile: Profile?): String = profile?.name ?: settings.tunName
 
     private fun getIsRunning(): Boolean {
-        return if (settings.transparentProxy) {
-            transparentProxyHelper.isRunning()
-        } else {
-            isRunning
+        if (settings.transparentProxy) {
+            isRunning = transparentProxyHelper.isRunning()
         }
+        return isRunning
     }
 
     private suspend fun getProfile(): Profile? {
