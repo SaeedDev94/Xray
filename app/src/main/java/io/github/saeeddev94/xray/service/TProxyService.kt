@@ -313,13 +313,18 @@ class TProxyService : VpnService() {
         if (cellularCallback == null) {
             val request = NetworkRequest.Builder()
                 .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                 .build()
-            cellularCallback = object : ConnectivityManager.NetworkCallback() {
+            val networkCallback = object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network) {
                     commands.trySend(NETWORK_UPDATE_SERVICE_ACTION_NAME)
                 }
             }
-            connectivityManager.registerNetworkCallback(request, cellularCallback!!)
+            runCatching {
+                connectivityManager.registerNetworkCallback(request, networkCallback)
+            }.onSuccess {
+                cellularCallback = networkCallback
+            }
         }
 
         /** Notify start event */
