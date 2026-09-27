@@ -38,6 +38,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.reflect.cast
@@ -48,6 +49,7 @@ class TProxyService : VpnService() {
     private val mainHandler by lazy { Handler(Looper.getMainLooper()) }
     private val binder by lazy { ServiceBinder() }
     private val scope by lazy { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
+    private val commands = Channel<String>(Channel.UNLIMITED)
     private val settings by lazy { Settings(applicationContext) }
     private val transparentProxyHelper by lazy { TransparentProxyHelper(this, settings) }
 
@@ -74,15 +76,15 @@ class TProxyService : VpnService() {
     private external fun TProxyIsRunning(): Boolean
     private external fun TProxyGetStats(): LongArray
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onCreate() {
+        super.onCreate()
         scope.launch {
-            when (intent?.action) {
-                START_VPN_SERVICE_ACTION_NAME -> start(getProfile(), globalConfigs())
-                NEW_CONFIG_SERVICE_ACTION_NAME -> newConfig(getProfile(), globalConfigs())
-                STOP_VPN_SERVICE_ACTION_NAME -> stopVPN()
-                NETWORK_UPDATE_SERVICE_ACTION_NAME -> transparentProxyHelper.networkUpdate()
-            }
+            for (action in commands) handleCommand(action)
         }
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.action?.let { commands.trySend(it) }
         return START_STICKY
     }
 
@@ -92,15 +94,25 @@ class TProxyService : VpnService() {
     }
 
     override fun onRevoke() {
-        stopVPN()
+        commands.trySend(STOP_VPN_SERVICE_ACTION_NAME)
     }
 
     override fun onDestroy() {
+        commands.close()
         scope.cancel()
         unregisterCellularCallback()
         stateListener = null
         toast = null
         super.onDestroy()
+    }
+
+    private suspend fun handleCommand(action: String) {
+        when (action) {
+            START_VPN_SERVICE_ACTION_NAME -> start(getProfile(), globalConfigs())
+            NEW_CONFIG_SERVICE_ACTION_NAME -> newConfig(getProfile(), globalConfigs())
+            STOP_VPN_SERVICE_ACTION_NAME -> stopVPN()
+            NETWORK_UPDATE_SERVICE_ACTION_NAME -> transparentProxyHelper.networkUpdate()
+        }
     }
 
     private fun configName(profile: Profile?): String = profile?.name ?: settings.tunName
@@ -296,7 +308,7 @@ class TProxyService : VpnService() {
                 .build()
             cellularCallback = object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network) {
-                    this@TProxyService.transparentProxyHelper.networkUpdate()
+                    commands.trySend(NETWORK_UPDATE_SERVICE_ACTION_NAME)
                 }
             }
             connectivityManager.registerNetworkCallback(request, cellularCallback!!)
