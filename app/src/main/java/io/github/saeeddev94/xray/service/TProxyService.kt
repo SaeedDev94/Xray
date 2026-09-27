@@ -13,8 +13,10 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.net.VpnService
+import android.os.Binder
 import android.os.Build
 import android.os.Handler
+import android.os.IBinder
 import android.os.Looper
 import android.os.ParcelFileDescriptor
 import android.util.Log
@@ -43,61 +45,29 @@ import kotlin.reflect.cast
 @SuppressLint("VpnServicePolicy")
 class TProxyService : VpnService() {
 
-    companion object {
-        init {
-            System.loadLibrary("hev-socks5-tunnel")
-        }
-
-        const val PKG_NAME = BuildConfig.APPLICATION_ID
-        const val STATUS_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.VpnStatus"
-        const val STOP_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.VpnStop"
-        const val START_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.VpnStart"
-        const val NEW_CONFIG_SERVICE_ACTION_NAME = "$PKG_NAME.NewConfig"
-        const val NETWORK_UPDATE_SERVICE_ACTION_NAME = "$PKG_NAME.NetworkUpdate"
-        private const val VPN_SERVICE_NOTIFICATION_ID = 1
-        private const val OPEN_MAIN_ACTIVITY_ACTION_ID = 2
-        private const val STOP_VPN_SERVICE_ACTION_ID = 3
-
-        fun status(context: Context) = startCommand(context, STATUS_VPN_SERVICE_ACTION_NAME)
-        fun stop(context: Context) = startCommand(context, STOP_VPN_SERVICE_ACTION_NAME)
-        fun newConfig(context: Context) = startCommand(context, NEW_CONFIG_SERVICE_ACTION_NAME)
-
-        fun start(context: Context, check: Boolean) {
-            if (check && prepare(context) != null) {
-                Log.e(
-                    "TProxyService",
-                    "Can't start: VpnService#prepare(): needs user permission"
-                )
-                return
-            }
-            startCommand(context, START_VPN_SERVICE_ACTION_NAME, true)
-        }
-
-        private fun startCommand(context: Context, name: String, foreground: Boolean = false) {
-            Intent(context, TProxyService::class.java).also {
-                it.action = name
-                if (foreground) {
-                    context.startForegroundService(it)
-                } else {
-                    context.startService(it)
-                }
-            }
-        }
-    }
-
-    private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
-    private val connectivityManager by lazy { getSystemService(ConnectivityManager::class.java) }
+    private val mainHandler by lazy { Handler(Looper.getMainLooper()) }
+    private val binder by lazy { ServiceBinder() }
+    private val scope by lazy { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
     private val settings by lazy { Settings(applicationContext) }
     private val transparentProxyHelper by lazy { TransparentProxyHelper(this, settings) }
-    private val configRepository by lazy { Xray::class.cast(application).configRepository }
-    private val profileRepository by lazy { Xray::class.cast(application).profileRepository }
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    private val app by lazy { Xray::class.cast(application) }
+    private val configRepository by lazy { app.configRepository }
+    private val profileRepository by lazy { app.profileRepository }
 
     private var isRunning: Boolean = false
     private var tunDevice: ParcelFileDescriptor? = null
     private var cellularCallback: ConnectivityManager.NetworkCallback? = null
+    private var stateListener: ((Boolean) -> Unit)? = null
     private var toast: Toast? = null
     private var script: String? = null
+
+    private val connectivityManager by lazy {
+        getSystemService(ConnectivityManager::class.java)
+    }
+    private val notificationManager by lazy {
+        getSystemService(NotificationManager::class.java)
+    }
 
     private external fun TProxyStartService(configPath: String, fd: Int): Boolean
     private external fun TProxyStopService(): Boolean
@@ -110,11 +80,15 @@ class TProxyService : VpnService() {
                 START_VPN_SERVICE_ACTION_NAME -> start(getProfile(), globalConfigs())
                 NEW_CONFIG_SERVICE_ACTION_NAME -> newConfig(getProfile(), globalConfigs())
                 STOP_VPN_SERVICE_ACTION_NAME -> stopVPN()
-                STATUS_VPN_SERVICE_ACTION_NAME -> broadcastStatus()
                 NETWORK_UPDATE_SERVICE_ACTION_NAME -> transparentProxyHelper.networkUpdate()
             }
         }
         return START_STICKY
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        if (intent?.action == SERVICE_INTERFACE) return super.onBind(intent)
+        return binder
     }
 
     override fun onRevoke() {
@@ -123,8 +97,8 @@ class TProxyService : VpnService() {
 
     override fun onDestroy() {
         scope.cancel()
-        cellularCallback?.let { connectivityManager.unregisterNetworkCallback(it) }
-        cellularCallback = null
+        unregisterCellularCallback()
+        stateListener = null
         toast = null
         super.onDestroy()
     }
@@ -193,7 +167,7 @@ class TProxyService : VpnService() {
             val name = configName(profile)
             val notification = createNotification(name)
             showToast(name)
-            broadcastStart(NEW_CONFIG_SERVICE_ACTION_NAME, name)
+            VpnTileService.update(applicationContext, true, name)
             notificationManager.notify(VPN_SERVICE_NOTIFICATION_ID, notification)
         }
     }
@@ -326,10 +300,10 @@ class TProxyService : VpnService() {
             connectivityManager.registerNetworkCallback(request, cellularCallback!!)
         }
 
-        /** Broadcast start event */
+        /** Notify start event */
         showToast("Start VPN")
         isRunning = true
-        broadcastStart(START_VPN_SERVICE_ACTION_NAME, name)
+        notifyState(true, name)
     }
 
     private fun stopVPN() {
@@ -342,33 +316,21 @@ class TProxyService : VpnService() {
             isRunning = false
         }
         stopXray()
+        unregisterCellularCallback()
         stopForeground(STOP_FOREGROUND_REMOVE)
         showToast("Stop VPN")
-        broadcastStop()
+        notifyState(false, getString(R.string.appName))
         stopSelf()
     }
 
-    private fun broadcastStart(action: String, configName: String) {
-        Intent(action).also {
-            it.`package` = BuildConfig.APPLICATION_ID
-            it.putExtra("profile", configName)
-            sendBroadcast(it)
-        }
+    private fun unregisterCellularCallback() {
+        cellularCallback?.let { connectivityManager.unregisterNetworkCallback(it) }
+        cellularCallback = null
     }
 
-    private fun broadcastStop() {
-        Intent(STOP_VPN_SERVICE_ACTION_NAME).also {
-            it.`package` = BuildConfig.APPLICATION_ID
-            sendBroadcast(it)
-        }
-    }
-
-    private fun broadcastStatus() {
-        Intent(STATUS_VPN_SERVICE_ACTION_NAME).also {
-            it.`package` = BuildConfig.APPLICATION_ID
-            it.putExtra("isRunning", getIsRunning())
-            sendBroadcast(it)
-        }
+    private fun notifyState(isRunning: Boolean, label: String) {
+        VpnTileService.update(applicationContext, isRunning, label)
+        mainHandler.post { stateListener?.invoke(isRunning) }
     }
 
     private fun createNotification(name: String): Notification {
@@ -408,7 +370,7 @@ class TProxyService : VpnService() {
     }
 
     private fun showToast(message: String) {
-        Handler(Looper.getMainLooper()).post {
+        mainHandler.post {
             toast?.cancel()
             toast = Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).also {
                 it.show()
@@ -416,4 +378,51 @@ class TProxyService : VpnService() {
         }
     }
 
+    inner class ServiceBinder : Binder() {
+        fun isRunning(): Boolean = getIsRunning()
+
+        fun setStateListener(listener: ((Boolean) -> Unit)?) {
+            stateListener = listener
+        }
+    }
+
+    companion object {
+        init {
+            System.loadLibrary("hev-socks5-tunnel")
+        }
+
+        const val PKG_NAME = BuildConfig.APPLICATION_ID
+        const val STOP_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.VpnStop"
+        const val START_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.VpnStart"
+        const val NEW_CONFIG_SERVICE_ACTION_NAME = "$PKG_NAME.NewConfig"
+        const val NETWORK_UPDATE_SERVICE_ACTION_NAME = "$PKG_NAME.NetworkUpdate"
+        private const val VPN_SERVICE_NOTIFICATION_ID = 1
+        private const val OPEN_MAIN_ACTIVITY_ACTION_ID = 2
+        private const val STOP_VPN_SERVICE_ACTION_ID = 3
+
+        fun stop(context: Context) = startCommand(context, STOP_VPN_SERVICE_ACTION_NAME)
+        fun newConfig(context: Context) = startCommand(context, NEW_CONFIG_SERVICE_ACTION_NAME)
+
+        fun start(context: Context, check: Boolean) {
+            if (check && prepare(context) != null) {
+                Log.e(
+                    "TProxyService",
+                    "Can't start: VpnService#prepare(): needs user permission"
+                )
+                return
+            }
+            startCommand(context, START_VPN_SERVICE_ACTION_NAME, true)
+        }
+
+        private fun startCommand(context: Context, name: String, foreground: Boolean = false) {
+            Intent(context, TProxyService::class.java).also {
+                it.action = name
+                if (foreground) {
+                    context.startForegroundService(it)
+                } else {
+                    context.startService(it)
+                }
+            }
+        }
+    }
 }

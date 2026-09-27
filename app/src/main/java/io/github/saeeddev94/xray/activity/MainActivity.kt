@@ -1,15 +1,15 @@
 package io.github.saeeddev94.xray.activity
 
 import XrayCore.XrayCore
-import android.content.BroadcastReceiver
 import android.content.ClipboardManager
-import android.content.Context
+import android.content.ComponentName
 import android.content.Intent
-import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.content.res.ColorStateList
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -50,6 +50,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URI
+import kotlin.reflect.cast
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -89,19 +90,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggleVpnService()
     }
 
-    private val vpnServiceEventReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (context == null || intent == null) return
-            when (intent.action) {
-                TProxyService.START_VPN_SERVICE_ACTION_NAME -> vpnStartStatus()
-                TProxyService.STOP_VPN_SERVICE_ACTION_NAME -> vpnStopStatus()
-                TProxyService.STATUS_VPN_SERVICE_ACTION_NAME -> {
-                    intent.getBooleanExtra("isRunning", false).let { isRunning ->
-                        if (isRunning) vpnStartStatus()
-                        else vpnStopStatus()
-                    }
-                }
+    private var vpnServiceBinder: TProxyService.ServiceBinder? = null
+    private val vpnServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            TProxyService.ServiceBinder::class.cast(service).apply {
+                setStateListener { onVpnState(it) }
+                onVpnState(isRunning())
+                vpnServiceBinder = this
             }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            vpnServiceBinder = null
         }
     }
 
@@ -185,20 +185,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onStart() {
         super.onStart()
-        IntentFilter().also {
-            it.addAction(TProxyService.START_VPN_SERVICE_ACTION_NAME)
-            it.addAction(TProxyService.STOP_VPN_SERVICE_ACTION_NAME)
-            it.addAction(TProxyService.STATUS_VPN_SERVICE_ACTION_NAME)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                registerReceiver(vpnServiceEventReceiver, it, RECEIVER_NOT_EXPORTED)
-            } else {
-                @Suppress("UnspecifiedRegisterReceiverFlag")
-                registerReceiver(vpnServiceEventReceiver, it)
-            }
-        }
         Intent(this, TProxyService::class.java).also {
-            it.action = TProxyService.STATUS_VPN_SERVICE_ACTION_NAME
-            startService(it)
+            bindService(it, vpnServiceConnection, BIND_AUTO_CREATE)
         }
         if (settings.refreshLinksOnOpen) {
             val interval = (settings.refreshLinksInterval * 60 * 1000).toLong()
@@ -209,7 +197,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onStop() {
         super.onStop()
-        unregisterReceiver(vpnServiceEventReceiver)
+        vpnServiceBinder?.setStateListener(null)
+        vpnServiceBinder = null
+        unbindService(vpnServiceConnection)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -275,6 +265,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         profiles.addAll(ArrayList(value))
         @Suppress("NotifyDataSetChanged")
         profileAdapter.notifyDataSetChanged()
+    }
+
+    private fun onVpnState(isRunning: Boolean) {
+        if (isRunning) vpnStartStatus() else vpnStopStatus()
     }
 
     private fun vpnStartStatus() {

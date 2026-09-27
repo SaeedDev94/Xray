@@ -1,7 +1,7 @@
 package io.github.saeeddev94.xray.service
 
 import android.content.ComponentName
-import android.content.Intent
+import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
@@ -13,19 +13,6 @@ import io.github.saeeddev94.xray.Settings
 class VpnTileService : TileService() {
 
     private val settings by lazy { Settings(applicationContext) }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        requestListeningState(this, ComponentName(this, VpnTileService::class.java))
-        val action = intent?.getStringExtra("action") ?: ""
-        val label = intent?.getStringExtra("label") ?: ""
-        val sharedPref = sharedPref()
-        sharedPref.edit {
-            putString("action", action)
-            putString("label", label)
-        }
-        handleUpdate(action, label)
-        return START_STICKY
-    }
 
     override fun onStartListening() {
         super.onStartListening()
@@ -43,18 +30,11 @@ class VpnTileService : TileService() {
         }
     }
 
-    private fun handleUpdate(newAction: String? = null, newLabel: String? = null) {
-        val sharedPref = sharedPref()
-        val action = newAction ?: sharedPref.getString("action", "")!!
-        val label = newLabel ?: sharedPref.getString("label", "")!!
-        if (action.isNotEmpty() && label.isNotEmpty()) {
-            when (action) {
-                TProxyService.START_VPN_SERVICE_ACTION_NAME,
-                TProxyService.NEW_CONFIG_SERVICE_ACTION_NAME -> updateTile(Tile.STATE_ACTIVE, label)
-
-                TProxyService.STOP_VPN_SERVICE_ACTION_NAME -> updateTile(Tile.STATE_INACTIVE, label)
-            }
-        }
+    private fun handleUpdate() {
+        val sharedPref = sharedPref(applicationContext)
+        val label = sharedPref.getString(PREF_LABEL, null) ?: return
+        val active = sharedPref.getBoolean(PREF_ACTIVE, false)
+        updateTile(if (active) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE, label)
     }
 
     private fun updateTile(newState: Int, newLabel: String) {
@@ -67,8 +47,22 @@ class VpnTileService : TileService() {
         }
     }
 
-    private fun sharedPref(): SharedPreferences {
-        return getSharedPreferences("vpn_tile", MODE_PRIVATE)
+    companion object {
+        private const val PREF_NAME = "vpn_tile"
+        private const val PREF_ACTIVE = "active"
+        private const val PREF_LABEL = "label"
+
+        fun update(context: Context, active: Boolean, label: String) {
+            sharedPref(context).edit {
+                putBoolean(PREF_ACTIVE, active)
+                putString(PREF_LABEL, label)
+            }
+            requestListeningState(context, ComponentName(context, VpnTileService::class.java))
+        }
+
+        private fun sharedPref(context: Context): SharedPreferences {
+            return context.getSharedPreferences(PREF_NAME, MODE_PRIVATE)
+        }
     }
 
 }

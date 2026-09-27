@@ -110,15 +110,6 @@
                 android:value="true" />
         </service>
         <receiver
-            android:name=".receiver.VpnActionReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="io.github.saeeddev94.xray.VpnStart" />
-                <action android:name="io.github.saeeddev94.xray.VpnStop" />
-                <action android:name="io.github.saeeddev94.xray.NewConfig" />
-            </intent-filter>
-        </receiver>
-        <receiver
             android:name=".receiver.BootReceiver"
             android:exported="true">
             <intent-filter>
