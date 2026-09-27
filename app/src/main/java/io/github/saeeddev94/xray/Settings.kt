@@ -33,6 +33,14 @@ class Settings(private val context: Context) {
         get() = sharedPreferences.getInt("xrayHelperVersionCode", 0)
         set(value) = sharedPreferences.edit { putInt("xrayHelperVersionCode", value) }
 
+    /** Quick Settings Tile */
+    var tileActive: Boolean
+        get() = sharedPreferences.getBoolean("tileActive", false)
+        set(value) = sharedPreferences.edit { putBoolean("tileActive", value) }
+    var tileLabel: String?
+        get() = sharedPreferences.getString("tileLabel", null)
+        set(value) = sharedPreferences.edit { putString("tileLabel", value) }
+
     /**
      * Apps Routing
      * Mode: true -> exclude, false -> include
