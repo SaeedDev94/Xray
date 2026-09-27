@@ -151,10 +151,12 @@ class TProxyService : VpnService() {
     }
 
     private fun start(profile: Profile?, globalConfigs: Config) {
-        if (profile == null) return
-        getConfig(profile, globalConfigs)?.let {
-            startXray(it)
-            startVPN(profile)
+        val config = profile?.let { getConfig(it, globalConfigs) }
+        if (config == null) return
+        startXray(config)
+        if (!startVPN(profile)) {
+            stopXray()
+            stopVPN()
         }
     }
 
@@ -198,7 +200,7 @@ class TProxyService : VpnService() {
         }
     }
 
-    private fun startVPN(profile: Profile?) {
+    private fun startVPN(profile: Profile): Boolean {
         if (settings.transparentProxy) {
             transparentProxyHelper.enableProxy()
             transparentProxyHelper.monitorNetwork()
@@ -245,12 +247,12 @@ class TProxyService : VpnService() {
             }
 
             /** Build tun device */
-            tunDevice = tun.establish()
+            tunDevice = runCatching { tun.establish() }.getOrNull()
 
             /** Check tun device */
             if (tunDevice == null) {
                 Log.e("TProxyService", "tun#establish failed")
-                return
+                return false
             }
 
             /** Create, Update tun2socks config */
@@ -304,6 +306,7 @@ class TProxyService : VpnService() {
         showToast("Start VPN")
         isRunning = true
         notifyState(true, name)
+        return true
     }
 
     private fun stopVPN() {
@@ -392,27 +395,17 @@ class TProxyService : VpnService() {
         }
 
         const val PKG_NAME = BuildConfig.APPLICATION_ID
-        const val STOP_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.VpnStop"
         const val START_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.VpnStart"
         const val NEW_CONFIG_SERVICE_ACTION_NAME = "$PKG_NAME.NewConfig"
+        const val STOP_VPN_SERVICE_ACTION_NAME = "$PKG_NAME.VpnStop"
         const val NETWORK_UPDATE_SERVICE_ACTION_NAME = "$PKG_NAME.NetworkUpdate"
         private const val VPN_SERVICE_NOTIFICATION_ID = 1
         private const val OPEN_MAIN_ACTIVITY_ACTION_ID = 2
         private const val STOP_VPN_SERVICE_ACTION_ID = 3
 
-        fun stop(context: Context) = startCommand(context, STOP_VPN_SERVICE_ACTION_NAME)
+        fun start(context: Context) = startCommand(context, START_VPN_SERVICE_ACTION_NAME, true)
         fun newConfig(context: Context) = startCommand(context, NEW_CONFIG_SERVICE_ACTION_NAME)
-
-        fun start(context: Context, check: Boolean) {
-            if (check && prepare(context) != null) {
-                Log.e(
-                    "TProxyService",
-                    "Can't start: VpnService#prepare(): needs user permission"
-                )
-                return
-            }
-            startCommand(context, START_VPN_SERVICE_ACTION_NAME, true)
-        }
+        fun stop(context: Context) = startCommand(context, STOP_VPN_SERVICE_ACTION_NAME)
 
         private fun startCommand(context: Context, name: String, foreground: Boolean = false) {
             Intent(context, TProxyService::class.java).also {

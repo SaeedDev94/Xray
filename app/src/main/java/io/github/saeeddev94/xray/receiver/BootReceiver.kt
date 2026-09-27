@@ -43,12 +43,12 @@ class BootReceiver : BroadcastReceiver() {
                 transparentProxyHelper.monitorNetwork()
                 withContext(Dispatchers.Main) {
                     if (bypassWiFi) TProxyService.stop(context)
-                    else TProxyService.start(context, false)
+                    else TProxyService.start(context)
                     pendingResult.finish()
                 }
             }
             return
         }
-        TProxyService.start(context, settings.tun2socks)
+        TProxyService.start(context)
     }
 }

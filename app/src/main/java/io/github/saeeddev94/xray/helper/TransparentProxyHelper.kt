@@ -75,7 +75,7 @@ class TransparentProxyHelper(
             return
         }
         if (!isRunning) {
-            TProxyService.start(context, false)
+            TProxyService.start(context)
             return
         }
         refreshProxy()

@@ -310,7 +310,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             TProxyService.stop(applicationContext)
             return
         }
-        TProxyService.start(applicationContext, false)
+        TProxyService.start(applicationContext)
     }
 
     private fun profileSelect(index: Int, profile: ProfileList) {
