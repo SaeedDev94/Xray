@@ -49,7 +49,7 @@ class TProxyService : VpnService() {
     private val mainHandler by lazy { Handler(Looper.getMainLooper()) }
     private val binder by lazy { ServiceBinder() }
     private val scope by lazy { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
-    private val commands = Channel<String>(Channel.UNLIMITED)
+    private val commands by lazy { Channel<String>(Channel.UNLIMITED) }
     private val settings by lazy { Settings(applicationContext) }
     private val transparentProxyHelper by lazy { TransparentProxyHelper(this, settings) }
 
