@@ -332,9 +332,9 @@ class TProxyService : VpnService() {
         } else {
             TProxyStopService()
             runCatching { tunDevice?.close() }
-            tunDevice = null
-            isRunning = false
         }
+        tunDevice = null
+        isRunning = false
         stopXray()
         unregisterCellularCallback()
         stopForeground(STOP_FOREGROUND_REMOVE)
