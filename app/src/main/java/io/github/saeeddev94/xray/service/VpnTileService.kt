@@ -19,9 +19,7 @@ class VpnTileService : TileService() {
     override fun onClick() {
         super.onClick()
         when (qsTile?.state) {
-            Tile.STATE_INACTIVE -> {
-                TProxyService.start(applicationContext)
-            }
+            Tile.STATE_INACTIVE -> TProxyService.start(applicationContext)
             Tile.STATE_ACTIVE -> TProxyService.stop(applicationContext)
         }
     }
@@ -34,8 +32,7 @@ class VpnTileService : TileService() {
     }
 
     private fun updateTile(newState: Int, newLabel: String) {
-        val tile = qsTile ?: return
-        tile.apply {
+        qsTile?.apply {
             state = newState
             label = newLabel
             icon = Icon.createWithResource(applicationContext, R.drawable.baseline_vpn_key)
