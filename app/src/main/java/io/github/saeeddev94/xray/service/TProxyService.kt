@@ -186,11 +186,12 @@ class TProxyService : VpnService() {
         getConfig(profile, globalConfigs).also {
             if (it == null) stopVPN() else startXray(it)
         }?.let {
-            val name = configName(profile)
-            val notification = createNotification(name)
-            showToast(name)
-            VpnTileService.update(applicationContext, true, name)
-            notificationManager.notify(VPN_SERVICE_NOTIFICATION_ID, notification)
+            configName(profile).let { name ->
+                val notification = createNotification(name)
+                showToast(name)
+                VpnTileService.update(applicationContext, true, name)
+                notificationManager.notify(VPN_SERVICE_NOTIFICATION_ID, notification)
+            }
         }
     }
 
@@ -305,10 +306,6 @@ class TProxyService : VpnService() {
             TProxyStartService(settings.tun2socksConfig().absolutePath, tunDevice!!.fd)
         }
 
-        /** Service Notification */
-        val name = configName(profile)
-        startForeground(VPN_SERVICE_NOTIFICATION_ID, createNotification(name))
-
         /** Listen for cellular changes */
         if (cellularCallback == null) {
             val request = NetworkRequest.Builder()
@@ -330,7 +327,7 @@ class TProxyService : VpnService() {
         /** Notify start event */
         showToast("Start VPN")
         isRunning = true
-        notifyState(true, name)
+        notifyState(true, configName(profile))
         return true
     }
 
