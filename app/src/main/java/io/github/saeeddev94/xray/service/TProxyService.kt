@@ -325,9 +325,9 @@ class TProxyService : VpnService() {
         }
 
         /** Notify start event */
-        showToast("Start VPN")
         isRunning = true
-        notifyState(true, configName(profile))
+        showToast("Start VPN")
+        notifyState(profile)
         return true
     }
 
@@ -344,7 +344,7 @@ class TProxyService : VpnService() {
         unregisterCellularCallback()
         stopForeground(STOP_FOREGROUND_REMOVE)
         showToast("Stop VPN")
-        notifyState(false, getString(R.string.appName))
+        notifyState()
         stopSelf()
     }
 
@@ -353,7 +353,8 @@ class TProxyService : VpnService() {
         cellularCallback = null
     }
 
-    private fun notifyState(isRunning: Boolean, label: String) {
+    private fun notifyState(profile: Profile? = null) {
+        val label = profile?.name ?: getString(R.string.appName)
         VpnTileService.update(applicationContext, isRunning, label)
         mainHandler.post { stateListener?.invoke(isRunning) }
     }
