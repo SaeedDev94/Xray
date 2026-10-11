@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Build arm32 docker
         run: docker build -t arm32 -f Dockerfile .
       - name: Compile arm32 build
@@ -28,7 +28,7 @@ jobs:
             -e KEY_PASSWORD="${{ secrets.KEY_PASSWORD }}" \
             arm32
       - name: Upload arm32 artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: arm32-build
           path: /opt/dist
@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Build arm64 docker
         run: docker build -t arm64 -f Dockerfile .
       - name: Compile arm64 build
@@ -55,7 +55,7 @@ jobs:
             -e KEY_PASSWORD="${{ secrets.KEY_PASSWORD }}" \
             arm64
       - name: Upload arm64 artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: arm64-build
           path: /opt/dist
@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Build x86 docker
         run: docker build -t x86 -f Dockerfile .
       - name: Compile x86 build
@@ -82,7 +82,7 @@ jobs:
             -e KEY_PASSWORD="${{ secrets.KEY_PASSWORD }}" \
             x86
       - name: Upload x86 artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: x86-build
           path: /opt/dist
@@ -91,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Build amd64 docker
         run: docker build -t amd64 -f Dockerfile .
       - name: Compile amd64 build
@@ -109,7 +109,7 @@ jobs:
             -e KEY_PASSWORD="${{ secrets.KEY_PASSWORD }}" \
             amd64
       - name: Upload amd64 artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: amd64-build
           path: /opt/dist
@@ -125,24 +125,24 @@ jobs:
       contents: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Download arm32 artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: arm32-build
           path: dist
       - name: Download arm64 artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: arm64-build
           path: dist
       - name: Download x86 artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: x86-build
           path: dist
       - name: Download amd64 artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: amd64-build
           path: dist
@@ -153,7 +153,7 @@ jobs:
           ((VERSION_CODE += ALL_VARIANTS))
           echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
       - name: Publish release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
