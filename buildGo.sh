@@ -3,9 +3,11 @@
 # Tools version
 SDK_VERSION=$(awk -F ' ' '/compileSdk/ {print $3}' app/build.gradle.kts)
 NDK_VERSION=$(awk -F '"' '/ndkVersion/ {print $2}' app/build.gradle.kts)
+GO_VERSION=$(awk -F ' ' '/^go / {print $2}' XrayCore/go.mod)
 
 # Set vars
 export GOPATH="$(realpath go-path)"
+export GOTOOLCHAIN="go$GO_VERSION"
 
 # Set path
 export PATH="$GOPATH/bin:$PATH"
