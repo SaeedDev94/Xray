@@ -174,9 +174,9 @@ class LinkHelper(
     private fun outbounds(): JsonArray {
         val outbound = this@LinkHelper.outbound!!
 
-        remark = outbound["sendThrough"]
-            ?.jsonPrimitive
-            ?.contentOrNull ?: REMARK_DEFAULT
+        remark = outbound["sendThrough"]?.jsonPrimitive?.contentOrNull ?:
+        outbound["tag"]?.jsonPrimitive?.contentOrNull ?:
+        REMARK_DEFAULT
 
         val proxy = buildJsonObject {
             for ((key, value) in outbound) {
