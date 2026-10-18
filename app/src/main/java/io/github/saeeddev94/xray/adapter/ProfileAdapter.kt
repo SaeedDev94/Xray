@@ -70,6 +70,7 @@ class ProfileAdapter(
     }
 
     override fun onItemMoveCompleted(startPosition: Int, endPosition: Int) {
+        if (startPosition == endPosition) return
         val isMoveUp = startPosition > endPosition
         val start = if (isMoveUp) profiles[endPosition + 1] else profiles[endPosition - 1]
         val end = profiles[endPosition]
