@@ -20,7 +20,7 @@ git checkout "$RELEASE_TAG"
 git submodule update --init --recursive
 
 # Tools version
-SDK_VERSION=$(awk -F ' ' '/compileSdk/ {print $3}' app/build.gradle.kts)
+BUILD_TOOLS_VERSION=$(awk -F '"' '/buildToolsVersion/ {print $2}' app/build.gradle.kts)
 JAVA_VERSION=$(awk -F '_' '/JVM/ {print $2}' app/build.gradle.kts)
 
 # Set vars
@@ -29,7 +29,7 @@ export JAVA_HOME="/usr/lib/jvm/java-$JAVA_VERSION-openjdk-amd64"
 
 # Set path
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
-export PATH="$ANDROID_HOME/build-tools/$SDK_VERSION.0.0:$PATH"
+export PATH="$ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION:$PATH"
 export PATH="$JAVA_HOME/bin:$PATH"
 
 # Install Tools

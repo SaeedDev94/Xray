@@ -14,7 +14,12 @@ fun calcVersionCode(): Int = file("versionCode.txt").readText().trim().let { ver
 
 android {
     namespace = "io.github.saeeddev94.xray"
-    compileSdk = 37
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
+    buildToolsVersion = "37.0.0"
 
     defaultConfig {
         applicationId = "io.github.saeeddev94.xray"
